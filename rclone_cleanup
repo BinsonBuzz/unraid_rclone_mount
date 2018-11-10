@@ -29,7 +29,6 @@ rm "$line"
 done
 find "/mnt/user/mount_unionfs/google_vfs/.unionfs" -mindepth 1 -type d -empty -delete
 
-
 rm /mnt/user/appdata/other/rclone/rclone_cleanup
 
 exit
