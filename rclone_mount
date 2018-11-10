@@ -1,0 +1,124 @@
+#!/bin/bash
+
+#######  Check if script already running  ##########
+
+if [[ -f "/mnt/user/appdata/other/rclone/rclone_mount_running" ]]; then
+
+echo "$(date "+%d.%m.%Y %T") INFO: Exiting script already running."
+
+exit
+
+else
+
+touch /mnt/user/appdata/other/rclone/rclone_mount_running
+
+fi
+
+#######  End Check if script already running  ##########
+
+#######  Start rclone_vfs mounted  ##########
+
+# create directories for rclone mount and unionfs mount
+
+mkdir -p /mnt/user/appdata/other/rclone
+mkdir -p /mnt/user/mount_rclone/google_vfs
+mkdir -p /mnt/user/mount_unionfs/google_vfs/{movies,tv_shows}
+mkdir -p /mnt/user/rclone_upload/google_vfs
+
+# check if rclone mount already created
+
+if [[ -f "/mnt/user/mount_rclone/google_vfs/mountcheck" ]]; then
+
+echo "$(date "+%d.%m.%Y %T") INFO: Check rclone vfs mount success."
+
+else
+
+echo "$(date "+%d.%m.%Y %T") INFO: mounting rclone vfs."
+
+rclone mount --rc --allow-other --buffer-size 1G --dir-cache-time 72h --drive-chunk-size 256M --fast-list --log-level INFO --vfs-read-chunk-size 128M --vfs-read-chunk-size-limit off gdrive_media_vfs: /mnt/user/mount_rclone/google_vfs &
+
+# check if mount successful
+
+if [[ -f "/mnt/user/mount_rclone/google_vfs/mountcheck" ]]; then
+
+echo "$(date "+%d.%m.%Y %T") INFO: Check rclone vfs mount success."
+
+else
+
+echo "$(date "+%d.%m.%Y %T") CRITICAL: rclone_vfs mount failed - please check for problems."
+
+rm /mnt/user/appdata/other/rclone/rclone_mount_running
+
+exit
+
+fi
+
+fi
+
+#######  End rclone_vfs mount  ##########
+
+#######  Start unionfs mount   ##########
+
+if [[ -f "/mnt/user/mount_unionfs/google_vfs/mountcheck" ]]; then
+
+echo "$(date "+%d.%m.%Y %T") INFO: Check successful, unionfs mounted."
+
+else
+
+# Unmount before remounting to be safe
+
+fusermount -uz /mnt/user/mount_unionfs/google_vfs
+
+unionfs -o cow,allow_other,direct_io,auto_cache,sync_read /mnt/user/rclone_upload/google_vfs=RW:/mnt/user/mount_rclone/google_vfs=RO /mnt/user/mount_unionfs/google_vfs
+
+if [[ -f "/mnt/user/mount_unionfs/google_vfs/mountcheck" ]]; then
+
+echo "$(date "+%d.%m.%Y %T") INFO: Check successful, unionfs mounted."
+
+else
+
+echo "$(date "+%d.%m.%Y %T") CRITICAL: unionfs Remount failed."
+
+rm /mnt/user/appdata/other/rclone/rclone_mount_running
+
+exit
+
+fi
+
+fi
+
+#######  End Mount unionfs   ##########
+
+############### starting dockers that need unionfs mount ######################
+
+# only start dockers once
+
+if [[ -f "/mnt/user/appdata/other/rclone/dockers_started" ]]; then
+
+echo "$(date "+%d.%m.%Y %T") INFO: dockers already started"
+
+else
+
+touch /mnt/user/appdata/other/rclone/dockers_started
+
+echo "$(date "+%d.%m.%Y %T") INFO: Starting dockers."
+
+docker start plex
+docker start ombi
+docker start tautulli
+docker start radarr
+docker start sonarr
+
+fi
+
+############### end dockers that need unionfs mount ######################
+
+# populate rclone dir-cache 
+
+echo "$(date "+%d.%m.%Y %T") Info: populating dir cache - this could take a while."
+
+rclone rc --timeout=1h vfs/refresh recursive=true
+
+echo "$(date "+%d.%m.%Y %T") Info: populating dir cache complete."
+
+exit
