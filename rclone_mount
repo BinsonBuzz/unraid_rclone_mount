@@ -1,6 +1,6 @@
 #!/bin/bash
 
-#######  Check if script already running  ##########
+#######  Check if script is already running  ##########
 
 if [[ -f "/mnt/user/appdata/other/rclone/rclone_mount_running" ]]; then
 
