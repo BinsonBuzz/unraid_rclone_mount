@@ -39,6 +39,10 @@ rclone mount --rc --allow-other --buffer-size 1G --dir-cache-time 72h --drive-ch
 
 # check if mount successful
 
+# slight pause to give mount time to finalise
+
+sleep 10
+
 if [[ -f "/mnt/user/mount_rclone/google_vfs/mountcheck" ]]; then
 
 echo "$(date "+%d.%m.%Y %T") INFO: Check rclone vfs mount success."
