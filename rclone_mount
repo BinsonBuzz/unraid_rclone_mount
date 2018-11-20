@@ -69,10 +69,6 @@ echo "$(date "+%d.%m.%Y %T") INFO: Check successful, unionfs mounted."
 
 else
 
-# Unmount before remounting to be safe
-
-fusermount -uz /mnt/user/mount_unionfs/google_vfs
-
 unionfs -o cow,allow_other,direct_io,auto_cache,sync_read /mnt/user/rclone_upload/google_vfs=RW:/mnt/user/mount_rclone/google_vfs=RO /mnt/user/mount_unionfs/google_vfs
 
 if [[ -f "/mnt/user/mount_unionfs/google_vfs/mountcheck" ]]; then
