@@ -22,6 +22,7 @@ fi
 
 mkdir -p /mnt/user/appdata/other/rclone
 mkdir -p /mnt/user/mount_rclone/google_vfs
+mkdir -p /mnt/user/mount_rclone/google_tdrive_vfs
 mkdir -p /mnt/user/mount_unionfs/google_vfs
 mkdir -p /mnt/user/rclone_upload/google_vfs
 
