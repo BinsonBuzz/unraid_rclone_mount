@@ -26,7 +26,7 @@ else
 
 echo "$(date "+%d.%m.%Y %T") INFO: rclone not installed - will try again later."
 
-rm /mnt/user/appdata/other/rclone/rclone_upload
+rm /mnt/user/appdata/other/rclone/rclone_upload_tdrive
 
 exit
 
