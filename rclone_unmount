@@ -4,6 +4,7 @@
 
 fusermount -uz /mnt/user/mount_rclone/google_vfs
 fusermount -uz /mnt/user/mount_unionfs/google_vfs
+fusermount -uz /mnt/user/mount_unionfs/google_tdrive_vfs
 
 # Remove dummy files
 
