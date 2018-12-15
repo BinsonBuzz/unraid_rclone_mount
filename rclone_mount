@@ -16,7 +16,7 @@ fi
 
 #######  End Check if script already running  ##########
 
-#######  Start rclone_vfs mounted  ##########
+#######  Start rclone mounts  ##########
 
 # create directories for rclone mount and unionfs mount
 
@@ -24,6 +24,8 @@ mkdir -p /mnt/user/appdata/other/rclone
 mkdir -p /mnt/user/mount_rclone/google_vfs
 mkdir -p /mnt/user/mount_unionfs/google_vfs
 mkdir -p /mnt/user/rclone_upload/google_vfs
+
+#######  Start rclone gdrive mount  ##########
 
 # check if rclone mount already created
 
@@ -45,11 +47,11 @@ sleep 10
 
 if [[ -f "/mnt/user/mount_rclone/google_vfs/mountcheck" ]]; then
 
-echo "$(date "+%d.%m.%Y %T") INFO: Check rclone vfs mount success."
+echo "$(date "+%d.%m.%Y %T") INFO: Check rclone gdrive vfs mount success."
 
 else
 
-echo "$(date "+%d.%m.%Y %T") CRITICAL: rclone_vfs mount failed - please check for problems."
+echo "$(date "+%d.%m.%Y %T") CRITICAL: rclone gdrive vfs mount failed - please check for problems."
 
 rm /mnt/user/appdata/other/rclone/rclone_mount_running
 
@@ -59,7 +61,45 @@ fi
 
 fi
 
-#######  End rclone_vfs mount  ##########
+#######  End rclone gdrive mount  ##########
+
+#######  Start rclone tdrive mount  ##########
+
+# check if rclone teamdrive mount already created
+
+if [[ -f "/mnt/user/mount_rclone/google_tdrive_vfs/mountcheck" ]]; then
+
+echo "$(date "+%d.%m.%Y %T") INFO: Check rclone tdrive vfs mount success."
+
+else
+
+echo "$(date "+%d.%m.%Y %T") INFO: mounting rclone tdrive vfs."
+
+rclone mount --allow-other --buffer-size 1G --dir-cache-time 72h --drive-chunk-size 256M --fast-list --log-level INFO --vfs-read-chunk-size 128M --vfs-read-chunk-size-limit off tdrive_media_vfs: /mnt/user/mount_rclone/google_tdrive_vfs &
+
+# check if mount successful
+
+# slight pause to give mount time to finalise
+
+sleep 10
+
+if [[ -f "/mnt/user/mount_rclone/google_tdrive_vfs/mountcheck" ]]; then
+
+echo "$(date "+%d.%m.%Y %T") INFO: Check rclone tdrive vfs mount success."
+
+else
+
+echo "$(date "+%d.%m.%Y %T") CRITICAL: rclone tdrive vfs mount failed - please check for problems."
+
+rm /mnt/user/appdata/other/rclone/rclone_mount_running
+
+exit
+
+fi
+
+fi
+
+#######  End rclone mounts  ##########
 
 #######  Start unionfs mount   ##########
 
@@ -69,7 +109,7 @@ echo "$(date "+%d.%m.%Y %T") INFO: Check successful, unionfs mounted."
 
 else
 
-unionfs -o cow,allow_other,direct_io,auto_cache,sync_read /mnt/user/rclone_upload/google_vfs=RW:/mnt/user/mount_rclone/google_vfs=RO /mnt/user/mount_unionfs/google_vfs
+unionfs -o cow,allow_other,direct_io,auto_cache,sync_read /mnt/user/rclone_upload/google_vfs=RW:/mnt/user/mount_rclone/google_vfs=RO:/mnt/user/mount_rclone/google_tdrive_vfs=RO /mnt/user/mount_unionfs/google_vfs
 
 if [[ -f "/mnt/user/mount_unionfs/google_vfs/mountcheck" ]]; then
 
