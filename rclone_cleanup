@@ -24,7 +24,9 @@ echo "$(date "+%d.%m.%Y %T"﻿) INFO: starting unionfs cleanup."
 find /mnt/user/mount_unionfs/google_vfs/.unionfs -name '*_HIDDEN~' | while read line; do
 oldPath=${line#/mnt/user/m﻿ount_unionfs/google_vfs/.unionfs}
 newPath=/mnt/user/mount_rclone/google_vfs${oldPath%_HIDDEN~}
+newPath2=/mnt/user/mount_rclone/google_tdrive_vfs${oldPath%_HIDDEN~}
 rm "$newPath"
+rm "$newPath2"
 rm "$line"
 done
 find "/mnt/user/mount_unionfs/google_vfs/.unionfs" -mindepth 1 -type d -empty -delete
