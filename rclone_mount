@@ -32,7 +32,7 @@ mkdir -p /mnt/user/rclone_upload/google_vfs
 
 if [[ -f "/mnt/user/mount_rclone/google_vfs/mountcheck" ]]; then
 
-echo "$(date "+%d.%m.%Y %T") INFO: Check rclone vfs mount success."
+echo "$(date "+%d.%m.%Y %T") INFO: Check rclone vfs already mounted."
 
 else
 
@@ -70,7 +70,7 @@ fi
 
 if [[ -f "/mnt/user/mount_rclone/google_tdrive_vfs/mountcheck" ]]; then
 
-echo "$(date "+%d.%m.%Y %T") INFO: Check rclone tdrive vfs mount success."
+echo "$(date "+%d.%m.%Y %T") INFO: Check rclone tdrive already mounted."
 
 else
 
@@ -106,7 +106,7 @@ fi
 
 if [[ -f "/mnt/user/mount_unionfs/google_vfs/mountcheck" ]]; then
 
-echo "$(date "+%d.%m.%Y %T") INFO: Check successful, unionfs mounted."
+echo "$(date "+%d.%m.%Y %T") INFO: Check successful, unionfs already mounted."
 
 else
 
@@ -156,10 +156,22 @@ fi
 
 # populate rclone dir-cache 
 
+# only populate dir cache once
+
+if [[ -f "/mnt/user/appdata/other/rclone/dir_cache_populated" ]]; then
+
+echo "$(date "+%d.%m.%Y %T") INFO: dir cache already populated"
+
+else
+
+touch /mnt/user/appdata/other/rclone/dir_cache_populated
+
 echo "$(date "+%d.%m.%Y %T") Info: populating dir cache - this could take a while."
 
 rclone rc --timeout=1h vfs/refresh recursive=true
 
 echo "$(date "+%d.%m.%Y %T") Info: populating dir cache complete."
+
+fi
 
 exit
