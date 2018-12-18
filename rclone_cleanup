@@ -1,5 +1,7 @@
 #!/bin/bash
 
+# THIS SCRIPT ONLY CLEANS UP Vs gdrive - if using teamdrives do not use, or only after moved files within gdrive from team drive to my drive
+
 #######  Check if script already running  ##########
 
 if [[ -f "/mnt/user/appdata/other/rclone/rclone_cleanup" ]]; then
@@ -24,9 +26,7 @@ echo "$(date "+%d.%m.%Y %T") INFO: starting unionfs cleanup."
 find /mnt/user/mount_unionfs/google_vfs/.unionfs -name '*_HIDDEN~' | while read line; do
 oldPath=${line#/mnt/user/mount_unionfs/google_vfs/.unionfs}
 newPath=/mnt/user/mount_rclone/google_vfs${oldPath%_HIDDEN~}
-newPath1=/mnt/user/mount_rclone/tdrive_rclone1_vfs${oldPath%_HIDDEN~}
 rm "$newPath"
-rm "$newPath1"
 rm "$line"
 done
 find "/mnt/user/mount_unionfs/google_vfs/.unionfs" -mindepth 1 -type d -empty -delete
