@@ -2,7 +2,7 @@
 
 #######  Check if script already running  ##########
 
-if [[ -f "/mnt/user/appdata/other/rclone/rclone_upload_tdrive" ]]; then
+if [[ -f "/mnt/user/appdata/other/rclone/tdrive_rclone1_upload" ]]; then
 
 echo "$(date "+%d.%m.%Y %T") INFO: Exiting as script already running."
 
@@ -10,7 +10,7 @@ exit
 
 else
 
-touch /mnt/user/appdata/other/rclone/rclone_upload_tdrive
+touch /mnt/user/appdata/other/rclone/tdrive_rclone1_upload
 
 fi
 
@@ -26,7 +26,7 @@ else
 
 echo "$(date "+%d.%m.%Y %T") INFO: rclone not installed - will try again later."
 
-rm /mnt/user/appdata/other/rclone/rclone_upload_tdrive
+rm /mnt/user/appdata/other/rclone/tdrive_rclone1_upload
 
 exit
 
@@ -36,10 +36,10 @@ fi
 
 # move files
 
-rclone move /mnt/cache/rclone_upload/google_vfs/ tdrive_media_vfs: -vv --drive-chunk-size 512M --checkers 3 --fast-list --transfers 3 --exclude .unionfs/** --exclude *fuse_hidden* --exclude *_HIDDEN --exclude .recycle** --exclude *.backup~* --exclude *.partial~*  --delete-empty-src-dirs --fast-list --bwlimit 10000k --tpslimit 3 --min-age 30m
+rclone move /mnt/cache/rclone_upload/google_vfs/movies_kids_gd tdrive_rclone1_vfs:movies_kids_gd -vv --drive-chunk-size 512M --checkers 3 --fast-list --transfers 3 --exclude .unionfs/** --exclude *fuse_hidden* --exclude *_HIDDEN --exclude .recycle** --exclude *.backup~* --exclude *.partial~*  --delete-empty-src-dirs --fast-list --bwlimit 10000k --tpslimit 3 --min-age 15m
 
 # remove dummy file
 
-rm /mnt/user/appdata/other/rclone/rclone_upload_tdrive
+rm /mnt/user/appdata/other/rclone/tdrive_rclone1_upload
 
 exit
