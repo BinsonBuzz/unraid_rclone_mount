@@ -36,7 +36,7 @@ fi
 
 # move files
 
-rclone move /mnt/user0/rclone_upload/google_vfs/ gdrive_media_vfs: -vv --drive-chunk-size 512M --checkers 3 --fast-list --transfers 2 --exclude .unionfs/** --exclude *fuse_hidden* --exclude *_HIDDEN --exclude .recycle** --exclude *.backup~* --exclude *.partial~*  --delete-empty-src-dirs --fast-list --bwlimit 9500k --tpslimit 3 --min-age 30m 
+rclone move /mnt/user/rclone_upload/google_vfs/ gdrive_media_vfs: -vv --drive-chunk-size 512M --checkers 3 --fast-list --transfers 2 --exclude .unionfs/** --exclude *fuse_hidden* --exclude *_HIDDEN --exclude .recycle** --exclude *.backup~* --exclude *.partial~*  --delete-empty-src-dirs --fast-list --bwlimit 9500k --tpslimit 3 --min-age 30m 
 
 # remove dummy file
 
