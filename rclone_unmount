@@ -4,11 +4,25 @@
 
 fusermount -uz /mnt/user/mount_unionfs/google_vfs
 fusermount -uz /mnt/user/mount_rclone/google_vfs
-fusermount -uz /mnt/user/mount_rclone/google_tdrive_vfs
 
-# Remove dummy files
+# remove if not using team drive
+fusermount -uz /mnt/user/mount_rclone/tdrive_rclone1_vfs
 
-if [[ -f "/mnt/user/appdat﻿a/other/rclone/rclone_mount_running" ]]; then
+if [[ -f "/mnt/user/appdata/other/rclone/tdrive_rclone1_upload" ]]; then
+
+echo "tdrive_rclone1 upload file present - removing dummy file"
+
+rm /mnt/user/appdata/other/rclone/tdrive_rclone1_upload
+
+else
+
+echo "tdrive_rclone1 upload already exited properly"
+
+fi
+
+# Remove other dummy files
+
+if [[ -f "/mnt/user/appdata/other/rclone/rclone_mount_running" ]]; then
 
 echo "install file present - removing dummy file"
 
