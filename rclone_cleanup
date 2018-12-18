@@ -19,10 +19,10 @@ fi
 
 ################### Clean-up UnionFS Folder  #########################
 
-echo "$(date "+%d.%m.%Y %T"﻿) INFO: starting unionfs cleanup."
+echo "$(date "+%d.%m.%Y %T") INFO: starting unionfs cleanup."
 
 find /mnt/user/mount_unionfs/google_vfs/.unionfs -name '*_HIDDEN~' | while read line; do
-oldPath=${line#/mnt/user/m﻿ount_unionfs/google_vfs/.unionfs}
+oldPath=${line#/mnt/user/mount_unionfs/google_vfs/.unionfs}
 newPath=/mnt/user/mount_rclone/google_vfs${oldPath%_HIDDEN~}
 newPath1=/mnt/user/mount_rclone/tdrive_rclone1_vfs${oldPath%_HIDDEN~}
 rm "$newPath"
@@ -30,11 +30,6 @@ rm "$newPath1"
 rm "$line"
 done
 find "/mnt/user/mount_unionfs/google_vfs/.unionfs" -mindepth 1 -type d -empty -delete
-
-########### Remove rclone duplicates ##################
-
-rclone dedupe --dedupe-mode largest --log-level INFO gdrive:crypt
-rclone dedupe --dedupe-mode largest --log-level INFO tdrive_rclone1:crypt
 
 rm /mnt/user/appdata/other/rclone/rclone_cleanup
 
