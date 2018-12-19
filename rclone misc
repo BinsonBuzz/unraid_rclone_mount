@@ -1,6 +1,5 @@
 #!/bin/bash
 
-rclone dedupe --dedupe-mode largest --log-level INFO gdrive:crypt
-rclone dedupe --dedupe-mode largest --log-level INFO tdrive:crypt
+# DO NOT USE!!!!!
 
 exit
