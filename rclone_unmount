@@ -70,16 +70,4 @@ echo "docker run once already removed"
 
 fi
 
-if [[ -f "/mnt/user/appdata/other/rclone/dir_cache_populated" ]]; then
-
-echo "dir cache file present - removing dummy file"
-
-rm /mnt/user/appdata/other/rclone/dir_cache_populated
-
-else
-
-echo "Passed: dir cache dummy file already removed"
-
-fi
-
 exit
