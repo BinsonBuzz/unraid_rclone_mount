@@ -38,7 +38,7 @@ else
 
 echo "$(date "+%d.%m.%Y %T") INFO: mounting rclone vfs."
 
-rclone mount --rc --allow-other --buffer-size 512M --dir-cache-time 72h --drive-chunk-size 512M --fast-list --log-level INFO --vfs-read-chunk-size 128M --vfs-read-chunk-size-limit off gdrive_media_vfs: /mnt/user/mount_rclone/google_vfs &
+rclone mount --allow-other --buffer-size 512M --dir-cache-time 72h --drive-chunk-size 512M --fast-list --log-level INFO --vfs-read-chunk-size 128M --vfs-read-chunk-size-limit off gdrive_media_vfs: /mnt/user/mount_rclone/google_vfs &
 
 # check if mount successful
 
@@ -158,25 +158,5 @@ docker start sonarr
 fi
 
 ############### end dockers that need unionfs mount ######################
-
-# populate rclone dir-cache 
-
-# only populate dir cache once
-
-if [[ -f "/mnt/user/appdata/other/rclone/dir_cache_populated" ]]; then
-
-echo "$(date "+%d.%m.%Y %T") INFO: dir cache already populated"
-
-else
-
-touch /mnt/user/appdata/other/rclone/dir_cache_populated
-
-echo "$(date "+%d.%m.%Y %T") Info: populating dir cache - this could take a while."
-
-rclone rc --timeout=1h vfs/refresh recursive=true
-
-echo "$(date "+%d.%m.%Y %T") Info: populating dir cache complete."
-
-fi
 
 exit
