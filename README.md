@@ -27,7 +27,7 @@ I use a rclone vfs mount as opposed to a rclone cache mount as this is optimised
 
 This blank file is used in the following scripts to verify if the mounts have been created properly.  Run these commands:
 
-<b>3.      Mount script - see https://github.com/BinsonBuzz/unraid_rclone_mount for latest script</b>
+<b>3.      Mount script</b>
 
 Create a new script in user scripts to create the rclone mount, unionfs mount and start dockers that need the mounts.  I run this script on a 10 min */10 * * * * schedule so that it automatically remounts if there’s a problem. 
 
@@ -47,7 +47,7 @@ A later script moves files from /mnt/user/rclone_upload to the cloud; to docker
 
 Update: delete the teamdrive section if you don't need it
 
-<b>4. Rclone upload script - see https://github.com/BinsonBuzz/unraid_rclone_mount for latest script</b>
+<b>4. Rclone upload script</b>
 
 I run this every hour to move files from my local drive /mnt/user/rclone_upload to the cloud.  I have set --bwlimit at 9500K as I find that even that even though this theoretically means I transfer more than google's 750GB/day limit, lower limits don't get me up to this mark.  Experiment with your setup if you've got enough upstream to upload 750GB/day.
 
@@ -57,7 +57,7 @@ The script includes some exclusions to stop partial files etc getting uploaded.
 
 Update: I have a 2nd upload script on github to move files to the teamdrive for an extra 750GB/day quota.  My script below only runs against user0 as I use my second script to upload from my cache.  If you using one script, just change user0 to user
 
-<b>5. Unionfs cleanup script - see https://github.com/BinsonBuzz/unraid_rclone_mount for latest script</b>
+<b>5. Unionfs cleanup script</b>
 
 The 'problem' with unionfs is that when it needs to delete a file from the cloud e.g. you have a better quality version of a file, it doesn't actually delete it - it 'hides' it from the mount so it appears deleted, but the file actually still exists.  So, if you in the future create a new mount or access the cloud drive via another means, the files will still be there potentially creating a very messy library.
 
@@ -66,7 +66,7 @@ This script cleans up the cloud files and actually deletes them - I run this a f
 
 Update: The script now cleans the teamdrive.  Delete the two lines with newPath2 if you don't use a teamdrive
 
-<b>6. Unmount Script - - see https://github.com/BinsonBuzz/unraid_rclone_mount for latest script</b>
+<b>6. Unmount Script</b>
 
 I use this at array start to make sure all the 'check' files have been removed properly in case of an unclean shutdown, to ensure the next mount goes smoothly.  
 
