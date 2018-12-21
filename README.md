@@ -33,11 +33,11 @@ Create a new script in user scripts to create the rclone mount, unionfs mount an
 
 The script:
 
-Checks if an instance is already running
-Update: Mounts rclone gdrive and tdrive remotes
-Update: Mounts unionfs creating a 3-way union between rclone gdrive remote, tdrive remote and local files stored in /mnt/user/rclone_upload
-Starts dockers that need the unionfs mount e.g. radarr
-New: used rclone rc to populate the directory cache
+<li>Checks if an instance is already running</li>
+<li>Update: Mounts rclone gdrive and tdrive remotes</li>
+<li>Update: Mounts unionfs creating a 3-way union between rclone gdrive remote, tdrive remote and local files stored in /mnt/user/rclone_upload</li>
+<li>Starts dockers that need the unionfs mount e.g. radarr</li>
+<li>New: used rclone rc to populate the directory cache</li>
 
 I've tried to annotate to make editing easy.  Once the script is added you should have a new folder created at /mnt/user/mount_unionfs.  Inside this folder create your media folders i.e. /mnt/user/mount_unionfs/google_vfs/movies and /mnt/user/mount_unionfs/google_vfs/tv_shows.  These are the folders to add to plex, radarr, sonarr etc.
 
