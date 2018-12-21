@@ -27,7 +27,7 @@ I use a rclone vfs mount as opposed to a rclone cache mount as this is optimised
 
 This blank file is used in the following scripts to verify if the mounts have been created properly.  Run these commands:
 
-<b>3.      Mount script - see https://github.com/BinsonBuzz/unraid_rclone_mount for latest script
+<b>3.      Mount script - see https://github.com/BinsonBuzz/unraid_rclone_mount for latest script</b>
 
 Create a new script in user scripts to create the rclone mount, unionfs mount and start dockers that need the mounts.  I run this script on a 10 min */10 * * * * schedule so that it automatically remounts if there’s a problem. 
 
