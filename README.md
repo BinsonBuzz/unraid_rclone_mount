@@ -38,7 +38,7 @@ The script:
 <li>Update: Mounts unionfs creating a 3-way union between rclone gdrive remote, tdrive remote and local files stored in /mnt/user/rclone_upload</li>
 <li>Starts dockers that need the unionfs mount e.g. radarr</li>
 <li>New: used rclone rc to populate the directory cache</li>
-
+<br>
 I've tried to annotate to make editing easy.  Once the script is added you should have a new folder created at /mnt/user/mount_unionfs.  Inside this folder create your media folders i.e. /mnt/user/mount_unionfs/google_vfs/movies and /mnt/user/mount_unionfs/google_vfs/tv_shows.  These are the folders to add to plex, radarr, sonarr etc.
 
 How it works is new files are written to the local RW part of the union mount (/mnt/user/rclone_upload), but the dockers can't distinguish between whether the file is local or in the cloud because they are checking /mnt/user/mount_unionfs. 
