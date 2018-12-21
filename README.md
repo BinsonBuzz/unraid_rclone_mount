@@ -9,8 +9,7 @@ https://forums.unraid.net/topic/75436-guide-how-to-use-rclone-to-mount-cloud-dri
 
 <li>Rclone beta – installs rclone and allows the creation of remotes and mounts</li>
 <li>User Scripts – controls how mounts get created</li>
-
-
+<br>
 <b>Optional Plugins</b>
 
 <li>Nerd Tools - used to install Unionfs which allows a 2nd mount to be created that merges the rclone mount with files locally e.g. new TV episodes that haven’t been uploaded yet, so that dockers like sonar, radar etc can see that you’ve already got the files and don’t try to add them to your library again.  In the future hopefully this will be replaced with rclone’s new Union allowing for an all-in-one solution</li>
@@ -18,7 +17,7 @@ https://forums.unraid.net/topic/75436-guide-how-to-use-rclone-to-mount-cloud-dri
 Optional: to allow an extra 750GB/day upload create 2 additional remotes to support a Team Drive
 
 <li>tdrive: - a teamdrive remote.  Note: you need to use a different gmail/google account to the one above (which creates and shares the Team Drive) to create the token - any google account will do.  I recommend creating a 2nd client_id using this account</li>
-<li>ve_media_vfs: - a crypt remote that is mounted locally and decrypts the encrypted files uploaded to the team drive</li>
+<li>gdrive_media_vfs: - a crypt remote that is mounted locally and decrypts the encrypted files uploaded to the team drive</li>
 
 
 I use a rclone vfs mount as opposed to a rclone cache mount as this is optimised for streaming, has faster media start times, and limits API calls to google to avoid bans.
