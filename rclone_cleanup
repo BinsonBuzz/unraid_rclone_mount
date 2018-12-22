@@ -1,7 +1,5 @@
 #!/bin/bash
 
-# THIS SCRIPT ONLY CLEANS UP Vs gdrive - if using teamdrives do not use, or only after moved files within gdrive from team drive to my drive
-
 #######  Check if script already running  ##########
 
 if [[ -f "/mnt/user/appdata/other/rclone/rclone_cleanup" ]]; then
