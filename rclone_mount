@@ -22,7 +22,6 @@ fi
 
 mkdir -p /mnt/user/appdata/other/rclone
 mkdir -p /mnt/user/mount_rclone/google_vfs
-mkdir -p /mnt/user/mount_rclone/tdrive_rclone1_vfs
 mkdir -p /mnt/user/mount_unionfs/google_vfs
 mkdir -p /mnt/user/rclone_upload/google_vfs
 
@@ -64,45 +63,6 @@ fi
 
 #######  End rclone gdrive mount  ##########
 
-#######  Start tdrive_rclone1 mount  ##########
-### Delete if not using team drive  ########
-
-# check if tdrive_rclone1 mount already created
-
-if [[ -f "/mnt/user/mount_rclone/tdrive_rclone1_vfs/mountcheck" ]]; then
-
-echo "$(date "+%d.%m.%Y %T") INFO: Check tdrive_rclone1 vfs already mounted."
-
-else
-
-echo "$(date "+%d.%m.%Y %T") INFO: mounting tdrive_rclone1 vfs."
-
-rclone mount --allow-other --buffer-size 512M --dir-cache-time 72h --drive-chunk-size 512M --fast-list --log-level INFO --vfs-read-chunk-size 128M --vfs-read-chunk-size-limit off tdrive1_media_vfs: /mnt/user/mount_rclone/tdrive_rclone1_vfs &
-
-# check if mount successful
-
-# slight pause to give mount time to finalise
-
-sleep 5
-
-if [[ -f "/mnt/user/mount_rclone/tdrive_rclone1_vfs/mountcheck" ]]; then
-
-echo "$(date "+%d.%m.%Y %T") INFO: Check tdrive_rclone1 vfs mount success."
-
-else
-
-echo "$(date "+%d.%m.%Y %T") CRITICAL: tdrive_rclone1 vfs mount failed - please check for problems."
-
-rm /mnt/user/appdata/other/rclone/rclone_mount_running
-
-exit
-
-fi
-
-fi
-
-#######  End rclone mounts  ##########
-
 #######  Start unionfs mount   ##########
 
 if [[ -f "/mnt/user/mount_unionfs/google_vfs/mountcheck" ]]; then
@@ -111,11 +71,7 @@ echo "$(date "+%d.%m.%Y %T") INFO: Check successful, unionfs already mounted."
 
 else
 
-unionfs -o cow,allow_other,direct_io,auto_cache,sync_read /mnt/user/rclone_upload/google_vfs=RW:/mnt/user/mount_rclone/google_vfs=RO:/mnt/user/mount_rclone/tdrive_rclone1_vfs=RO /mnt/user/mount_unionfs/google_vfs
-
-# uncomment the unionfs mount below if not using teamdrive and delete the one above
-
-# unionfs -o cow,allow_other,direct_io,auto_cache,sync_read /mnt/user/rclone_upload/google_vfs=RW:/mnt/user/mount_rclone/google_vfs=RO /mnt/user/mount_unionfs/google_vfs
+unionfs -o cow,allow_other,direct_io,auto_cache,sync_read /mnt/user/rclone_upload/google_vfs=RW:/mnt/user/mount_rclone/google_vfs=RO /mnt/user/mount_unionfs/google_vfs
 
 if [[ -f "/mnt/user/mount_unionfs/google_vfs/mountcheck" ]]; then
 
