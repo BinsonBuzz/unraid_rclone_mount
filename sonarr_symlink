@@ -1,14 +1,17 @@
 #!/bin/bash
 
 # Make sure we're working on torrents.
-if ! [[ "${sonarr_episodefile_sourcepath}" =~ torrents ]]; then
-  echo "[Torrent Symlink] Path ${sonarr_episodefile_sourcepath} does not contain \"torrents\", exiting."
-  exit
-fi
+if [[ "${sonarr_episodefile_sourcepath}" == *"torrents"* ]]; then
+	echo "[Torrent Symlink] Path ${sonarr_episodefile_sourcepath} contains \"torrents\"."
 
-# Make sure destination path is media not rclone upload
-if ! [[ "${sonarr_episodefile_path}" =~ media ]]; then
-  echo "[Torrent Symlink] Path ${sonarr_episodefile_path} does not contain \"media\", exiting."
+	# Make sure destination path is media not rclone upload
+	if [[ "${sonarr_episodefile_path}"  == *"media"* ]]; then
+		echo "[Torrent Symlink] Path ${sonarr_episodefile_path} contains \"media\", exiting."
+	else
+		exit
+	fi
+
+else
   exit
 fi
 
