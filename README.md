@@ -25,7 +25,6 @@ I use a rclone vfs mount as opposed to a rclone cache mount as this is optimised
  
 Once done, your rclone config should look something like this: 
 <br>
-<code>
 [gdrive]
 type = drive
 client_id = ID1.apps.googleusercontent.com
@@ -58,7 +57,6 @@ filename_encryption = standard
 directory_name_encryption = true
 password = xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx
 password2 = xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx
-</code>
 
 
 <b>2.       Create Mountcheck files</b>
