@@ -13,7 +13,7 @@ https://forums.unraid.net/topic/75436-guide-how-to-use-rclone-to-mount-cloud-dri
 <b>Optional Plugins</b>
 <br>
 <li>Nerd Tools - used to install Unionfs which allows a 2nd mount to be created that merges the rclone mount with files locally e.g. new TV episodes that haven’t been uploaded yet, so that dockers like sonar, radar etc can see that you’ve already got the files and don’t try to add them to your library again.  In the future hopefully this will be replaced with rclone’s new Union allowing for an all-in-one solution</li>
-
+<br>
 <b>1.       Rclone remote setup </b> 
 
 Install the rclone beta plugin and via command line by running rclone config create 2 remotes: 
@@ -24,7 +24,7 @@ Install the rclone beta plugin and via command line by running rclone config cre
 I use a rclone vfs mount as opposed to a rclone cache mount as this is optimised for streaming, has faster media start times, and limits API calls to google to avoid bans.
  
 Once done, your rclone config should look something like this: 
-<br><br>
+<br>
 <code>
 [gdrive]
 type = drive
