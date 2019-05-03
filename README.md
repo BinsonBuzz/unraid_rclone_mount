@@ -22,6 +22,41 @@ Install the rclone beta plugin and via command line by running rclone config cre
 <li>gdrive_media_vfs: - a crypt remote that is mounted locally and decrypts the encrypted files uploaded to gdrive:</li>
  
 I use a rclone vfs mount as opposed to a rclone cache mount as this is optimised for streaming, has faster media start times, and limits API calls to google to avoid bans.
+
+Once done, your rclone config should look something like this:
+
+[gdrive]
+type = drive
+client_id = ID1.apps.googleusercontent.com
+client_secret = secret1
+scope = drive
+root_folder_id = 
+service_account_file = 
+token = {"access_token":"token1"}
+
+[gdrive_media_vfs]
+type = crypt
+remote = gdrive:crypt
+filename_encryption = standard
+directory_name_encryption = true
+password = xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx
+password2 = xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx
+
+[tdrive]
+type = drive
+scope = drive
+team_drive = xxxxxxxxxxxx
+token = {"access_token":"token2"}
+client_id = ID2
+client_secret = secret2
+
+[tdrive_media_vfs]
+type = crypt
+remote = tdrive:crypt
+filename_encryption = standard
+directory_name_encryption = true
+password = xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx
+password2 = xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx﻿
  
 <b>2.       Create Mountcheck files</b>
 
