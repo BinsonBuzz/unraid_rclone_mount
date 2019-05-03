@@ -23,44 +23,15 @@ Install the rclone beta plugin and via command line by running rclone config cre
  
 I use a rclone vfs mount as opposed to a rclone cache mount as this is optimised for streaming, has faster media start times, and limits API calls to google to avoid bans.
 
-Once done, your rclone config should look something like this:
-<i>
-[gdrive]
- type = drive
- client_id = ID1.apps.go﻿ogleusercontent.com
- client_secret = secret1
- scope = drive
- root_folder_id = 
- service_account_file = 
- token = {"access_token":"token1"}
-
-[gdrive_media_vfs]
-type = crypt
-remote = gdrive:crypt
-filename_encryption = standard
-directory_name_encryption = true
-password = xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx
-password2 = xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx
-
-[tdrive]
-type = drive
-scope = drive
-team_drive = xxxxxxxxxxxx
-token = {"access_token":"token2"}
-client_id = ID2
-client_secret = secret2
-
-[tdrive_media_vfs]
-type = crypt
-remote = tdrive:crypt
-filename_encryption = standard
-directory_name_encryption = true
-password = xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx
-password2 = xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx
-</i>
 <b>2.       Create Mountcheck files</b>
 
 This blank file is used in the following scripts to verify if the mounts have been created properly.  Run these commands:
+<br>
+<i>touch mountcheck</i>
+<br>
+<i>rclone copy mountcheck gdrive_media_vfs: -vv --no-traverse</i>
+<br>
+<i>rclone copy mountcheck tdrive_media_vfs: -vv --no-traverse</i>
 
 <b>3.      Mount script</b>
 
@@ -80,8 +51,6 @@ How it works is new files are written to the local RW part of the union mount (
 
 A later script moves files from /mnt/user/rclone_upload to the cloud; to dockers the files are still in /mnt/user/mount_unionfs, so nothing has changed for them.
 
-Update: delete the teamdrive section if you don't need it
-
 <b>4. Rclone upload script</b>
 
 I run this every hour to move files from my local drive /mnt/user/rclone_upload to the cloud.  I have set --bwlimit at 9500K as I find that even that even though this theoretically means I transfer more than google's 750GB/day limit, lower limits don't get me up to this mark.  Experiment with your setup if you've got enough upstream to upload 750GB/day.
@@ -98,11 +67,6 @@ The 'problem' with unionfs is that when it needs to delete a file from the cloud
 
 This script cleans up the cloud files and actually deletes them - I run this a few times a day.
 
-
-Update: The script now cleans the teamdrive.  Delete the two lines with newPath2 if you don't use a teamdrive
-
 <b>6. Unmount Script</b>
 
 I use this at array start to make sure all the 'check' files have been removed properly in case of an unclean shutdown, to ensure the next mount goes smoothly.  
-
-Update: delete teamdrive fusermount line if don't need
