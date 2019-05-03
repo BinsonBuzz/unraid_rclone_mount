@@ -24,6 +24,7 @@ Install the rclone beta plugin and via command line by running rclone config cre
 I use a rclone vfs mount as opposed to a rclone cache mount as this is optimised for streaming, has faster media start times, and limits API calls to google to avoid bans.
  
 Once done, your rclone config should look something like this: 
+<br><br>
 <code>
 [gdrive]
 type = drive
