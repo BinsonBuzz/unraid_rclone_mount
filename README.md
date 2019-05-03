@@ -24,15 +24,15 @@ Install the rclone beta plugin and via command line by running rclone config cre
 I use a rclone vfs mount as opposed to a rclone cache mount as this is optimised for streaming, has faster media start times, and limits API calls to google to avoid bans.
 
 Once done, your rclone config should look something like this:
-<code>
+<i>
 [gdrive]
-type = drive
-client_id = ID1.apps.go﻿ogleusercontent.com
-client_secret = secret1
-scope = drive
-root_folder_id = 
-service_account_file = 
-token = {"access_token":"token1"}
+ type = drive
+ client_id = ID1.apps.go﻿ogleusercontent.com
+ client_secret = secret1
+ scope = drive
+ root_folder_id = 
+ service_account_file = 
+ token = {"access_token":"token1"}
 
 [gdrive_media_vfs]
 type = crypt
@@ -57,7 +57,7 @@ filename_encryption = standard
 directory_name_encryption = true
 password = xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx
 password2 = xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx
-</code>
+</i>
 <b>2.       Create Mountcheck files</b>
 
 This blank file is used in the following scripts to verify if the mounts have been created properly.  Run these commands:
