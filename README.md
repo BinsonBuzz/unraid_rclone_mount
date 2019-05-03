@@ -14,13 +14,51 @@ https://forums.unraid.net/topic/75436-guide-how-to-use-rclone-to-mount-cloud-dri
 <br>
 <li>Nerd Tools - used to install Unionfs which allows a 2nd mount to be created that merges the rclone mount with files locally e.g. new TV episodes that haven’t been uploaded yet, so that dockers like sonar, radar etc can see that you’ve already got the files and don’t try to add them to your library again.  In the future hopefully this will be replaced with rclone’s new Union allowing for an all-in-one solution</li>
 
-Optional: to allow an extra 750GB/day upload create 2 additional remotes to support a Team Drive
+<b>1.       Rclone remote setup </b> 
 
-<li>tdrive: - a teamdrive remote.  Note: you need to use a different gmail/google account to the one above (which creates and shares the Team Drive) to create the token - any google account will do.  I recommend creating a 2nd client_id using this account</li>
-<li>gdrive_media_vfs: - a crypt remote that is mounted locally and decrypts the encrypted files uploaded to the team drive</li>
+Install the rclone beta plugin and via command line by running rclone config create 2 remotes: 
 
-
+<li>gdrive: - a drive remote that connects to your gdrive account.  Recommend creating your own client_id</li>
+<li>gdrive_media_vfs: - a crypt remote that is mounted locally and decrypts the encrypted files uploaded to gdrive:</li>
+ 
 I use a rclone vfs mount as opposed to a rclone cache mount as this is optimised for streaming, has faster media start times, and limits API calls to google to avoid bans.
+ 
+Once done, your rclone config should look something like this: 
+<code>
+[gdrive]
+type = drive
+client_id = ID1.apps.googleusercontent.com
+client_secret = secret1
+scope = drive
+root_folder_id = 
+service_account_file = 
+token = {"access_token":"token1"}
+
+[gdrive_media_vfs]
+type = crypt
+remote = gdrive:crypt
+filename_encryption = standard
+directory_name_encryption = true
+password = xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx
+password2 = xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx
+
+[tdrive]
+type = drive
+scope = drive
+team_drive = xxxxxxxxxxxx
+token = {"access_token":"token2"}
+client_id = ID2
+client_secret = secret2
+
+[tdrive_media_vfs]
+type = crypt
+remote = tdrive:crypt
+filename_encryption = standard
+directory_name_encryption = true
+password = xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx
+password2 = xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx
+</code>
+
 
 <b>2.       Create Mountcheck files</b>
 
