@@ -15,7 +15,6 @@ echo "$(date "+%d.%m.%Y %T") INFO: mounting rclone vfs."
 # create directories for rclone mount and unionfs mount
 
 mkdir -p /mnt/user/appdata/other/rclone
-mkdir -p /mnt/user/mount_rclone/google_vfs
 mkdir -p /mnt/user/mount_unionfs/google_vfs
 mkdir -p /mnt/user/rclone_upload/google_vfs
 
