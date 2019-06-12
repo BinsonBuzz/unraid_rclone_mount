@@ -1,5 +1,21 @@
 #!/bin/bash
 
+#######  Check if script is already running  ##########
+
+if [[ -f "/mnt/user/appdata/other/rclone/rclone_mount_running" ]]; then
+
+echo "$(date "+%d.%m.%Y %T") INFO: Exiting script already running."
+
+exit
+
+else
+
+touch /mnt/user/appdata/other/rclone/rclone_mount_running
+
+fi
+
+#######  End Check if script already running  ##########
+
 #######  Start rclone gdrive mount  ##########
 
 # check if gdrive mount already created
