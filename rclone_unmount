@@ -7,6 +7,18 @@ fusermount -uz /mnt/user/mount_rclone/google_vfs
 
 # Remove other dummy files
 
+if [[ -f "/mnt/user/appdata/other/rclone/rclone_mount_running" ]]; then
+
+echo "install file present - removing dummy file"
+
+rm /mnt/user/appdata/other/rclone/rclone_mount_running
+
+else
+
+echo "Passed: install already exited properly"
+
+fi
+
 if [[ -f "/mnt/user/appdata/other/rclone/rclone_upload" ]]; then
 
 echo "upload file present - removing dummy file"
