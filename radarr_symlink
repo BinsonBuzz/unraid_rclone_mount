@@ -1,7 +1,5 @@
 #!/bin/bash
 
-#!/bin/bash
-
 # Make sure we're working on torrents.
 if [[ "${radarr_moviefile_sourcepath}" == *"torrents"* ]]; then
 	echo "[Torrent Symlink] Path ${radarr_moviefile_sourcepath} contains \"torrents\"."
