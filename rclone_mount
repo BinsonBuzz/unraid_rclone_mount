@@ -111,13 +111,13 @@ touch /mnt/user/appdata/other/rclone/dockers_started
 
 echo "$(date "+%d.%m.%Y %T") INFO: Starting dockers."
 
+docker start nzbget
+docker start transmission
 docker start plex
 docker start ombi
 docker start tautulli
 docker start radarr
 docker start sonarr
-docker start nzbget
-docker start transmission
 
 fi
 
