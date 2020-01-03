@@ -53,7 +53,7 @@ This blank file is used in the following scripts to verify if the mounts have be
 <i>touch mountcheck</i>
 <br>
 <i>rclone copy mountcheck gdrive_media_vfs: -vv --no-traverse</i>
-<br>
+<br><br>
 <b>3.      Mount script</b>
 <br><br>
 Create a new script in user scripts to create the rclone mount, mergerfs mount and start dockers that need the mounts.  I run this script on a 10 min */10 * * * * schedule so that it automatically remounts if there’s a problem. 
