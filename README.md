@@ -24,8 +24,9 @@ Install the rclone plugin and via command line run rclone config and create 2 re
 
 <li>gdrive: - a drive remote that connects to your gdrive account.  Recommend creating your own client_id</li>
 <li>gdrive_media_vfs: - a crypt remote that is mounted locally and decrypts the encrypted files uploaded to gdrive:</li>
-
+<br/>
 Once complete your rclone_config file should look something like this:
+<br/>
 <br/>
 [gdrive]
 <br/>type = drive
@@ -35,7 +36,7 @@ Once complete your rclone_config file should look something like this:
 <br/>root_folder_id = xxxx
 <br/>service_account_file = 
 <br/>token = {"xxxxx"}
-
+<br/><br/>
 [gdrive_media_vfs]
 <br/>type = crypt
 <br/>remote = gdrive:crypt
