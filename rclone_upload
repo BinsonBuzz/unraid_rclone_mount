@@ -1,6 +1,10 @@
 #!/bin/bash
+###########################################################################
+#                    <>       rclone_upload        <>                     #
+###########################################################################
 
 #######  Check if script already running  ##########
+echo "$(date "+%d.%m.%Y %T") INFO: *** Starting rclone_upload script ***"
 
 if [[ -f "/mnt/user/appdata/other/rclone/rclone_upload" ]]; then
 
