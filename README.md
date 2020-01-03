@@ -2,7 +2,7 @@
 
 unRAID scripts to create rclone vfs mounts on unraid to allow fast launch times with Plex (or Emby). 
 
-The main thread
+The main thread for more support:
 
 https://forums.unraid.net/topic/75436-guide-how-to-use-rclone-to-mount-cloud-drives-and-play-files/
 
@@ -10,23 +10,41 @@ https://forums.unraid.net/topic/75436-guide-how-to-use-rclone-to-mount-cloud-dri
 
 <li>Rclone beta – installs rclone and allows the creation of remotes and mounts</li>
 <li>User Scripts – to run scripts</li>
-
-<br>
+<br/>
 <b>How It Works </b>
-
+<br/>
 <li>Rclone is used to access files on your google drive in a mount </li>
 <li>Mergerfs is used to merge files on your rclone/google mount with local files that haven't been uploaded yet in another  mount </li>
 <li>Dockers that need to play files (Plex, Emby) and dockers that need to add new files (Sonarr, Radarr, nzbget, transmission etc) <b>ALL</b> are mapped to folders <b>WITHIN</b> the <b>MERGERFS MOUNT </b>, not the real local location or the rclone mount </li>
-
-<br>
+<br/>
+<
 <b>1.       Rclone remote setup </b> 
 
-Install the rclone beta plugin and via command line by running rclone config create 2 remotes: 
+Install the rclone plugin and via command line run rclone config and create 2 remotes: 
 
 <li>gdrive: - a drive remote that connects to your gdrive account.  Recommend creating your own client_id</li>
 <li>gdrive_media_vfs: - a crypt remote that is mounted locally and decrypts the encrypted files uploaded to gdrive:</li>
- 
-I use a rclone vfs mount as opposed to a rclone cache mount as this is optimised for streaming, has faster media start times, and limits API calls to google to avoid bans.
+
+Once complete your rclone_config file should look something like this:
+<br/>
+[gdrive]
+<br/>type = drive
+<br/>client_id = xxxx.apps.googleusercontent.com
+<br/>client_secret = xxxxx
+<br/>scope = drive
+<br/>root_folder_id = xxxx
+<br/>service_account_file = 
+<br/>token = {"xxxxx"}
+
+[gdrive_media_vfs]
+<br/>type = crypt
+<br/>remote = gdrive:crypt
+<br/>filename_encryption = standard
+<br/>directory_name_encryption = true
+<br/>password = xxxx
+<br/>password2 = -xxxxx
+<br/>
+If you need help doing this, please consult the forum thread above.  
 
 <b>2.       Create Mountcheck files</b>
 
