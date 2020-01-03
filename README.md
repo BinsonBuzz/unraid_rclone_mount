@@ -17,7 +17,6 @@ https://forums.unraid.net/topic/75436-guide-how-to-use-rclone-to-mount-cloud-dri
 <li>Mergerfs is used to merge files on your rclone/google mount with local files that haven't been uploaded yet in another  mount </li>
 <li>Dockers that need to play files (Plex, Emby) and dockers that need to add new files (Sonarr, Radarr, nzbget, transmission etc) <b>ALL</b> are mapped to folders <b>WITHIN</b> the <b>MERGERFS MOUNT </b>, not the real local location or the rclone mount </li>
 <br/>
-<br>
 <b>1.       Rclone remote setup </b> 
 <br>
 Install the rclone plugin and via command line run rclone config and create 2 remotes: 
@@ -48,7 +47,7 @@ Once complete your rclone_config file should look something like this:
 If you need help doing this, please consult the forum thread above.  
 <br/><br/>
 <b>2.       Create Mountcheck files</b>
-<br>
+<br><br>
 This blank file is used in the following scripts to verify if the mounts have been created properly.  Run these commands:
 <br>
 <i>touch mountcheck</i>
@@ -56,7 +55,7 @@ This blank file is used in the following scripts to verify if the mounts have be
 <i>rclone copy mountcheck gdrive_media_vfs: -vv --no-traverse</i>
 <br>
 <b>3.      Mount script</b>
-<br>
+<br><br>
 Create a new script in user scripts to create the rclone mount, mergerfs mount and start dockers that need the mounts.  I run this script on a 10 min */10 * * * * schedule so that it automatically remounts if there’s a problem. 
 <br>
 The script:
@@ -65,7 +64,7 @@ The script:
 <li>Update: Mounts rclone gdrive remote</li>
 <li>Update: Mounts mergerfs creating a 3-way union between rclone gdrive remote and local files stored in /mnt/user/local/google_vfs</li>
 <li>Starts dockers that need the mergerfs mount e.g. radarr</li>
-<br><br>
+<br>
 I've tried to annotate to make editing easy.  Once the script is added you should have a new folder created at /mnt/user/mount_mergerfs/google_vfs.  Inside this folder add files that you want uploading to google create your media folders i.e. /mnt/user/mount_mergerfs/google_vfs/movies/Star Wars and /mnt/user/mount_mergerfs/google_vfs/Peppa Pig.  These are the folders to map to plex, radarr, sonarr,nzbget etc - DO NOT MAP any folders from local or the rclone mount.
 <br><br>
 How it works is new files are written in the background to the local RW part of the mergerfs mount (/mnt/user/local/google_vfs), but the dockers can't distinguish between whether the file is local or in the cloud because they are checking /mnt/user/mount_mergerfs. 
