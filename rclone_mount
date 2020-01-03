@@ -16,6 +16,12 @@ fi
 
 #######  End Check if script already running  ##########
 
+########## create directories for rclone mount and mergerfs mount ##############
+
+mkdir -p /mnt/user/local/google_vfs/{downloads/complete,downloads/intermediate,downloads/seeds,movies,tv}
+mkdir -p /mnt/user/mount_rclone/google_vfs
+mkdir -p /mnt/user/mount_mergerfs/google_vfs
+
 #######  Start rclone gdrive mount  ##########
 
 # check if gdrive mount already created
@@ -28,18 +34,9 @@ else
 
 echo "$(date "+%d.%m.%Y %T") INFO: mounting rclone vfs."
 
-# create directories for rclone mount and unionfs mount
+rclone mount --allow-other --buffer-size 256M --dir-cache-time 720h --drive-chunk-size 512M --fast-list --log-level INFO --vfs-read-chunk-size 128M --vfs-read-chunk-size-limit off --vfs-cache-mode writes tdrive_vfs: /mnt/user/mount_rclone/google_vfs &
 
-mkdir -p /mnt/user/appdata/other/rclone
-mkdir -p /mnt/user/mount_rclone/google_vfs
-mkdir -p /mnt/user/mount_unionfs/google_vfs
-mkdir -p /mnt/user/rclone_upload/google_vfs
-
-rclone mount --allow-other --buffer-size 256M --dir-cache-time 72h --drive-chunk-size 512M --fast-list --log-level INFO --vfs-read-chunk-size 128M --vfs-read-chunk-size-limit off gdrive_media_vfs: /mnt/user/mount_rclone/google_vfs &
-
-# check if mount successful
-
-# slight pause to give mount time to finalise
+# check if mount successful with slight pause to give mount time to finalise
 
 sleep 5
 
@@ -61,23 +58,34 @@ fi
 
 #######  End rclone gdrive mount  ##########
 
-#######  Start unionfs mount   ##########
+#######  Start mergerfs mount  ##########
 
-if [[ -f "/mnt/user/mount_unionfs/google_vfs/mountcheck" ]]; then
+if [[ -f "/mnt/user/mount_mergerfs/google_vfs/mountcheck" ]]; then
 
-echo "$(date "+%d.%m.%Y %T") INFO: Check successful, unionfs already mounted."
-
-else
-
-unionfs -o cow,allow_other,direct_io,auto_cache,sync_read /mnt/user/rclone_upload/google_vfs=RW:/mnt/user/mount_rclone/google_vfs=RO /mnt/user/mount_unionfs/google_vfs
-
-if [[ -f "/mnt/user/mount_unionfs/google_vfs/mountcheck" ]]; then
-
-echo "$(date "+%d.%m.%Y %T") INFO: Check successful, unionfs mounted."
+echo "$(date "+%d.%m.%Y %T") INFO: Check successful, mergerfs already mounted."
 
 else
 
-echo "$(date "+%d.%m.%Y %T") CRITICAL: unionfs Remount failed."
+# Build mergerfs binary and delete old binary as precaution
+rm /bin/mergerfs
+
+# Create Docker
+docker run -v /mnt/user/appdata/other/mergerfs:/build --rm -it trapexit/mergerfs-static-build
+
+# move to bin to use for commands
+mv /mnt/user/appdata/other/mergerfs/mergerfs /bin
+
+# Create mergerfs mount
+
+mergerfs /mnt/user/local/google_vfs:/mnt/user/mount_rclone/google_vfs /mnt/user/mount_mergerfs/google_vfs -o rw,async_read=false,use_ino,allow_other,func.getattr=newest,category.action=all,category.create=ff,cache.files=partial,dropcacheonclose=true
+
+if [[ -f "/mnt/user/mount_mergerfs/google_vfs/mountcheck" ]]; then
+
+echo "$(date "+%d.%m.%Y %T") INFO: Check successful, mergerfs mounted."
+
+else
+
+echo "$(date "+%d.%m.%Y %T") CRITICAL: mergerfs Remount failed."
 
 rm /mnt/user/appdata/other/rclone/rclone_mount_running
 
@@ -87,9 +95,9 @@ fi
 
 fi
 
-#######  End Mount unionfs   ##########
+#######  End Mount mergerfs   ##########
 
-############### starting dockers that need unionfs mount ######################
+############### starting dockers that need mergerfs mount ######################
 
 # only start dockers once
 
@@ -108,9 +116,13 @@ docker start ombi
 docker start tautulli
 docker start radarr
 docker start sonarr
+docker start nzbget
+docker start transmission
 
 fi
 
-############### end dockers that need unionfs mount ######################
+############### end dockers that need mergerfs mount ######################
+
+rm /mnt/user/appdata/other/rclone/rclone_mount_running
 
 exit
