@@ -1,8 +1,6 @@
 # unraid_rclone_mount
 
-NOTE: Needs updating - please do not use until I've made this the new master branch
-
-scripts to create rclone vfs mounts on unraid to allow fast launch times with Plex (or Emby).
+unRAID scripts to create rclone vfs mounts on unraid to allow fast launch times with Plex (or Emby). 
 
 The main thread
 
@@ -11,11 +9,15 @@ https://forums.unraid.net/topic/75436-guide-how-to-use-rclone-to-mount-cloud-dri
 <b>Plugins needed</b>
 
 <li>Rclone beta – installs rclone and allows the creation of remotes and mounts</li>
-<li>User Scripts – controls how mounts get created</li>
+<li>User Scripts – to run scripts</li>
+
 <br>
-<b>Optional Plugins</b>
-<br>
-<li>Nerd Tools - used to install Unionfs which allows a 2nd mount to be created that merges the rclone mount with files locally e.g. new TV episodes that haven’t been uploaded yet, so that dockers like sonar, radar etc can see that you’ve already got the files and don’t try to add them to your library again.  In the future hopefully this will be replaced with rclone’s new Union allowing for an all-in-one solution</li>
+<b>How It Works </b>
+
+<li>Rclone is used to access files on your google drive in a mount </li>
+<li>Mergerfs is used to merge files on your rclone/google mount with local files that haven't been uploaded yet in another  mount </li>
+<li>Dockers that need to play files (Plex, Emby) and dockers that need to add new files (Sonarr, Radarr, nzbget, transmission etc) <b>ALL</b> are mapped to folders <b>WITHIN</b> the <b>MERGERFS MOUNT </b>, not the real local location or the rclone mount </li>
+
 <br>
 <b>1.       Rclone remote setup </b> 
 
