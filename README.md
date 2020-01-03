@@ -1,4 +1,7 @@
 # unraid_rclone_mount
+
+NOTE: Needs updating - please do not use until I've made this the new master branch
+
 scripts to create rclone vfs mounts on unraid to allow fast launch times with Plex (or Emby).
 
 The main thread
