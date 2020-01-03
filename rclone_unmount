@@ -1,11 +1,14 @@
 #!/bin/bash
-
+###########################################################################
+#                    <>       rclone_unmount       <>                     #
+###########################################################################
+#
 # unmount to be safe
-
+echo "$(date "+%d.%m.%Y %T") INFO: *** Starting rclone_unmount script ***"
 fusermount -uz /mnt/user/mount_mergerfs/google_vfs
 fusermount -uz /mnt/user/mount_rclone/google_vfs
 
-# Remove other dummy files
+#######################   Cleanup tracking files   #######################
 
 if [[ -f "/mnt/user/appdata/other/rclone/rclone_mount_running" ]]; then
 
