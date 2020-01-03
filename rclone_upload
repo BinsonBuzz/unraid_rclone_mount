@@ -1,7 +1,7 @@
 #!/bin/bash
 
 #######  Check if script already running  ##########
-﻿
+
 if [[ -f "/mnt/user/appdata/other/rclone/rclone_upload" ]]; then
 
 echo "$(date "+%d.%m.%Y %T") INFO: Exiting as script already running."
@@ -23,7 +23,7 @@ if [[ -f "/mnt/user/mount_rclone/google_vfs/mountcheck" ]]; then
 echo "$(date "+%d.%m.%Y %T") INFO: rclone installed successfully - proceeding with upload."
 
 else
-﻿
+
 echo "$(date "+%d.%m.%Y %T") INFO: rclone not installed - will try again later."
 
 rm /mnt/user/appdata/other/rclone/rclone_upload
@@ -36,7 +36,7 @@ fi
 
 # move files
 
-rclone move /mnt/user/rclone_upload/google_vfs/ gdrive_media_vfs: -vv --drive-chunk-size 512M --checkers 3 --fast-list --transfers 2 --exclude .unionfs/** --exclude *fuse_hidden* --exclude *_HIDDEN --exclude .recycle** --exclude *.backup~* --exclude *.partial~*  --delete-empty-src-dirs --fast-list --bwlimit 9500k --tpslimit 3 --min-age 30m 
+rclone move /mnt/user/local/google_vfs/ gdrive_media_vfs: -vv --drive-chunk-size 512M --checkers 3 --fast-list --transfers 2 --exclude downloads/** --exclude *fuse_hidden* --exclude *_HIDDEN --exclude .recycle** --exclude *.backup~* --exclude *.partial~*  --delete-empty-src-dirs --fast-list --bwlimit 9500k --tpslimit 3 --min-age 30m 
 
 # remove dummy file
 
