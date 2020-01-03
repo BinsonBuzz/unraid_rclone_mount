@@ -1,6 +1,13 @@
 #!/bin/bash
-
-#######  Check if script is already running  ##########
+###########################################################################
+#                    <>       rclone_mount         <>                     #
+###########################################################################
+#
+##################  Check if script is already running  ###################
+#
+sleep 1
+echo "$(date "+%d.%m.%Y %T") INFO: *** Starting rclone_mount script ***"
+echo "$(date "+%d.%m.%Y %T") INFO: Checking if this script is already running."
 
 if [[ -f "/mnt/user/appdata/other/rclone/rclone_mount_running" ]]; then
 
@@ -37,9 +44,9 @@ echo "$(date "+%d.%m.%Y %T") INFO: mounting rclone vfs."
 rclone mount --allow-other --buffer-size 256M --dir-cache-time 720h --drive-chunk-size 512M --fast-list --log-level INFO --vfs-read-chunk-size 128M --vfs-read-chunk-size-limit off --vfs-cache-mode writes tdrive_vfs: /mnt/user/mount_rclone/google_vfs &
 
 # check if mount successful with slight pause to give mount time to finalise
-
+echo "$(date "+%d.%m.%Y %T") INFO: sleeping 5 sec"
 sleep 5
-
+cho "$(date "+%d.%m.%Y %T") INFO: continuing..."
 if [[ -f "/mnt/user/mount_rclone/google_vfs/mountcheck" ]]; then
 
 echo "$(date "+%d.%m.%Y %T") INFO: Check rclone gdrive vfs mount success."
