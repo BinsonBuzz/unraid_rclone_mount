@@ -27,7 +27,7 @@ fi
 
 mkdir -p /mnt/user/local/google_vfs/{downloads/complete,downloads/intermediate,downloads/seeds,movies,tv}
 mkdir -p /mnt/user/mount_rclone/google_vfs
-mkdir -p /mnt/user/appdata/other/mergerfs/mergerfs
+mkdir -p /mnt/user/appdata/other/mergerfs/
 mkdir -p /mnt/user/mount_mergerfs/google_vfs
 
 #######  Start rclone gdrive mount  ##########
@@ -47,7 +47,7 @@ rclone mount --allow-other --buffer-size 256M --dir-cache-time 720h --drive-chun
 # check if mount successful with slight pause to give mount time to finalise
 echo "$(date "+%d.%m.%Y %T") INFO: sleeping 5 sec"
 sleep 5
-cho "$(date "+%d.%m.%Y %T") INFO: continuing..."
+echo "$(date "+%d.%m.%Y %T") INFO: continuing..."
 if [[ -f "/mnt/user/mount_rclone/google_vfs/mountcheck" ]]; then
 
 echo "$(date "+%d.%m.%Y %T") INFO: Check rclone gdrive vfs mount success."
@@ -78,7 +78,7 @@ else
 rm /bin/mergerfs
 
 # Create Docker
-docker run -v /mnt/user/appdata/other/mergerfs:/build --rm -it trapexit/mergerfs-static-build
+docker run -v /mnt/user/appdata/other/mergerfs:/build --rm trapexit/mergerfs-static-build
 
 # move to bin to use for commands
 mv /mnt/user/appdata/other/mergerfs/mergerfs /bin
