@@ -27,6 +27,7 @@ fi
 
 mkdir -p /mnt/user/local/google_vfs/{downloads/complete,downloads/intermediate,downloads/seeds,movies,tv}
 mkdir -p /mnt/user/mount_rclone/google_vfs
+mkdir -p /mnt/user/appdata/other/mergerfs/mergerfs
 mkdir -p /mnt/user/mount_mergerfs/google_vfs
 
 #######  Start rclone gdrive mount  ##########
