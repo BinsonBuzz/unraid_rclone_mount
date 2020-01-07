@@ -42,7 +42,7 @@ else
 
 echo "$(date "+%d.%m.%Y %T") INFO: mounting rclone vfs."
 
-rclone mount --allow-other --buffer-size 256M --dir-cache-time 720h --drive-chunk-size 512M --fast-list --log-level INFO --vfs-read-chunk-size 128M --vfs-read-chunk-size-limit off --vfs-cache-mode writes gdrive_media_vfs: /mnt/user/mount_rclone/google_vfs &
+rclone mount --allow-other --buffer-size 256M --dir-cache-time 720h --drive-chunk-size 512M --log-level INFO --vfs-read-chunk-size 128M --vfs-read-chunk-size-limit off --vfs-cache-mode writes gdrive_media_vfs: /mnt/user/mount_rclone/google_vfs &
 
 # check if mount successful with slight pause to give mount time to finalise
 echo "$(date "+%d.%m.%Y %T") INFO: sleeping 5 sec"
