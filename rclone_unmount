@@ -1,11 +1,14 @@
 #!/bin/bash
-
+###########################################################################
+#                    <>       rclone_unmount       <>                     #
+###########################################################################
+#
 # unmount to be safe
-
-fusermount -uz /mnt/user/mount_unionfs/google_vfs
+echo "$(date "+%d.%m.%Y %T") INFO: *** Starting rclone_unmount script ***"
+fusermount -uz /mnt/user/mount_mergerfs/google_vfs
 fusermount -uz /mnt/user/mount_rclone/google_vfs
 
-# Remove other dummy files
+#######################   Cleanup tracking files   #######################
 
 if [[ -f "/mnt/user/appdata/other/rclone/rclone_mount_running" ]]; then
 
@@ -28,18 +31,6 @@ rm /mnt/user/appdata/other/rclone/rclone_upload
 else
 
 echo "rclone upload already exited properly"
-
-fi
-
-if [[ -f "/mnt/user/appdata/other/rclone/rclone_cleanup" ]]; then
-
-echo "cleanup file pre﻿sent - removing dummy file"
-
-rm /mnt/user/appdata/other/rclone/rclone_cleanup
-
-else
-
-echo "cleanup already exited properly"
 
 fi
 
