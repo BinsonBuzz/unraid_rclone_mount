@@ -15,35 +15,31 @@ https://forums.unraid.net/topic/75436-guide-how-to-use-rclone-to-mount-cloud-dri
  </ul>
   <li><b>Unraid CA User Scripts Plugin</b></li>
   <ul>
-<li>Best way to run scripts<b><a href="https://forums.unraid.net/topic/48286-plugin-ca-user-scripts/">Details</a></b>
+<li>Best way to run scripts<b> <a href="https://forums.unraid.net/topic/48286-plugin-ca-user-scripts/">Details</a></b>
   </ul>
 </ul>
-<br/>
 <b>How It Works </b>
-<br/><br>
 <ul>
-<li>Rclone is used to access files on your google drive and to mount them in a folder on your server e.g. mount a gdrive remote called gdrive_vfs: at /mnt/user/mount_rlone/gdrive_vfs </li>
-<li>Mergerfs is used to merge files from your rclone mount (/mnt/user/mount_rlone/gdrive_vfs) with local files that exist on your server and haven't been uploaded yet (e.g. /mnt/user/local/gdrive_vfs) in a new mount /mnt/user/mount_unionfs/gdrive_vfs
+<ol>Rclone is used to access files on your google drive and to mount them in a folder on your server e.g. mount a gdrive remote called gdrive_vfs: at /mnt/user/mount_rlone/gdrive_vfs </ol>
+<ol>Mergerfs is used to merge files from your rclone mount (/mnt/user/mount_rlone/gdrive_vfs) with local files that exist on your server and haven't been uploaded yet (e.g. /mnt/user/local/gdrive_vfs) in a new mount /mnt/user/mount_unionfs/gdrive_vfs</ol>
   <ul>
     <li>This mergerfs mount allows files to be played by dockers such as Plex, or added to by dockers like radarr etc without the dockers even being aware that some files are local and some are remote.  It just doesn't matter</li>
-    <li> the use of a rclone vfs remote allows fast playback, with files streaming within seconds</li>
+    <li>The use of a rclone vfs remote allows fast playback, with files streaming within seconds</li>
   </ul>
-<li>An upload script is used to upload files in the background from the local folder to the remote.  This activity is masked by mergerfs i.e. to plex, radarr etc files haven't 'moved'</li>
+<ol>An upload script is used to upload files in the background from the local folder to the remote.  This activity is masked by mergerfs i.e. to plex, radarr etc files haven't 'moved'</ol>
 </ul>
-<li>Dockers that need to play files (Plex, Emby) and dockers that need to add new files (Sonarr, Radarr, nzbget, transmission etc) <b>ALL</b> are mapped to folders <b>WITHIN</b> the <b>MERGERFS MOUNT </b>, not the real local location or the rclone mount </li>
-
-
-<br/>
-<b>1.       Rclone remote setup </b> 
-<br><br>
-Install the rclone plugin and via command line run rclone config and create 2 remotes: 
-<br>
-<li>gdrive: - a drive remote that connects to your gdrive account.  Recommend creating your own client_id</li>
-<li>gdrive_media_vfs: - a crypt remote that is mounted locally and decrypts the encrypted files uploaded to gdrive:</li>
-<br/>
+<b>Getting Started </b>
+<ul>
+<ol>Rclone remote setup </ol> 
+<ul>
+  <li>Install the rclone plugin and via command line run rclone config and create 2 remotes:</ul> 
+<ul>
+<ol>gdrive: - a drive remote that connects to your gdrive account.  Recommend creating your own client_id</ol>
+<ol>gdrive_media_vfs: - a crypt remote that is mounted locally and decrypts the encrypted files uploaded to gdrive:</ol>
+</ul>
+<p/>
 Once complete your rclone_config file should look something like this:
-<br/>
-<br/>
+<p/>
 [gdrive]
 <br/>type = drive
 <br/>client_id = xxxx.apps.googleusercontent.com
@@ -60,8 +56,9 @@ Once complete your rclone_config file should look something like this:
 <br/>directory_name_encryption = true
 <br/>password = xxxx
 <br/>password2 = -xxxxx
-<br/><br/>
+</p/>
 If you need help doing this, please consult the forum thread above.  
+<ul>
 <br/><br/>
 <b>2.       Create Mountcheck files</b>
 <br><br>
@@ -99,3 +96,5 @@ The script includes some exclusions to stop partial files etc getting uploaded.
 <b>5. Unmount Script</b>
 <br><br>
 I use this at array start to make sure all the 'check' files have been removed properly in case of an unclean shutdown, to ensure the next mount goes smoothly.  
+
+<li>Dockers that need to play files (Plex, Emby) and dockers that need to add new files (Sonarr, Radarr, nzbget, transmission etc) <b>ALL</b> are mapped to folders <b>WITHIN</b> the <b>MERGERFS MOUNT </b>, not the real local location or the rclone mount </li>
