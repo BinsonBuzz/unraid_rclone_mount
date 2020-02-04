@@ -31,6 +31,7 @@ https://forums.unraid.net/topic/75436-guide-how-to-use-rclone-to-mount-cloud-dri
 <b>Getting Started </b>
 <ol>
 	<li>Rclone remote setup </li> 
+	</p/>
 		<ul>
 			<li>Install the rclone plugin and via command line run rclone config and create 2 remotes:</li> 
 				<ol>
@@ -39,7 +40,7 @@ https://forums.unraid.net/topic/75436-guide-how-to-use-rclone-to-mount-cloud-dri
 				</ol>
 		</ul>
 	<p/>
-	Once complete your rclone_config file should look something like this:
+	<li>Once complete your rclone_config file should look something like this:</li>
 	<p/>
 [gdrive]
 <br/>type = drive
@@ -58,5 +59,34 @@ https://forums.unraid.net/topic/75436-guide-how-to-use-rclone-to-mount-cloud-dri
 <br/>password = xxxx
 <br/>password2 = -xxxxx
 </p/>
-If you need help doing this, please consult the forum thread above.  
+If you need help doing this, please consult the forum thread above.
+	<li>Mount script</li>
+	</p/>
+		<ul>
+			<li>Create a new script using the the user scripts plugin and paste in the rclone_mount script</li>
+			<li>Edit the config lines at the start of the script to choose your remote name, paths etc</li>
+			<li>Choose a suitable cron job. I run this script on a 10 min */10 * * * * schedule so that it automatically remounts if there’s a problem.</li> 
+			<li>The script:</li>
+			<ul>
+				<li>Checks if an instance is already running, remounts (if cron job set) automatically if mount drops</li>
+				<li>Mounts your rclone gdrive remote</li>
+				<li>Installs mergerfs and creates a mergerfs mount</li>
+				<li>Starts dockers that need the mergerfs mount e.g. plex, radarr</li>
+			</ul>
+	<li>Upload script</li>
+	</p/>
+		<ul>
+			<li>Create a new script using the the user scripts plugin and paste in the rclone_mount script</li>
+			<li>Edit the config lines at the start of the script to choose your remote name, paths etc - USE THE SAME PATHS</li>
+			<li>Choose a suitable cron job. I run this script on a 10 min */10 * * * * schedule so it checks for new files to upload every 10 mins.</li> 
+			<li>The script:</li>
+			<ul>
+				<li>Checks if rclone is installed correctly</li>
+				<li>sets bwlimits</li>
+			</ul>
+	<li>Cleanup script</li>
+	</p/>
+		<ul>
+			<li>Create a new script using the the user scripts plugin and set to run at array start (recommended) or array stop</li>
+		</ul>
 </ol>
