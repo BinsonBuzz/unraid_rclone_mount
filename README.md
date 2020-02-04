@@ -64,7 +64,6 @@ If you need help doing this, please consult the forum thread above.
 <b> It is advisable to create your own client_id to avoid API bans.  <a href="https://rclone.org/drive/#making-your-own-client-id">More Details</a></b>
 <p/>
 	<li>Mount script</li>
-	</p/>
 		<ul>
 			<li>Create a new script using the the user scripts plugin and paste in the rclone_mount script</li>
 			<li>Edit the config lines at the start of the script to choose your remote name, paths etc</li>
