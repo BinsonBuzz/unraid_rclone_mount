@@ -100,7 +100,7 @@ if [[  $CreateBindMount == 'Y' ]]; then
 	--drive-stop-on-upload-limit \
 	--bwlimit "${BWLimit1Time},${BWLimit1} ${BWLimit2Time},${BWLimit2} ${BWLimit3Time},${BWLimit3}" \
 	--bind=$RCloneMountIP
-# upload with bind option
+# upload without bind option
 else
 	echo "$(date "+%d.%m.%Y %T") INFO: *** Uploading to remote ${RcloneRemoteName}"
 	rclone move $LocalFilesLocation $RcloneUploadRemoteName: \
