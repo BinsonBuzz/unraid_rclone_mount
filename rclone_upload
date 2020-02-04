@@ -1,49 +1,130 @@
 #!/bin/bash
-###########################################################################
-#                    <>       rclone_upload        <>                     #
-###########################################################################
+
+######################
+### Upload Script ####
+######################
+#### Version 0.9 #####
+######################
+
+####### EDIT ONLY THESE SETTINGS #######
+
+# INSTRUCTIONS
+# 1. Edit the change the name of the rclone remote and local share to match your setup
+# 2. NOTE: enter RcloneRemoteName WITHOUT ':'
+# 3. Optional: include bind mount settings
+
+# REQUIRED SETTINGS
+RcloneRemoteName="gdrive_vfs" # Name of rclone remote mount WITHOUT ':'. NOTE: Choose your encrypted remote for sensitive data
+LocalFilesShare="local" # location of the local files you want to upload to rclone
+RcloneMountShare="mount_rclone" # where your rclone remote will be located
+
+# Note: Again - remember to NOT use ':' in your remote name above
+
+# Bandwidth limits: specify the desired bandwidth in kBytes/s, or use a suffix b|k|M|G. Or 'off' or '0' for unlimited.  The script now uses --drive-stop-on-upload-limit which stops the script if the 750GB/day limir is achieved, so you no loger have to slow 'trickle' your files all day if you don't want to e.g. could just do an unlimited job overnight.
+BWLimit1="off"
+BWLimit1Time="01:00"
+BWLimit2="15M"
+BWLimit2Time="08:00"
+BWLimit3="12M"
+BWLimit3Time="16:00"
+
+# OPTIONAL SETTINGS
+CreateBindMount="Y" # Y/N. Choose whether to bind traffic to a particular network adapter
+RCloneMountIP="172.30.12.22" # My unraid IP is 172.30.12.2 so I create another similar IP address
+NetworkAdapter="eth0" # choose your network adapter. eth0 recommended
+VirtualIPNumber="2" # creates eth0:x e.g. eth0:1.  I create a unique virtual IP addresses for each mount & upload so I can monitor and traffic shape for each of them
+
+####### END SETTINGS #######
+
+###############################################################################
+#####    DO NOT EDIT BELOW THIS LINE UNLESS YOU KNOW WHAT YOU ARE DOING   #####
+###############################################################################
+
+####### Preparing mount location variables #######
+LocalFilesLocation="/mnt/user/$LocalFilesShare/$RcloneRemoteName" # Location for local files to be merged with rclone mount
+RcloneMountLocation="/mnt/user/$RcloneMountShare/$RcloneRemoteName" # Location for rclone mount
+
+####### create directories for rclone mount and mergerfs mounts #######
+mkdir -p /mnt/user/appdata/other/rclone/$RcloneRemoteName #for script files
 
 #######  Check if script already running  ##########
-echo "$(date "+%d.%m.%Y %T") INFO: *** Starting rclone_upload script ***"
-
-if [[ -f "/mnt/user/appdata/other/rclone/rclone_upload" ]]; then
-
-echo "$(date "+%d.%m.%Y %T") INFO: Exiting as script already running."
-
-exit
-
+echo "$(date "+%d.%m.%Y %T") INFO: *** Starting rclone_upload script for ${RcloneRemoteName} ***"
+if [[ -f "/mnt/user/appdata/other/rclone/$RcloneRemoteName/rclone_upload" ]]; then
+	echo "$(date "+%d.%m.%Y %T") INFO: Exiting as script already running."
+	exit
 else
-
-touch /mnt/user/appdata/other/rclone/rclone_upload
-
+	echo "$(date "+%d.%m.%Y %T") INFO: Script not running - proceeding."
+	touch /mnt/user/appdata/other/rclone/$RcloneRemoteName/rclone_upload
 fi
-
-#######  End Check if script already running  ##########
 
 #######  check if rclone installed  ##########
-
-if [[ -f "/mnt/user/mount_rclone/google_vfs/mountcheck" ]]; then
-
-echo "$(date "+%d.%m.%Y %T") INFO: rclone installed successfully - proceeding with upload."
-
+echo "$(date "+%d.%m.%Y %T") INFO: Checking if rclone installed successfully."
+if [[ -f "$RcloneMountLocation/mountcheck" ]]; then
+	echo "$(date "+%d.%m.%Y %T") INFO: rclone installed successfully - proceeding with upload."
 else
-
-echo "$(date "+%d.%m.%Y %T") INFO: rclone not installed - will try again later."
-
-rm /mnt/user/appdata/other/rclone/rclone_upload
-
-exit
-
+	echo "$(date "+%d.%m.%Y %T") INFO: rclone not installed - will try again later."
+	rm /mnt/user/appdata/other/rclone/$RcloneRemoteName/rclone_upload
+	exit
 fi
 
-#######  end check if rclone installed  ##########
+#######  Upload files  ##########
 
-# move files
-
-rclone move /mnt/user/local/google_vfs/ gdrive_media_vfs: -vv --drive-chunk-size 512M --checkers 3 --transfers 2 --order-by modtime,ascending --exclude downloads/** --exclude *fuse_hidden* --exclude *_HIDDEN --exclude .recycle** --exclude *.backup~* --exclude *.partial~*  --delete-empty-src-dirs --bwlimit 9500k --tpslimit 3 --min-age 30m
+if [[  $CreateBindMount == 'Y' ]]; then
+# upload with bind option
+	echo "$(date "+%d.%m.%Y %T") INFO: *** Checking if IP address ${RCloneMountIP} already created for upload to remote ${RcloneRemoteName}"
+	ping -q -c2 $RCloneMountIP > /dev/null # -q quiet, -c number of pings to perform
+	if [ $? -eq 0 ]; then # ping returns exit status 0 if successful
+		echo "$(date "+%d.%m.%Y %T") INFO: *** IP address ${RCloneMountIP} already created for upload to remote ${RcloneRemoteName}"
+	else
+		echo "$(date "+%d.%m.%Y %T") INFO: *** Creating IP address ${RCloneMountIP} for upload to remote ${RcloneRemoteName}"
+		ip addr add $RCloneMountIP/24 dev $NetworkAdapter label $NetworkAdapter:$VirtualIPNumber
+	fi
+	echo "$(date "+%d.%m.%Y %T") INFO: *** Using IP address ${RCloneMountIP} to upload to remote ${RcloneRemoteName}"
+	rclone move $LocalFilesLocation $RcloneRemoteName: \
+	--user-agent="$RcloneRemoteName" \
+	-vv \
+	--buffer-size 512M \
+	--drive-chunk-size 512M \
+	--tpslimit 8 \
+	--checkers 8 \
+	--transfers 4 \
+	--order-by modtime,ascending \
+	--min-age 10m \
+	--exclude downloads/** \
+	--exclude *fuse_hidden* \
+	--exclude *_HIDDEN \
+	--exclude .recycle** \
+	--exclude *.backup~* \
+	--exclude *.partial~* \
+	--drive-stop-on-upload-limit \
+	--bwlimit "${BWLimit1Time},${BWLimit1} ${BWLimit2Time},${BWLimit2} ${BWLimit3Time},${BWLimit3}" \
+	--bind=$RCloneMountIP
+# upload with bind option
+else
+	echo "$(date "+%d.%m.%Y %T") INFO: *** Uploading to remote ${RcloneRemoteName}"
+	rclone move $LocalFilesLocation $RcloneRemoteName: \
+	--user-agent="$RcloneRemoteName" \
+	-vv \
+	--buffer-size 512M \
+	--drive-chunk-size 512M \
+	--tpslimit 8 \
+	--checkers 8 \
+	--transfers 4 \
+	--order-by modtime,ascending \
+	--min-age 10m \
+	--exclude downloads/** \
+	--exclude *fuse_hidden* \
+	--exclude *_HIDDEN \
+	--exclude .recycle** \
+	--exclude *.backup~* \
+	--exclude *.partial~* \
+	--drive-stop-on-upload-limit \
+	--bwlimit "${BWLimit1Time},${BWLimit1} ${BWLimit2Time},${BWLimit2} ${BWLimit3Time},${BWLimit3}" 
+fi
 
 # remove dummy file
 
-rm /mnt/user/appdata/other/rclone/rclone_upload
+rm /mnt/user/appdata/other/rclone/$RcloneRemoteName/rclone_upload
+echo "$(date "+%d.%m.%Y %T") INFO: Script complete"
 
 exit
