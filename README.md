@@ -19,23 +19,23 @@ https://forums.unraid.net/topic/75436-guide-how-to-use-rclone-to-mount-cloud-dri
   </ul>
 </ul>
 <b>How It Works </b>
-<ul>
-<ol>Rclone is used to access files on your google drive and to mount them in a folder on your server e.g. mount a gdrive remote called gdrive_vfs: at /mnt/user/mount_rlone/gdrive_vfs </ol>
+<ol>
+<li>Rclone is used to access files on your google drive and to mount them in a folder on your server e.g. mount a gdrive remote called gdrive_vfs: at /mnt/user/mount_rlone/gdrive_vfs </li>
 <ol>Mergerfs is used to merge files from your rclone mount (/mnt/user/mount_rlone/gdrive_vfs) with local files that exist on your server and haven't been uploaded yet (e.g. /mnt/user/local/gdrive_vfs) in a new mount /mnt/user/mount_unionfs/gdrive_vfs</ol>
   <ul>
     <li>This mergerfs mount allows files to be played by dockers such as Plex, or added to by dockers like radarr etc without the dockers even being aware that some files are local and some are remote.  It just doesn't matter</li>
     <li>The use of a rclone vfs remote allows fast playback, with files streaming within seconds</li>
   </ul>
-<ol>An upload script is used to upload files in the background from the local folder to the remote.  This activity is masked by mergerfs i.e. to plex, radarr etc files haven't 'moved'</ol>
+<li>An upload script is used to upload files in the background from the local folder to the remote.  This activity is masked by mergerfs i.e. to plex, radarr etc files haven't 'moved'</li>
 </ul>
 <b>Getting Started </b>
-<ul>
-<ol>Rclone remote setup </ol> 
+<ol>
+<li>Rclone remote setup </li> 
 <ul>
   <li>Install the rclone plugin and via command line run rclone config and create 2 remotes:</ul> 
-<ul>
-<ol>gdrive: - a drive remote that connects to your gdrive account.  Recommend creating your own client_id</ol>
-<ol>gdrive_media_vfs: - a crypt remote that is mounted locally and decrypts the encrypted files uploaded to gdrive:</ol>
+<ol>
+<li>gdrive: - a drive remote that connects to your gdrive account.  Recommend creating your own client_id</li>
+<li>gdrive_media_vfs: - a crypt remote that is mounted locally and decrypts the encrypted files uploaded to gdrive:</li>
 </ul>
 <p/>
 Once complete your rclone_config file should look something like this:
@@ -58,7 +58,7 @@ Once complete your rclone_config file should look something like this:
 <br/>password2 = -xxxxx
 </p/>
 If you need help doing this, please consult the forum thread above.  
-<ul>
+</ol>
 <br/><br/>
 <b>2.       Create Mountcheck files</b>
 <br><br>
