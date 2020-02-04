@@ -1,6 +1,6 @@
 # Unraid Rclone Scripts
 
-Unraid scripts to create rclone vfs mounts on unraid to allow fast launch times with Plex (or Emby).  They should work on other systems, just take care with your paths.
+Collection of Unraid scripts to create rclone vfs mounts on unraid to allow fast launch times with Plex (or Emby).  They should work on other systems, just take care with your paths.
 
 The main thread for more support:
 
