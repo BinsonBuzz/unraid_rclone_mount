@@ -50,12 +50,12 @@ mkdir -p /mnt/user/appdata/other/rclone/$RcloneRemoteName #for script files
 
 #######  Check if script already running  ##########
 echo "$(date "+%d.%m.%Y %T") INFO: *** Starting rclone_upload script for ${RcloneRemoteName} ***"
-if [[ -f "/mnt/user/appdata/other/rclone/$RcloneRemoteName/rclone_upload" ]]; then
+if [[ -f "/mnt/user/appdata/other/rclone/$RcloneRemoteName/upload_running" ]]; then
 	echo "$(date "+%d.%m.%Y %T") INFO: Exiting as script already running."
 	exit
 else
 	echo "$(date "+%d.%m.%Y %T") INFO: Script not running - proceeding."
-	touch /mnt/user/appdata/other/rclone/$RcloneRemoteName/rclone_upload
+	touch /mnt/user/appdata/other/rclone/$RcloneRemoteName/upload_running
 fi
 
 #######  check if rclone installed  ##########
@@ -64,7 +64,7 @@ if [[ -f "$RcloneMountLocation/mountcheck" ]]; then
 	echo "$(date "+%d.%m.%Y %T") INFO: rclone installed successfully - proceeding with upload."
 else
 	echo "$(date "+%d.%m.%Y %T") INFO: rclone not installed - will try again later."
-	rm /mnt/user/appdata/other/rclone/$RcloneRemoteName/rclone_upload
+	rm /mnt/user/appdata/other/rclone/$RcloneRemoteName/upload_running
 	exit
 fi
 
@@ -125,7 +125,7 @@ fi
 
 # remove dummy file
 
-rm /mnt/user/appdata/other/rclone/$RcloneRemoteName/rclone_upload
+rm /mnt/user/appdata/other/rclone/$RcloneRemoteName/upload_running
 echo "$(date "+%d.%m.%Y %T") INFO: Script complete"
 
 exit
