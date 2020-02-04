@@ -25,6 +25,7 @@ https://forums.unraid.net/topic/75436-guide-how-to-use-rclone-to-mount-cloud-dri
 		<ul>
 			<li>This mergerfs mount allows files to be played by dockers such as Plex, or added to by dockers like radarr etc without the dockers even being aware that some files are local and some are remote.  It just doesn't matter</li>
 			<li>The use of a rclone vfs remote allows fast playback, with files streaming within seconds</li>
+			<li>New files added to the mergerfs share are actually written to the local share, where they will stay until the upload script processes them
 		</ul>
 	<li>An upload script is used to upload files in the background from the local folder to the remote.  This activity is masked by mergerfs i.e. to plex, radarr etc files haven't 'moved'</li>
 </ol>
@@ -82,11 +83,14 @@ If you need help doing this, please consult the forum thread above.
 		<ul>
 			<li>Create a new script using the the user scripts plugin and paste in the rclone_mount script</li>
 			<li>Edit the config lines at the start of the script to choose your remote name, paths etc - USE THE SAME PATHS</li>
-			<li>Choose a suitable cron job. I run this script on a 10 min */10 * * * * schedule so it checks for new files to upload every 10 mins.</li>
-			<li>The script:</li>
+			<li>Choose a suitable cron job e.g hourly</li>
+			<li>Features:</li>
 			<ul>
 				<li>Checks if rclone is installed correctly</li>
 				<li>sets bwlimits</li>
+				<li>There is a cap on uploads by google of 750GB/day.  I have added bandwidth scheduling to the script so you can e.g. set an overnight job to upload the daily quota at 30MB/s, have it trickle up over the day at a constant 10MB/s, or set variable speeds over the day</li>
+				<li>The script now stops once the 750GB/day limit is hit (rclone 1.5.1+ required) so there is more flexibility over upload strategies</li>
+				<li>I've also added <i>--min age 10mins</i> to stop any premature uploads and exclusions to stop partial files etc getting uploaded.</li>
 			</ul>
 		</ul>
 	</p/>
@@ -97,6 +101,7 @@ If you need help doing this, please consult the forum thread above.
 </ol>
 <p/>
 <b>Using Mergerfs</b>
+<p/>
 Once the scripts are added you should have a new folder created at /mnt/user/mount_mergerfs/name_of_remote. 
 <ul>
 <li>Inside this folder, add files that you want uploading to google i.e. create your media folders here</li>
