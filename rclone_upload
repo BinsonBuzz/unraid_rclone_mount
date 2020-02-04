@@ -91,6 +91,7 @@ if [[  $CreateBindMount == 'Y' ]]; then
 	--transfers 4 \
 	--order-by modtime,ascending \
 	--min-age 10m \
+	--exclude .Recycle.Bin/** \
 	--exclude downloads/** \
 	--exclude *fuse_hidden* \
 	--exclude *_HIDDEN \
@@ -113,6 +114,7 @@ else
 	--transfers 4 \
 	--order-by modtime,ascending \
 	--min-age 10m \
+	--exclude .Recycle.Bin/** \
 	--exclude downloads/** \
 	--exclude *fuse_hidden* \
 	--exclude *_HIDDEN \
