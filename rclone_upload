@@ -15,6 +15,7 @@
 
 # REQUIRED SETTINGS
 RcloneRemoteName="gdrive_vfs" # Name of rclone remote mount WITHOUT ':'. NOTE: Choose your encrypted remote for sensitive data
+RcloneUploadRemoteName="gdrive_vfs" # If you have a second remote created for uploads put it here.  Otherwise use the same remote as RcloneRemoteName
 LocalFilesShare="local" # location of the local files you want to upload to rclone
 RcloneMountShare="mount_rclone" # where your rclone remote will be located
 
@@ -80,8 +81,8 @@ if [[  $CreateBindMount == 'Y' ]]; then
 		ip addr add $RCloneMountIP/24 dev $NetworkAdapter label $NetworkAdapter:$VirtualIPNumber
 	fi
 	echo "$(date "+%d.%m.%Y %T") INFO: *** Using IP address ${RCloneMountIP} to upload to remote ${RcloneRemoteName}"
-	rclone move $LocalFilesLocation $RcloneRemoteName: \
-	--user-agent="$RcloneRemoteName" \
+	rclone move $LocalFilesLocation $RcloneUploadRemoteName: \
+	--user-agent="$RcloneUploadRemoteName" \
 	-vv \
 	--buffer-size 512M \
 	--drive-chunk-size 512M \
@@ -102,8 +103,8 @@ if [[  $CreateBindMount == 'Y' ]]; then
 # upload with bind option
 else
 	echo "$(date "+%d.%m.%Y %T") INFO: *** Uploading to remote ${RcloneRemoteName}"
-	rclone move $LocalFilesLocation $RcloneRemoteName: \
-	--user-agent="$RcloneRemoteName" \
+	rclone move $LocalFilesLocation $RcloneUploadRemoteName: \
+	--user-agent="$RcloneUploadRemoteName" \
 	-vv \
 	--buffer-size 512M \
 	--drive-chunk-size 512M \
