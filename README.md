@@ -61,7 +61,7 @@ https://forums.unraid.net/topic/75436-guide-how-to-use-rclone-to-mount-cloud-dri
 </p/>
 If you need help doing this, please consult the forum thread above.
 </p>
-<b> It is advisable to create your own client_id to avoid API bans.  <a href="https://rclone.org/drive/#making-your-own-client-id">More Details</a>
+<b> It is advisable to create your own client_id to avoid API bans.  <a href="https://rclone.org/drive/#making-your-own-client-id">More Details</a></b>
 <p/>
 	<li>Mount script</li>
 	</p/>
@@ -77,21 +77,34 @@ If you need help doing this, please consult the forum thread above.
 				<li>Starts dockers that need the mergerfs mount e.g. plex, radarr</li>
 			</ul>
 		</ul>
-	<li>Upload script</li>
 	</p/>
+	<li>Upload script</li>
 		<ul>
 			<li>Create a new script using the the user scripts plugin and paste in the rclone_mount script</li>
 			<li>Edit the config lines at the start of the script to choose your remote name, paths etc - USE THE SAME PATHS</li>
-			<li>Choose a suitable cron job. I run this script on a 10 min */10 * * * * schedule so it checks for new files to upload every 10 mins.</li> 
+			<li>Choose a suitable cron job. I run this script on a 10 min */10 * * * * schedule so it checks for new files to upload every 10 mins.</li>
 			<li>The script:</li>
 			<ul>
 				<li>Checks if rclone is installed correctly</li>
 				<li>sets bwlimits</li>
 			</ul>
 		</ul>
-	<li>Cleanup script</li>
 	</p/>
+	<li>Cleanup script</li>
 		<ul>
 			<li>Create a new script using the the user scripts plugin and set to run at array start (recommended) or array stop</li>
 		</ul>
 </ol>
+<p/>
+<b>Using Mergerfs</b>
+Once the scripts are added you should have a new folder created at /mnt/user/mount_mergerfs/name_of_remote. 
+<ul>
+<li>Inside this folder, add files that you want uploading to google i.e. create your media folders here</li>
+<li>This includes any files downloaded by e.g. nzbget (i.e use /mnt/user/mount_unionfs/downloads) that you want radarr etc to move e.g. /mnt/user/mount_mergerfs/google_vfs/movies/Star Wars and /mnt/user/mount_mergerfs/google_vfs/Peppa Pig.</li>
+<li>To get the best performance out of mergerfs, map dockers to /user   --> /mnt/user </li>
+<ul>
+<li>Then within the docker webui navigate to the relevant folder within the mergerfs share e.g. /user/mount_unionfs/downloads or /user/mount_unionfs/movies. These are the folders to map to plex, radarr, sonarr,nzbget etc</li>
+<li><b>DO NOT MAP any folders from local or the rclone mount</b></li>
+<li><b>DO NOT create mappings like /downloads or /media for your dockers.  Only use /user --> /mnt/user if you want to ensure the best performance from mergerfs when moving and editing files within the mount</b></li>
+</ul>
+</ul>
