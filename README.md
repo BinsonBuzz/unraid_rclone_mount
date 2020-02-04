@@ -32,7 +32,6 @@ https://forums.unraid.net/topic/75436-guide-how-to-use-rclone-to-mount-cloud-dri
 <b>Getting Started </b>
 <ol>
 	<li>Rclone remote setup </li> 
-	</p/>
 		<ul>
 			<li>Install the rclone plugin and via command line run rclone config and create 2 remotes:</li> 
 				<ol>
@@ -42,7 +41,7 @@ https://forums.unraid.net/topic/75436-guide-how-to-use-rclone-to-mount-cloud-dri
 		</ul>
 	<p/>
 	<li>Once complete your rclone_config file should look something like this:</li>
-	<p/>
+	<p/><p/><i>
 [gdrive]
 <br/>type = drive
 <br/>client_id = xxxx.apps.googleusercontent.com
@@ -59,7 +58,7 @@ https://forums.unraid.net/topic/75436-guide-how-to-use-rclone-to-mount-cloud-dri
 <br/>directory_name_encryption = true
 <br/>password = xxxx
 <br/>password2 = -xxxxx
-</p/>
+	</i></p/>
 If you need help doing this, please consult the forum thread above.
 </p>
 <b> It is advisable to create your own client_id to avoid API bans.  <a href="https://rclone.org/drive/#making-your-own-client-id">More Details</a></b>
