@@ -1,136 +1,190 @@
 #!/bin/bash
-###########################################################################
-#                    <>       rclone_mount         <>                     #
-###########################################################################
-#
-##################  Check if script is already running  ###################
-#
-sleep 1
-echo "$(date "+%d.%m.%Y %T") INFO: *** Starting rclone_mount script ***"
+
+######################
+#### Mount Script ####
+######################
+#### Version 0.9 #####
+######################
+
+####### EDIT ONLY THESE SETTINGS #######
+
+# INSTRUCTIONS
+# 1. dit the change the name of the rclone remote and shares to match your setup
+# 2. NOTE: enter RcloneRemoteName WITHOUT ':'
+# 3. Optional: include bind mount settings
+
+# REQUIRED SETTINGS
+RcloneRemoteName="gdrive_vfs" # Name of rclone remote mount WITHOUT ':'. NOTE: Choose your encrypted remote for sensitive data
+LocalFilesShare="local" # location of the local files you want to upload to Rclone
+RcloneMountShare="mount_rclone" # where your rclone remote will be located
+MergerfsMountShare="mount_mergerfs" # location of the share you will use for Plex, Sonarr etc that combines files on your server's 'LocalFilesShare' with files on gdrive 'RcloneMountShare'
+
+# Note: Again - remember to NOT use ':' in your remote name above
+
+# OPTIONAL SETTINGS
+CreateBindMount="Y" # Y/N. Choose whether to bind traffic to a particular network adapter
+RCloneMountIP="172.30.12.21" # My unraid IP is 172.30.12.2 so I create another similar IP address
+NetworkAdapter="eth0" # choose your network adapter. eth0 recommended
+VirtualIPNumber="1" # creates eth0:x e.g. eth0:1.  I create a unique virtual IP addresses for each mount & upload so I can monitor and traffic shape for each of them
+
+####### END SETTINGS #######
+
+###############################################################################
+######## ONLY EDIT THE LIST OF DOCKERS TO BE STARTED BELOW THIS LINE ##########
+########   DO NOT EDIT ANYTHING UNLESS YOU KNOW WHAT YOU ARE DOING   ##########
+###############################################################################
+
+####### Preparing mount location variables #######
+LocalFilesLocation="/mnt/user/$LocalFilesShare/$RcloneRemoteName" # Location for local files to be merged with rclone mount
+RcloneMountLocation="/mnt/user/$RcloneMountShare/$RcloneRemoteName" # Location for rclone mount
+MergerFSMountLocation="/mnt/user/$MergerfsMountShare/$RcloneRemoteName" # Rclone data folder location
+
+####### create directories for rclone mount and mergerfs mounts #######
+mkdir -p /mnt/user/appdata/other/rclone/$RcloneRemoteName #for script files
+mkdir -p $LocalFilesLocation/{downloads/complete,downloads/intermediate,downloads/seeds,movies,tv}
+mkdir -p $RcloneMountLocation
+mkdir -p $MergerFSMountLocation
+
+#######  Check if script is already running  #######
+echo "$(date "+%d.%m.%Y %T") INFO: *** Starting mount of remote ${RcloneRemoteName}"
 echo "$(date "+%d.%m.%Y %T") INFO: Checking if this script is already running."
-
-if [[ -f "/mnt/user/appdata/other/rclone/rclone_mount_running" ]]; then
-
-echo "$(date "+%d.%m.%Y %T") INFO: Exiting script already running."
-
-exit
-
+if [[ -f "/mnt/user/appdata/other/rclone/$RcloneRemoteName/mount_running" ]]; then
+	echo "$(date "+%d.%m.%Y %T") INFO: Exiting script as already running."
+	exit
 else
-
-touch /mnt/user/appdata/other/rclone/rclone_mount_running
-
+	echo "$(date "+%d.%m.%Y %T") INFO: Script not running - proceeding."
+	touch /mnt/user/appdata/other/rclone/$RcloneRemoteName/mount_running
 fi
 
-#######  End Check if script already running  ##########
+#######  Check If Rclone Mount Already Created  #######
 
-########## create directories for rclone mount and mergerfs mount ##############
-
-mkdir -p /mnt/user/local/google_vfs/{downloads/complete,downloads/intermediate,downloads/seeds,movies,tv}
-mkdir -p /mnt/user/mount_rclone/google_vfs
-mkdir -p /mnt/user/appdata/other/mergerfs/
-mkdir -p /mnt/user/mount_mergerfs/google_vfs
-
-#######  Start rclone gdrive mount  ##########
-
-# check if gdrive mount already created
-
-if [[ -f "/mnt/user/mount_rclone/google_vfs/mountcheck" ]]; then
-
-echo "$(date "+%d.%m.%Y %T") INFO: Check rclone vfs already mounted."
-
+if [[ -f "$RcloneMountLocation/mountcheck" ]]; then
+	echo "$(date "+%d.%m.%Y %T") INFO: Success ${RcloneRemoteName} remote is already mounted."
 else
+	echo "$(date "+%d.%m.%Y %T") INFO: Mount not running. Will now mount ${RcloneRemoteName} remote."
 
-echo "$(date "+%d.%m.%Y %T") INFO: mounting rclone vfs."
+#######  Create RClone Mount  #######
 
-rclone mount --allow-other --buffer-size 256M --dir-cache-time 720h --drive-chunk-size 512M --log-level INFO --vfs-read-chunk-size 128M --vfs-read-chunk-size-limit off --vfs-cache-mode writes gdrive_media_vfs: /mnt/user/mount_rclone/google_vfs &
+# Creating mountcheck file in case it doesn't already exist
+	echo "$(date "+%d.%m.%Y %T") INFO: Recreating mountcheck file for ${RcloneRemoteName} remote."
+	touch mountcheck
+	rclone copy mountcheck $RcloneRemoteName: -vv --no-traverse
+	echo "$(date "+%d.%m.%Y %T") INFO: Completed creation of mountcheck file for ${RcloneRemoteName} remote."
+	if [[  $CreateBindMount == 'Y' ]]; then
+# mount with bind option
+		echo "$(date "+%d.%m.%Y %T") INFO: *** Checking if IP address ${RCloneMountIP} already created for remote ${RcloneRemoteName}"
+		ping -q -c2 $RCloneMountIP > /dev/null # -q quiet, -c number of pings to perform
+		if [ $? -eq 0 ]; then # ping returns exit status 0 if successful
+			echo "$(date "+%d.%m.%Y %T") INFO: *** IP address ${RCloneMountIP} already created for remote ${RcloneRemoteName}"
+		else
+			echo "$(date "+%d.%m.%Y %T") INFO: *** Creating IP address ${RCloneMountIP} for remote ${RcloneRemoteName}"
+			ip addr add $RCloneMountIP/24 dev $NetworkAdapter label $NetworkAdapter:$VirtualIPNumber
+		fi
+		echo "$(date "+%d.%m.%Y %T") INFO: *** Creating bind mount ${RCloneMountIP} for remote ${RcloneRemoteName}"
+		rclone mount \
+		--allow-other \
+		--buffer-size 256M \
+		--dir-cache-time 720h \
+		--drive-chunk-size 512M \
+		--log-level INFO \
+		--vfs-read-chunk-size 128M \
+		--vfs-read-chunk-size-limit off \
+		--vfs-cache-mode writes \
+		--bind=$RCloneMountIP $RcloneRemoteName: \
+		$RcloneMountLocation &
+	else
+# mount without bind option
+		echo "$(date "+%d.%m.%Y %T") INFO: *** Creating mount for remote ${RcloneRemoteName}"
+			rclone mount \
+			--allow-other \
+			--buffer-size 256M \
+			--dir-cache-time 720h \
+			--drive-chunk-size 512M \
+			--log-level INFO \
+			--vfs-read-chunk-size 128M \
+			--vfs-read-chunk-size-limit off \
+			--vfs-cache-mode writes \
+			$RcloneMountLocation &
+	fi
 
-# check if mount successful with slight pause to give mount time to finalise
-echo "$(date "+%d.%m.%Y %T") INFO: sleeping 5 sec"
-sleep 5
-echo "$(date "+%d.%m.%Y %T") INFO: continuing..."
-if [[ -f "/mnt/user/mount_rclone/google_vfs/mountcheck" ]]; then
+#######  Check if Mount Successful  #######
 
-echo "$(date "+%d.%m.%Y %T") INFO: Check rclone gdrive vfs mount success."
-
-else
-
-echo "$(date "+%d.%m.%Y %T") CRITICAL: rclone gdrive vfs mount failed - please check for problems."
-
-rm /mnt/user/appdata/other/rclone/rclone_mount_running
-
-exit
-
+# slight pause to give mount time to finalise
+	echo "$(date "+%d.%m.%Y %T") INFO: sleeping for 5 seconds"
+	sleep 5
+	echo "$(date "+%d.%m.%Y %T") INFO: continuing..."
+	if [[ -f "$RcloneMountLocation/mountcheck" ]]; then
+		echo "$(date "+%d.%m.%Y %T") INFO: Successful mount of ${RcloneRemoteName} mount."
+	else
+		echo "$(date "+%d.%m.%Y %T") CRITICAL: ${RcloneRemoteName} mount failed - please check for problems."
+		rm /mnt/user/appdata/other/rclone/$RcloneRemoteName/mount_running
+		exit
+	fi
 fi
 
-fi
+####### Start MergerFS Mount #######
 
-#######  End rclone gdrive mount  ##########
-
-#######  Start mergerfs mount  ##########
-
-if [[ -f "/mnt/user/mount_mergerfs/google_vfs/mountcheck" ]]; then
-
-echo "$(date "+%d.%m.%Y %T") INFO: Check successful, mergerfs already mounted."
-
+if [[ -f "$MergerFSMountLocation/mountcheck" ]]; then
+	echo "$(date "+%d.%m.%Y %T") INFO: Check successful, ${RcloneRemoteName} mergerfs mount in place."
 else
-
-# Build mergerfs binary and delete old binary as precaution
-rm /bin/mergerfs
-
-# Create Docker
-docker run -v /mnt/user/appdata/other/mergerfs:/build --rm trapexit/mergerfs-static-build
-
-# move to bin to use for commands
-mv /mnt/user/appdata/other/mergerfs/mergerfs /bin
-
+# check if mergerfs already installed
+	if [[ -f "/bin/mergerfs" ]]; then
+		echo "$(date "+%d.%m.%Y %T") INFO: Mergerfs already installed, proceeding to create mergerfs mount"
+	else
+# Build mergerfs binary
+		echo "$(date "+%d.%m.%Y %T") INFO: Mergerfs not installed - installing now."
+		docker run -v /mnt/user/appdata/other/rclone:/build --rm trapexit/mergerfs-static-build
+		mv /mnt/user/appdata/other/rclone/mergerfs /bin
+	fi
 # Create mergerfs mount
-
-mergerfs /mnt/user/local/google_vfs:/mnt/user/mount_rclone/google_vfs /mnt/user/mount_mergerfs/google_vfs -o rw,async_read=false,use_ino,allow_other,func.getattr=newest,category.action=all,category.create=ff,cache.files=partial,dropcacheonclose=true
-
-if [[ -f "/mnt/user/mount_mergerfs/google_vfs/mountcheck" ]]; then
-
-echo "$(date "+%d.%m.%Y %T") INFO: Check successful, mergerfs mounted."
-
-else
-
-echo "$(date "+%d.%m.%Y %T") CRITICAL: mergerfs Remount failed."
-
-rm /mnt/user/appdata/other/rclone/rclone_mount_running
-
-exit
-
+	echo "$(date "+%d.%m.%Y %T") INFO: Creating ${RcloneRemoteName} mergerfs mount."
+	mergerfs $LocalFilesLocation:$RcloneMountLocation $MergerFSMountLocation -o rw,async_read=false,use_ino,allow_other,func.getattr=newest,category.action=all,category.create=ff,cache.files=partial,dropcacheonclose=true
+# check if mergerfs mount successful
+	echo "$(date "+%d.%m.%Y %T") INFO: Checking if ${RcloneRemoteName} mergerfs mount created."
+	if [[ -f "$MergerFSMountLocation/mountcheck" ]]; then
+		echo "$(date "+%d.%m.%Y %T") INFO: Check successful, ${RcloneRemoteName} mergerfs mount created."
+	else
+		echo "$(date "+%d.%m.%Y %T") CRITICAL: ${RcloneRemoteName} mergerfs mount failed."
+		rm /mnt/user/appdata/other/rclone/$RcloneRemoteName/mount_running
+		exit
+	fi
 fi
 
-fi
+####### Starting Dockers That Need Unionfs Mount To Work Properly #######
 
-#######  End Mount mergerfs   ##########
-
-############### starting dockers that need mergerfs mount ######################
+# delete/add dockers as appropriate..Remember to disable AUTOSTART in docker settings page
 
 # only start dockers once
-
 if [[ -f "/mnt/user/appdata/other/rclone/dockers_started" ]]; then
-
-echo "$(date "+%d.%m.%Y %T") INFO: dockers already started"
-
+	echo "$(date "+%d.%m.%Y %T") INFO: dockers already started."
 else
-
-touch /mnt/user/appdata/other/rclone/dockers_started
-
-echo "$(date "+%d.%m.%Y %T") INFO: Starting dockers."
-
-docker start nzbget
-docker start transmission
-docker start plex
-docker start ombi
-docker start tautulli
-docker start radarr
-docker start sonarr
-
+	touch /mnt/user/appdata/other/rclone/dockers_started
+	echo "$(date "+%d.%m.%Y %T") INFO: Starting dockers."
+# downloads to mergerfs folder, so don't start if not mounted
+	docker start nzbget 
+	docker start qbittorrentvpn
+# download programs - avoids issues if download clients not running and can't access mergerfs share
+	docker start activ-flexget
+	docker start lazylibrarian
+	docker start lidarr
+	docker start radarr 
+	docker start radarr-uhd
+	docker start radarr-collections
+	docker start sonarr
+	docker start sonarr-uhd
+# plex and associated appps play from mergerfs folder - avoids hassle if mount fails
+	docker start emby
+	docker start plex
+	docker start NowShowingv2
+	docker start ombi
+	docker start tautulli
+	docker start LDAPforPlex
+# other dockers I add to only start if network is up
+	docker start letsencrypt # avoid certificate renewal issues
+	docker start organizrv2
 fi
 
-############### end dockers that need mergerfs mount ######################
-
-rm /mnt/user/appdata/other/rclone/rclone_mount_running
+rm /mnt/user/appdata/other/rclone/$RcloneRemoteName/mount_running
+echo "$(date "+%d.%m.%Y %T") INFO: Script complete"
 
 exit
