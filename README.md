@@ -1,14 +1,14 @@
-# unraid_rclone_mount
+# Unraid Rclone Scripts
 
-unRAID scripts to create rclone vfs mounts on unraid to allow fast launch times with Plex (or Emby). 
+Unraid scripts to create rclone vfs mounts on unraid to allow fast launch times with Plex (or Emby).  They should work on other systems, just take care with your paths.
 
 The main thread for more support:
 
 https://forums.unraid.net/topic/75436-guide-how-to-use-rclone-to-mount-cloud-drives-and-play-files/
 
-<b>Plugins needed</b>
+<b>Plugins Needed</b>
 
-<li>Rclone beta – installs rclone and allows the creation of remotes and mounts</li>
+<li>Unraid Rclone Plugin: 1.5.1 or higher needed <a href="https://forums.unraid.net/topic/51633-plugin-rclone/">Details</a>.  Installs rclone and allows the creation of remotes and mounts</li>
 <li>User Scripts – to run scripts</li>
 <br/>
 <b>How It Works </b>
