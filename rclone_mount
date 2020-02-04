@@ -9,7 +9,7 @@
 ####### EDIT ONLY THESE SETTINGS #######
 
 # INSTRUCTIONS
-# 1. dit the change the name of the rclone remote and shares to match your setup
+# 1. Edit the change the name of the rclone remote and shares to match your setup
 # 2. NOTE: enter RcloneRemoteName WITHOUT ':'
 # 3. Optional: include bind mount settings
 
