@@ -18,7 +18,7 @@ RcloneRemoteName="gdrive_vfs" # Name of rclone remote mount WITHOUT ':'. NOTE: C
 LocalFilesShare="local" # location of the local files you want to upload to Rclone
 RcloneMountShare="mount_rclone" # where your rclone remote will be located
 MergerfsMountShare="mount_mergerfs" # location of the share you will use for Plex, Sonarr etc that combines files on your server's 'LocalFilesShare' with files on gdrive 'RcloneMountShare'
-MountDirectories="downloads/complete,downloads/intermediate,downloads/seeds,movies,tv" #comma separated list of directoies 
+MountDirectories="downloads/complete,downloads/intermediate,downloads/seeds,movies,tv" #comma separated list of directories 
 
 # Note: Again - remember to NOT use ':' in your remote name above
 
