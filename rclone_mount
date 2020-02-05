@@ -3,7 +3,7 @@
 ######################
 #### Mount Script ####
 ######################
-## Version 0.91.1 ####
+#### Version 0.92 ####
 ######################
 
 ####### EDIT ONLY THESE SETTINGS #######
@@ -19,6 +19,7 @@ LocalFilesShare="local" # location of the local files you want to upload to Rclo
 RcloneMountShare="mount_rclone" # where your rclone remote will be located
 MergerfsMountShare="mount_mergerfs" # location of the share you will use for Plex, Sonarr etc that combines files on your server's 'LocalFilesShare' with files on gdrive 'RcloneMountShare'
 DockerStart="nzbget qbittorrentvpn lidarr radarr sonarr emby plex ombi tautulli" # list of dockers, separated by space, to start once mergerfs mount verified
+MountFolders=\{"movies,tv,downloads/complete,downloads/intermediate,downloads/seeds"\} # comma separated list of folders to create within the mount
 
 # Note: Again - remember to NOT use ':' in your remote name above
 
@@ -42,7 +43,7 @@ MergerFSMountLocation="/mnt/user/$MergerfsMountShare/$RcloneRemoteName" # Rclone
 
 ####### create directories for rclone mount and mergerfs mounts #######
 mkdir -p /mnt/user/appdata/other/rclone/$RcloneRemoteName #for script files
-mkdir -p $LocalFilesLocation/{downloads/complete,downloads/intermediate,downloads/seeds,movies,tv}
+eval mkdir -p $LocalFilesLocation/"$MountFolders"
 mkdir -p $RcloneMountLocation
 mkdir -p $MergerFSMountLocation
 
