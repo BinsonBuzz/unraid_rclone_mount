@@ -48,20 +48,21 @@ Thanks to <a href="https://github.com/SenpaiBox">SenPaiBox</a> and the Unraid co
 	<p/><p/><i>
 [gdrive]
 <br/>type = drive
-<br/>client_id = xxxx.apps.googleusercontent.com
-<br/>client_secret = xxxxx
+<br/>client_id = UNIQUE CLIENT_ID
+<br/>client_secret = MATCHING_UNIQUE_SECRET
 <br/>scope = drive
 <br/>root_folder_id = xxxx
 <br/>service_account_file = 
 <br/>token = {"xxxxx"}
+<br/>server_side_across_configs = true
 <p/>
 [gdrive_media_vfs]
 <br/>type = crypt
 <br/>remote = gdrive:crypt
 <br/>filename_encryption = standard
 <br/>directory_name_encryption = true
-<br/>password = xxxx
-<br/>password2 = -xxxxx
+<br/>password = PASSWORD1
+<br/>password2 = PASSWORD2
 	</i></p/>
 If you need help doing this, please consult the forum thread above.
 </p>
