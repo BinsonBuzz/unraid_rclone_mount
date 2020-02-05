@@ -3,7 +3,7 @@
 ######################
 ### Upload Script ####
 ######################
-#### Version 0.91 ####
+### Version 0.91.1 ###
 ######################
 
 ####### EDIT ONLY THESE SETTINGS #######
@@ -15,6 +15,7 @@
 # 4. Optional: use multiple remotes to get extra upload quota of (number of remotes) x 750GB/day e.g to max out a 1Gbps line 14-15 remotes would be needed
 
 # REQUIRED SETTINGS
+RcloneCommand="move" # choose your rclone command e.g. move, copy, sync
 RcloneRemoteName="gdrive_vfs" # Name of rclone remote mount WITHOUT ':'. NOTE: Choose your encrypted remote for sensitive data
 RcloneUploadRemoteName="gdrive_vfs" # If you have a second remote created for uploads put it here.  Otherwise use the same remote as RcloneRemoteName
 LocalFilesShare="local" # location of the local files you want to upload to rclone
@@ -110,7 +111,7 @@ if [[  $CreateBindMount == 'Y' ]]; then
 		ip addr add $RCloneMountIP/24 dev $NetworkAdapter label $NetworkAdapter:$VirtualIPNumber
 	fi
 	echo "$(date "+%d.%m.%Y %T") INFO: *** Using IP address ${RCloneMountIP} to upload to remote ${RcloneRemoteName}"
-	rclone move $LocalFilesLocation $RcloneUploadRemoteName: \
+	rclone $RcloneCommand $LocalFilesLocation $RcloneUploadRemoteName: \
 	--user-agent="$RcloneUploadRemoteName" \
 	-vv \
 	--buffer-size 512M \
@@ -133,7 +134,7 @@ if [[  $CreateBindMount == 'Y' ]]; then
 # upload without bind option
 else
 	echo "$(date "+%d.%m.%Y %T") INFO: *** Uploading to remote ${RcloneRemoteName}"
-	rclone move $LocalFilesLocation $RcloneUploadRemoteName: \
+	rclone $RcloneCommand $LocalFilesLocation $RcloneUploadRemoteName: \
 	--user-agent="$RcloneUploadRemoteName" \
 	-vv \
 	--buffer-size 512M \
