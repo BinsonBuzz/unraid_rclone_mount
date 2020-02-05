@@ -3,7 +3,7 @@
 ######################
 #### Mount Script ####
 ######################
-#### Version 0.91 #####
+## Version 0.91.1 ####
 ######################
 
 ####### EDIT ONLY THESE SETTINGS #######
@@ -156,10 +156,10 @@ fi
 # delete/add dockers as appropriate..Remember to disable AUTOSTART in docker settings page
 
 # only start dockers once
-if [[ -f "/mnt/user/appdata/other/rclone/dockers_started" ]]; then
+if [[ -f "/mnt/user/appdata/other/rclone/$RcloneRemoteName/dockers_started" ]]; then
 	echo "$(date "+%d.%m.%Y %T") INFO: dockers already started."
 else
-	touch /mnt/user/appdata/other/rclone/dockers_started
+	touch /mnt/user/appdata/other/rclone/$RcloneRemoteName/dockers_started
 	echo "$(date "+%d.%m.%Y %T") INFO: Starting dockers."
 	docker start $DockerStart
 fi
