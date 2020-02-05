@@ -3,7 +3,7 @@
 ######################
 #### Mount Script ####
 ######################
-#### Version 0.9 #####
+#### Version 0.91 #####
 ######################
 
 ####### EDIT ONLY THESE SETTINGS #######
@@ -90,8 +90,8 @@ else
 		--vfs-read-chunk-size 128M \
 		--vfs-read-chunk-size-limit off \
 		--vfs-cache-mode writes \
-		--bind=$RCloneMountIP $RcloneRemoteName: \
-		$RcloneMountLocation &
+		--bind=$RCloneMountIP \
+		$RcloneRemoteName: $RcloneMountLocation &
 	else
 # mount without bind option
 		echo "$(date "+%d.%m.%Y %T") INFO: *** Creating mount for remote ${RcloneRemoteName}"
@@ -104,7 +104,7 @@ else
 			--vfs-read-chunk-size 128M \
 			--vfs-read-chunk-size-limit off \
 			--vfs-cache-mode writes \
-			$RcloneMountLocation &
+			$RcloneRemoteName: $RcloneMountLocation &
 	fi
 
 #######  Check if Mount Successful  #######
