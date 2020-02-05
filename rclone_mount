@@ -18,6 +18,7 @@ RcloneRemoteName="gdrive_vfs" # Name of rclone remote mount WITHOUT ':'. NOTE: C
 LocalFilesShare="local" # location of the local files you want to upload to Rclone
 RcloneMountShare="mount_rclone" # where your rclone remote will be located
 MergerfsMountShare="mount_mergerfs" # location of the share you will use for Plex, Sonarr etc that combines files on your server's 'LocalFilesShare' with files on gdrive 'RcloneMountShare'
+DockerStart="nzbget qbittorrentvpn lidarr radarr sonarr emby plex ombi tautulli" # list of dockers, separated by space, to start once mergerfs mount verified
 
 # Note: Again - remember to NOT use ':' in your remote name above
 
@@ -95,16 +96,16 @@ else
 	else
 # mount without bind option
 		echo "$(date "+%d.%m.%Y %T") INFO: *** Creating mount for remote ${RcloneRemoteName}"
-			rclone mount \
-			--allow-other \
-			--buffer-size 256M \
-			--dir-cache-time 720h \
-			--drive-chunk-size 512M \
-			--log-level INFO \
-			--vfs-read-chunk-size 128M \
-			--vfs-read-chunk-size-limit off \
-			--vfs-cache-mode writes \
-			$RcloneRemoteName: $RcloneMountLocation &
+		rclone mount \
+		--allow-other \
+		--buffer-size 256M \
+		--dir-cache-time 720h \
+		--drive-chunk-size 512M \
+		--log-level INFO \
+		--vfs-read-chunk-size 128M \
+		--vfs-read-chunk-size-limit off \
+		--vfs-cache-mode writes \
+		$RcloneRemoteName: $RcloneMountLocation &
 	fi
 
 #######  Check if Mount Successful  #######
@@ -160,28 +161,7 @@ if [[ -f "/mnt/user/appdata/other/rclone/dockers_started" ]]; then
 else
 	touch /mnt/user/appdata/other/rclone/dockers_started
 	echo "$(date "+%d.%m.%Y %T") INFO: Starting dockers."
-# downloads to mergerfs folder, so don't start if not mounted
-	docker start nzbget 
-	docker start qbittorrentvpn
-# download programs - avoids issues if download clients not running and can't access mergerfs share
-	docker start activ-flexget
-	docker start lazylibrarian
-	docker start lidarr
-	docker start radarr 
-	docker start radarr-uhd
-	docker start radarr-collections
-	docker start sonarr
-	docker start sonarr-uhd
-# plex and associated appps play from mergerfs folder - avoids hassle if mount fails
-	docker start emby
-	docker start plex
-	docker start NowShowingv2
-	docker start ombi
-	docker start tautulli
-	docker start LDAPforPlex
-# other dockers I add to only start if network is up
-	docker start letsencrypt # avoid certificate renewal issues
-	docker start organizrv2
+	docker start $DockerStart
 fi
 
 rm /mnt/user/appdata/other/rclone/$RcloneRemoteName/mount_running
