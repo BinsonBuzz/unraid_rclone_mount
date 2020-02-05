@@ -41,8 +41,8 @@ VirtualIPNumber="2" # creates eth0:x e.g. eth0:1.  I create a unique virtual IP 
 # Use Multiple upload remotes for multiple quotas
 UseMultipleUploadRemotes="Y" # Y/N. Choose whether want to rotate multiple upload remotes for incresed quota (750GB x number of remotes)
 RemoteNumber="15" # Integer number of remotes to use.  
-RcloneUploadRemoteStart="tdrive_fast" # Enter characters before counter in your remote names ## i.e. for tdrive_fast1_vfs, tdrive_fast2_vfs, ...tdrive_fast15_vfs,tdrive_fast16_vfs enter 'tdrive_fast'
-RcloneUploadRemoteEnd="_vfs" # Enter characters after counter ## i.e. for tdrive_fast1_vfs, tdrive_fast2_vfs, ...tdrive_fast15_vfs,tdrive_fast16_vfs enter '_vfs'
+RcloneUploadRemoteStart="gdrive_counter" # Enter characters before counter in your remote names ## i.e. for gdrive_counter1_vfs, gdrive_counter2_vfs, ...gdrive_counter15_vfs,gdrive_counter16_vfs enter 'gdrive_counter'
+RcloneUploadRemoteEnd="_vfs" # Enter characters after counter ## i.e. for gdrive_counter1_vfs, gdrive_counter2_vfs, ...gdrive_counter15_vfs,gdrive_counter16_vfs enter '_vfs'
 
 ####### END SETTINGS #######
 
