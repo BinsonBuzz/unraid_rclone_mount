@@ -3,7 +3,7 @@
 ######################
 ### Upload Script ####
 ######################
-#### Version 0.9 #####
+#### Version 0.91 ####
 ######################
 
 ####### EDIT ONLY THESE SETTINGS #######
@@ -11,7 +11,8 @@
 # INSTRUCTIONS
 # 1. Edit the change the name of the rclone remote and local share to match your setup
 # 2. NOTE: enter RcloneRemoteName WITHOUT ':'
-# 3. Optional: include bind mount settings
+# 3. Optional: include bind mount settings for potential traffic shaping/monitoring
+# 4. Optional: use multiple remotes to get extra upload quota of (number of remotes) x 750GB/day e.g to max out a 1Gbps line 14-15 remotes would be needed
 
 # REQUIRED SETTINGS
 RcloneRemoteName="gdrive_vfs" # Name of rclone remote mount WITHOUT ':'. NOTE: Choose your encrypted remote for sensitive data
@@ -30,10 +31,18 @@ BWLimit3="12M"
 BWLimit3Time="16:00"
 
 # OPTIONAL SETTINGS
+
+# Bind the mount to an IP address
 CreateBindMount="Y" # Y/N. Choose whether to bind traffic to a particular network adapter
 RCloneMountIP="172.30.12.22" # My unraid IP is 172.30.12.2 so I create another similar IP address
 NetworkAdapter="eth0" # choose your network adapter. eth0 recommended
 VirtualIPNumber="2" # creates eth0:x e.g. eth0:1.  I create a unique virtual IP addresses for each mount & upload so I can monitor and traffic shape for each of them
+
+# Use Multiple upload remotes for multiple quotas
+UseMultipleUploadRemotes="Y" # Y/N. Choose whether want to rotate multiple upload remotes for incresed quota (750GB x number of remotes)
+RemoteNumber="15" # Integer number of remotes to use.  
+RcloneUploadRemoteStart="tdrive_fast" # Enter characters before counter in your remote names ## i.e. for tdrive_fast1_vfs, tdrive_fast2_vfs, ...tdrive_fast15_vfs,tdrive_fast16_vfs enter 'tdrive_fast'
+RcloneUploadRemoteEnd="_vfs" # Enter characters after counter ## i.e. for tdrive_fast1_vfs, tdrive_fast2_vfs, ...tdrive_fast15_vfs,tdrive_fast16_vfs enter '_vfs'
 
 ####### END SETTINGS #######
 
@@ -44,6 +53,26 @@ VirtualIPNumber="2" # creates eth0:x e.g. eth0:1.  I create a unique virtual IP 
 ####### Preparing mount location variables #######
 LocalFilesLocation="/mnt/user/$LocalFilesShare/$RcloneRemoteName" # Location for local files to be merged with rclone mount
 RcloneMountLocation="/mnt/user/$RcloneMountShare/$RcloneRemoteName" # Location for rclone mount
+
+####### Adjusting RcloneUploadRemoteName if using multiple remotes #######
+if [[  $UseMultipleUploadRemotes == 'Y' ]]; then
+	CounterNumber=$(find /mnt/user/appdata/other/rclone/$RcloneRemoteName/ -name 'counter_*' | cut -d"_" -f3)
+	echo $CounterNumber
+	CounterCheck="1"
+	if [[ "$CounterNumber" -ge "$CounterCheck" ]];then
+		echo "$(date "+%d.%m.%Y %T") INFO: Counter file found for ${RcloneRemoteName}."
+	else
+		echo "$(date "+%d.%m.%Y %T") INFO: No counter file found for ${RcloneRemoteName}. Creating counter_1."
+		touch /mnt/user/appdata/other/rclone/$RcloneRemoteName/counter_1
+	fi
+# creating new $RcloneUploadRemoteName based on counter
+	RcloneUploadRemoteName=$RcloneUploadRemoteStart
+	RcloneUploadRemoteName+=$CounterNumber
+	RcloneUploadRemoteName+=$RcloneUploadRemoteEnd
+	echo "$(date "+%d.%m.%Y %T") INFO: Adjusted upload remote name to ${RcloneUploadRemoteName} based on counter ${CounterNumber}."
+else
+	echo "$(date "+%d.%m.%Y %T") INFO: Uploading using one remote"
+fi
 
 ####### create directories for rclone mount and mergerfs mounts #######
 mkdir -p /mnt/user/appdata/other/rclone/$RcloneRemoteName #for script files
@@ -125,8 +154,26 @@ else
 	--bwlimit "${BWLimit1Time},${BWLimit1} ${BWLimit2Time},${BWLimit2} ${BWLimit3Time},${BWLimit3}" 
 fi
 
-# remove dummy file
+#######  Remove Control Files  ##########
 
+# update counter and remove other control files
+if [[  $UseMultipleUploadRemotes == 'Y' ]]; then
+	if [[ "$CounterNumber" == "$RemoteNumber" ]];then
+		rm /mnt/user/appdata/other/rclone/$RcloneRemoteName/counter_$CounterNumber
+		touch /mnt/user/appdata/other/rclone/$RcloneRemoteName/counter_1
+		echo "$(date "+%d.%m.%Y %T") INFO: Final counter used - resetting loop and created counter_1."
+		CounterNumber=$(find /mnt/user/appdata/other/rclone/$RcloneRemoteName/ -name 'counter_*' | cut -d"_" -f3)
+	else
+		rm /mnt/user/appdata/other/rclone/$RcloneRemoteName/counter_$CounterNumber
+		CounterNumber=$((CounterNumber+1))
+		touch /mnt/user/appdata/other/rclone/$RcloneRemoteName/counter_$CounterNumber
+		echo "$(date "+%d.%m.%Y %T") INFO: Created counter_${CounterNumber} for next upload run."
+	fi
+else
+	echo "$(date "+%d.%m.%Y %T") INFO: Not utilising multiple upload remotes."
+fi
+
+# remove dummy file
 rm /mnt/user/appdata/other/rclone/$RcloneRemoteName/upload_running
 echo "$(date "+%d.%m.%Y %T") INFO: Script complete"
 
