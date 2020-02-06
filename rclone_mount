@@ -3,7 +3,7 @@
 ######################
 #### Mount Script ####
 ######################
-#### Version 0.92 ####
+#### Version 0.93 ####
 ######################
 
 ####### EDIT ONLY THESE SETTINGS #######
@@ -15,9 +15,9 @@
 
 # REQUIRED SETTINGS
 RcloneRemoteName="gdrive_vfs" # Name of rclone remote mount WITHOUT ':'. NOTE: Choose your encrypted remote for sensitive data
-LocalFilesShare="local" # location of the local files you want to upload to Rclone
-RcloneMountShare="mount_rclone" # where your rclone remote will be located
-MergerfsMountShare="mount_mergerfs" # location of the share you will use for Plex, Sonarr etc that combines files on your server's 'LocalFilesShare' with files on gdrive 'RcloneMountShare'
+LocalFilesShare="/mnt/user/local" # location of the local files you want to upload without trailing slash to rclone e.g. /mnt/user/local
+RcloneMountShare="/mnt/user/mount_rclone" # where your rclone remote will be located without trailing slash  e.g. /mnt/user/mount_rclone
+MergerfsMountShare="/mnt/user/mount_mergerfs" # location without trailing slash  e.g. /mnt/user/mount_mergerfs of the share you will use for Plex, Sonarr etc that combines files on your server's 'LocalFilesShare' with files on gdrive 'RcloneMountShare'
 DockerStart="nzbget qbittorrentvpn lidarr radarr sonarr emby plex ombi tautulli" # list of dockers, separated by space, to start once mergerfs mount verified
 MountFolders=\{"movies,tv,downloads/complete,downloads/intermediate,downloads/seeds"\} # comma separated list of folders to create within the mount
 
@@ -37,9 +37,9 @@ VirtualIPNumber="1" # creates eth0:x e.g. eth0:1.  I create a unique virtual IP 
 ###############################################################################
 
 ####### Preparing mount location variables #######
-LocalFilesLocation="/mnt/user/$LocalFilesShare/$RcloneRemoteName" # Location for local files to be merged with rclone mount
-RcloneMountLocation="/mnt/user/$RcloneMountShare/$RcloneRemoteName" # Location for rclone mount
-MergerFSMountLocation="/mnt/user/$MergerfsMountShare/$RcloneRemoteName" # Rclone data folder location
+LocalFilesLocation="$LocalFilesShare/$RcloneRemoteName" # Location for local files to be merged with rclone mount
+RcloneMountLocation="$RcloneMountShare/$RcloneRemoteName" # Location for rclone mount
+MergerFSMountLocation="$MergerfsMountShare/$RcloneRemoteName" # Rclone data folder location
 
 ####### create directories for rclone mount and mergerfs mounts #######
 mkdir -p /mnt/user/appdata/other/rclone/$RcloneRemoteName #for script files
