@@ -1,6 +1,6 @@
 # Rclone Mount & Upload Scripts for Plex Users
 
-Collection of scripts to create rclone vfs mounts on unraid to allow fast launch times with Plex (or Emby).  
+Collection of scripts to create rclone google mounts to allow fast launch times with Plex (or Emby).  
 
 The main thread for more support:
 
@@ -24,7 +24,7 @@ Thanks to <a href="https://github.com/SenpaiBox">SenPaiBox</a> and the Unraid co
 </ul>
 <b>Non-unRaid Users</b>
 <p/><p/>
-Other users need to install rclone and use their preferred way to schedule cron jobs.
+Other users need to install rclone and use their preferred way to schedule cron jobs.  The scripts install mergerfs, which I think should work for other systems.
 <p/>
 <b>How It Works </b>
 <ol>
