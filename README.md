@@ -10,7 +10,7 @@ Credits:
 
 Thanks to <a href="https://github.com/SenpaiBox">SenPaiBox</a> and the Unraid community for help in refining the scripts.
 
-<b>Plugins Needed</b>
+<b>Unraid Plugins Needed</b>
 <ul>
 	<li><b>Unraid Rclone Plugin</b>
 		<ul>
@@ -22,6 +22,10 @@ Thanks to <a href="https://github.com/SenpaiBox">SenPaiBox</a> and the Unraid co
 			<li>Best way to run scripts<b> <a href="https://forums.unraid.net/topic/48286-plugin-ca-user-scripts/">Details</a></b>
 		</ul>
 </ul>
+<b>Unraid Plugins Needed</b>
+<p/>
+Other users need to install rclone and use their preferred way to schedule cron jobs.
+<p/>
 <b>How It Works </b>
 <ol>
 	<li>Rclone is used to access files on your google drive and to mount them in a folder on your server e.g. mount a gdrive remote called gdrive_vfs: at /mnt/user/mount_rlone/gdrive_vfs </li>
