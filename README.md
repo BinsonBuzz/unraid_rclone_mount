@@ -23,7 +23,7 @@ Thanks to <a href="https://github.com/SenpaiBox">SenPaiBox</a> and the Unraid co
 		</ul>
 </ul>
 <b>Non-unRaid Users</b>
-<p/>
+<p/><p/>
 Other users need to install rclone and use their preferred way to schedule cron jobs.
 <p/>
 <b>How It Works </b>
