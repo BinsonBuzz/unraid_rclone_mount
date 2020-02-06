@@ -3,7 +3,7 @@
 ######################
 ### Upload Script ####
 ######################
-### Version 0.91.2 ###
+### Version 0.92 ###
 ######################
 
 ####### EDIT ONLY THESE SETTINGS #######
@@ -18,8 +18,8 @@
 RcloneCommand="move" # choose your rclone command e.g. move, copy, sync
 RcloneRemoteName="gdrive_vfs" # Name of rclone remote mount WITHOUT ':'. NOTE: Choose your encrypted remote for sensitive data
 RcloneUploadRemoteName="gdrive_vfs" # If you have a second remote created for uploads put it here.  Otherwise use the same remote as RcloneRemoteName
-LocalFilesShare="local" # location of the local files you want to upload to rclone
-RcloneMountShare="mount_rclone" # where your rclone remote will be located
+LocalFilesShare="/mnt/user/local" # location of the local files you want to upload without trailing slash to rclone e.g. /mnt/user/local
+RcloneMountShare="/mnt/user/mount_rclone" # where your rclone remote will be located without trailing slash  e.g. /mnt/user/mount_rclone
 
 # Note: Again - remember to NOT use ':' in your remote name above
 
@@ -52,8 +52,8 @@ RcloneUploadRemoteEnd="_vfs" # Enter characters after counter ## i.e. for gdrive
 ###############################################################################
 
 ####### Preparing mount location variables #######
-LocalFilesLocation="/mnt/user/$LocalFilesShare/$RcloneRemoteName" # Location for local files to be merged with rclone mount
-RcloneMountLocation="/mnt/user/$RcloneMountShare/$RcloneRemoteName" # Location for rclone mount
+LocalFilesLocation="$LocalFilesShare/$RcloneRemoteName" # Location for local files to be merged with rclone mount
+RcloneMountLocation="$RcloneMountShare/$RcloneRemoteName" # Location for rclone mount
 
 ####### create directories for rclone mount and mergerfs mounts #######
 mkdir -p /mnt/user/appdata/other/rclone/$RcloneRemoteName #for script files
