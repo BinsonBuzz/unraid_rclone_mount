@@ -3,7 +3,7 @@
 ######################
 ### Upload Script ####
 ######################
-### Version 0.91.1 ###
+### Version 0.91.2 ###
 ######################
 
 ####### EDIT ONLY THESE SETTINGS #######
@@ -55,26 +55,6 @@ RcloneUploadRemoteEnd="_vfs" # Enter characters after counter ## i.e. for gdrive
 LocalFilesLocation="/mnt/user/$LocalFilesShare/$RcloneRemoteName" # Location for local files to be merged with rclone mount
 RcloneMountLocation="/mnt/user/$RcloneMountShare/$RcloneRemoteName" # Location for rclone mount
 
-####### Adjusting RcloneUploadRemoteName if using multiple remotes #######
-if [[  $UseMultipleUploadRemotes == 'Y' ]]; then
-	CounterNumber=$(find /mnt/user/appdata/other/rclone/$RcloneRemoteName/ -name 'counter_*' | cut -d"_" -f3)
-	echo $CounterNumber
-	CounterCheck="1"
-	if [[ "$CounterNumber" -ge "$CounterCheck" ]];then
-		echo "$(date "+%d.%m.%Y %T") INFO: Counter file found for ${RcloneRemoteName}."
-	else
-		echo "$(date "+%d.%m.%Y %T") INFO: No counter file found for ${RcloneRemoteName}. Creating counter_1."
-		touch /mnt/user/appdata/other/rclone/$RcloneRemoteName/counter_1
-	fi
-# creating new $RcloneUploadRemoteName based on counter
-	RcloneUploadRemoteName=$RcloneUploadRemoteStart
-	RcloneUploadRemoteName+=$CounterNumber
-	RcloneUploadRemoteName+=$RcloneUploadRemoteEnd
-	echo "$(date "+%d.%m.%Y %T") INFO: Adjusted upload remote name to ${RcloneUploadRemoteName} based on counter ${CounterNumber}."
-else
-	echo "$(date "+%d.%m.%Y %T") INFO: Uploading using one remote"
-fi
-
 ####### create directories for rclone mount and mergerfs mounts #######
 mkdir -p /mnt/user/appdata/other/rclone/$RcloneRemoteName #for script files
 
@@ -96,6 +76,26 @@ else
 	echo "$(date "+%d.%m.%Y %T") INFO: rclone not installed - will try again later."
 	rm /mnt/user/appdata/other/rclone/$RcloneRemoteName/upload_running
 	exit
+fi
+
+####### Adjusting RcloneUploadRemoteName if using multiple remotes #######
+if [[  $UseMultipleUploadRemotes == 'Y' ]]; then
+	CounterNumber=$(find /mnt/user/appdata/other/rclone/$RcloneRemoteName/ -name 'counter_*' | cut -d"_" -f3)
+	echo $CounterNumber
+	CounterCheck="1"
+	if [[ "$CounterNumber" -ge "$CounterCheck" ]];then
+		echo "$(date "+%d.%m.%Y %T") INFO: Counter file found for ${RcloneRemoteName}."
+	else
+		echo "$(date "+%d.%m.%Y %T") INFO: No counter file found for ${RcloneRemoteName}. Creating counter_1."
+		touch /mnt/user/appdata/other/rclone/$RcloneRemoteName/counter_1
+	fi
+# creating new $RcloneUploadRemoteName based on counter
+	RcloneUploadRemoteName=$RcloneUploadRemoteStart
+	RcloneUploadRemoteName+=$CounterNumber
+	RcloneUploadRemoteName+=$RcloneUploadRemoteEnd
+	echo "$(date "+%d.%m.%Y %T") INFO: Adjusted upload remote name to ${RcloneUploadRemoteName} based on counter ${CounterNumber}."
+else
+	echo "$(date "+%d.%m.%Y %T") INFO: Uploading using one remote"
 fi
 
 #######  Upload files  ##########
