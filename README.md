@@ -4,7 +4,7 @@ Collection of scripts to create rclone vfs mounts on unraid to allow fast launch
 
 The main thread for more support:
 
-https://forums.unraid.net/topic/75436-guide-how-to-use-rclone-to-mount-cloud-drives-and-play-files/ and this post for how to use <b><a href="https://forums.unraid.net/topic/75436-guide-how-to-use-rclone-to-mount-cloud-drives-and-play-files/page/51/?tab=comments#comment-819559">multiple upload remotes</a></b>
+https://forums.unraid.net/topic/75436-guide-how-to-use-rclone-to-mount-cloud-drives-and-play-files/ and this post for how to use <b><a href="https://forums.unraid.net/topic/75436-guide-how-to-use-rclone-to-mount-cloud-drives-and-play-files/page/51/?tab=comments#comment-819559">multiple upload remotes</a></b>.
 
 Credits:
 
