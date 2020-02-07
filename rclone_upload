@@ -128,6 +128,7 @@ if [[  $CreateBindMount == 'Y' ]]; then
 	--exclude .recycle** \
 	--exclude *.backup~* \
 	--exclude *.partial~* \
+	--delete-empty-src-dirs \
 	--drive-stop-on-upload-limit \
 	--bwlimit "${BWLimit1Time},${BWLimit1} ${BWLimit2Time},${BWLimit2} ${BWLimit3Time},${BWLimit3}" \
 	--bind=$RCloneMountIP
@@ -151,6 +152,7 @@ else
 	--exclude .recycle** \
 	--exclude *.backup~* \
 	--exclude *.partial~* \
+	--delete-empty-src-dirs \
 	--drive-stop-on-upload-limit \
 	--bwlimit "${BWLimit1Time},${BWLimit1} ${BWLimit2Time},${BWLimit2} ${BWLimit3Time},${BWLimit3}" 
 fi
