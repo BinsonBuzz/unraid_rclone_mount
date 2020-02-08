@@ -3,7 +3,7 @@
 ######################
 #### Mount Script ####
 ######################
-#### Version 0.93 ####
+### Version 0.93.1 ###
 ######################
 
 ####### EDIT ONLY THESE SETTINGS #######
@@ -152,7 +152,7 @@ else
 	fi
 fi
 
-####### Starting Dockers That Need Unionfs Mount To Work Properly #######
+####### Starting Dockers That Need Mergerfs Mount To Work Properly #######
 
 # delete/add dockers as appropriate..Remember to disable AUTOSTART in docker settings page
 
