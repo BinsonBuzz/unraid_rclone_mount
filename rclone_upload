@@ -3,7 +3,7 @@
 ######################
 ### Upload Script ####
 ######################
-### Version 0.92 ###
+#### Version 0.93 ####
 ######################
 
 ####### EDIT ONLY THESE SETTINGS #######
@@ -23,7 +23,7 @@ RcloneMountShare="/mnt/user/mount_rclone" # where your rclone remote will be loc
 
 # Note: Again - remember to NOT use ':' in your remote name above
 
-# Bandwidth limits: specify the desired bandwidth in kBytes/s, or use a suffix b|k|M|G. Or 'off' or '0' for unlimited.  The script now uses --drive-stop-on-upload-limit which stops the script if the 750GB/day limir is achieved, so you no loger have to slow 'trickle' your files all day if you don't want to e.g. could just do an unlimited job overnight.
+# Bandwidth limits: specify the desired bandwidth in kBytes/s, or use a suffix b|k|M|G. Or 'off' or '0' for unlimited.  The script now uses --drive-stop-on-upload-limit which stops the script if the 750GB/day limit is achieved, so you no longer have to slow 'trickle' your files all day if you don't want to e.g. could just do an unlimited job overnight.
 BWLimit1="off"
 BWLimit1Time="01:00"
 BWLimit2="15M"
@@ -40,7 +40,7 @@ NetworkAdapter="eth0" # choose your network adapter. eth0 recommended
 VirtualIPNumber="2" # creates eth0:x e.g. eth0:1.  I create a unique virtual IP addresses for each mount & upload so I can monitor and traffic shape for each of them
 
 # Use Multiple upload remotes for multiple quotas
-UseMultipleUploadRemotes="Y" # Y/N. Choose whether want to rotate multiple upload remotes for incresed quota (750GB x number of remotes)
+UseMultipleUploadRemotes="Y" # Y/N. Choose whether want to rotate multiple upload remotes for increased quota (750GB x number of remotes)
 RemoteNumber="15" # Integer number of remotes to use.  
 RcloneUploadRemoteStart="gdrive_counter" # Enter characters before counter in your remote names ## i.e. for gdrive_counter1_vfs, gdrive_counter2_vfs, ...gdrive_counter15_vfs,gdrive_counter16_vfs enter 'gdrive_counter'
 RcloneUploadRemoteEnd="_vfs" # Enter characters after counter ## i.e. for gdrive_counter1_vfs, gdrive_counter2_vfs, ...gdrive_counter15_vfs,gdrive_counter16_vfs enter '_vfs'
@@ -66,6 +66,7 @@ if [[ -f "/mnt/user/appdata/other/rclone/$RcloneRemoteName/upload_running" ]]; t
 else
 	echo "$(date "+%d.%m.%Y %T") INFO: Script not running - proceeding."
 	touch /mnt/user/appdata/other/rclone/$RcloneRemoteName/upload_running
+	CounterNumber=$(find /mnt/user/appdata/other/rclone/$RcloneRemoteName/ -name 'counter_*' | cut -d"_" -f3)
 fi
 
 #######  check if rclone installed  ##########
@@ -88,6 +89,7 @@ if [[  $UseMultipleUploadRemotes == 'Y' ]]; then
 	else
 		echo "$(date "+%d.%m.%Y %T") INFO: No counter file found for ${RcloneRemoteName}. Creating counter_1."
 		touch /mnt/user/appdata/other/rclone/$RcloneRemoteName/counter_1
+		CounterNumber="1"
 	fi
 # creating new $RcloneUploadRemoteName based on counter
 	RcloneUploadRemoteName=$RcloneUploadRemoteStart
