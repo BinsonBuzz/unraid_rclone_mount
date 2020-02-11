@@ -73,19 +73,19 @@ Other users need to install rclone and use their preferred way to schedule cron 
 	<p/><p/><i>	
 	
 	
-	[registry_upload]
-type = drive
-scope = drive
-service_account_file = /mnt/user/appdata/other/rclone/service_accounts/sa_registry_upload1.json
-team_drive = 0AGzXm6cWC0ceUk9PVA
+[gdrive]
+<br/>type = drive
+<br/>scope = drive
+<br/>service_account_file = /mnt/user/appdata/other/rclone/service_accounts/sa_registry_upload1.json
+<br/>team_drive = TEAM DRIVE ID
 
-[registry_upload_vfs]
-type = crypt
-remote = registry_upload:crypt2
-filename_encryption = standard
-directory_name_encryption = true
-password = zlg_Lanpx5dzHkfz7oI6OGCoz0sHyfoD-D8ZWey2IRcRys336R2NYKYmjYx0cy_2JWjfGt0eYCKL2qpNiQAwElAV-g
-password2 = FFraGkG1XWwNqTCoCdt6Rnov9-eS5GnTGS02b4TUr_uXI3BuivR73g4EEQTVFSq6Wv1cgy8BPzpXnFvY7CCkTL9RZA
+[gdrive_media_vfs]
+<br/>type = crypt
+<br/>remote = gdrive:crypt
+<br/>filename_encryption = standard
+<br/>directory_name_encryption = true
+<br/>password = PASSWORD1
+<br/>password2 = PASSWORD2
 	</i></p/>	
 	
 	
