@@ -3,7 +3,7 @@
 ######################
 ### Upload Script ####
 ######################
-### Version 0.94.2 ###
+### Version 0.94.3 ###
 ######################
 
 ####### EDIT ONLY THESE SETTINGS #######
@@ -105,8 +105,8 @@ fi
 
 #######  Upload files  ##########
 
-if [[  $CreateBindMount == 'Y' ]]; then
 # upload with bind option
+if [[  $CreateBindMount == 'Y' ]]; then
 	echo "$(date "+%d.%m.%Y %T") INFO: *** Checking if IP address ${RCloneMountIP} already created for upload to remote ${RcloneUploadRemoteName}"
 	ping -q -c2 $RCloneMountIP > /dev/null # -q quiet, -c number of pings to perform
 	if [ $? -eq 0 ]; then # ping returns exit status 0 if successful
@@ -115,6 +115,11 @@ if [[  $CreateBindMount == 'Y' ]]; then
 		echo "$(date "+%d.%m.%Y %T") INFO: *** Creating IP address ${RCloneMountIP} for upload to remote ${RcloneUploadRemoteName}"
 		ip addr add $RCloneMountIP/24 dev $NetworkAdapter label $NetworkAdapter:$VirtualIPNumber
 	fi
+else
+	RCloneMountIP=""
+fi
+
+# process files
 	echo "$(date "+%d.%m.%Y %T") INFO: *** Using IP address ${RCloneMountIP} for remote ${RcloneUploadRemoteName}"
 	rclone $RcloneCommand $LocalFilesLocation $RcloneUploadRemoteName: \
 	--user-agent="$RcloneUploadRemoteName" \
@@ -137,30 +142,6 @@ if [[  $CreateBindMount == 'Y' ]]; then
 	--drive-stop-on-upload-limit \
 	--bwlimit "${BWLimit1Time},${BWLimit1} ${BWLimit2Time},${BWLimit2} ${BWLimit3Time},${BWLimit3}" \
 	--bind=$RCloneMountIP
-# upload without bind option
-else
-	echo "$(date "+%d.%m.%Y %T") INFO: *** Uploading to remote ${RcloneUploadRemoteName}"
-	rclone $RcloneCommand $LocalFilesLocation $RcloneUploadRemoteName: \
-	--user-agent="$RcloneUploadRemoteName" \
-	-vv \
-	--buffer-size 512M \
-	--drive-chunk-size 512M \
-	--tpslimit 8 \
-	--checkers 8 \
-	--transfers 4 \
-	--order-by modtime,ascending \
-	--min-age 10m \
-	--exclude .Recycle.Bin/** \
-	--exclude downloads/** \
-	--exclude *fuse_hidden* \
-	--exclude *_HIDDEN \
-	--exclude .recycle** \
-	--exclude *.backup~* \
-	--exclude *.partial~* \
-	--delete-empty-src-dirs \
-	--drive-stop-on-upload-limit \
-	--bwlimit "${BWLimit1Time},${BWLimit1} ${BWLimit2Time},${BWLimit2} ${BWLimit3Time},${BWLimit3}" 
-fi
 
 #######  Remove Control Files  ##########
 
