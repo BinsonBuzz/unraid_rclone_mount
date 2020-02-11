@@ -3,7 +3,7 @@
 ######################
 ### Upload Script ####
 ######################
-#### Version 0.93 ####
+#### Version 0.94 ####
 ######################
 
 ####### EDIT ONLY THESE SETTINGS #######
@@ -12,18 +12,18 @@
 # 1. Edit the change the name of the rclone remote and local share to match your setup
 # 2. NOTE: enter RcloneRemoteName WITHOUT ':'
 # 3. Optional: include bind mount settings for potential traffic shaping/monitoring
-# 4. Optional: use multiple remotes to get extra upload quota of (number of remotes) x 750GB/day e.g to max out a 1Gbps line 14-15 remotes would be needed
+# 4. Optional: use service accounts in your upload remote
 
 # REQUIRED SETTINGS
 RcloneCommand="move" # choose your rclone command e.g. move, copy, sync
-RcloneRemoteName="gdrive_vfs" # Name of rclone remote mount WITHOUT ':'. NOTE: Choose your encrypted remote for sensitive data
-RcloneUploadRemoteName="gdrive_vfs" # If you have a second remote created for uploads put it here.  Otherwise use the same remote as RcloneRemoteName
-LocalFilesShare="/mnt/user/local" # location of the local files you want to upload without trailing slash to rclone e.g. /mnt/user/local
-RcloneMountShare="/mnt/user/mount_rclone" # where your rclone remote will be located without trailing slash  e.g. /mnt/user/mount_rclone
+RcloneRemoteName="gdrive_vfs" # Name of rclone remote mount WITHOUT ':'.
+RcloneUploadRemoteName="gdrive_upload_vfs" # If you have a second remote created for uploads put it here.  Otherwise use the same remote as RcloneRemoteName.
+LocalFilesShare="/mnt/user/local" # location of the local files without trailing slash you want to rclone to use
+RcloneMountShare="/mnt/user/mount_rclone" # where your rclone mount is located without trailing slash  e.g. /mnt/user/mount_rclone
 
 # Note: Again - remember to NOT use ':' in your remote name above
 
-# Bandwidth limits: specify the desired bandwidth in kBytes/s, or use a suffix b|k|M|G. Or 'off' or '0' for unlimited.  The script now uses --drive-stop-on-upload-limit which stops the script if the 750GB/day limit is achieved, so you no longer have to slow 'trickle' your files all day if you don't want to e.g. could just do an unlimited job overnight.
+# Bandwidth limits: specify the desired bandwidth in kBytes/s, or use a suffix b|k|M|G. Or 'off' or '0' for unlimited.  The script uses --drive-stop-on-upload-limit which stops the script if the 750GB/day limit is achieved, so you no longer have to slow 'trickle' your files all day if you don't want to e.g. could just do an unlimited job overnight.
 BWLimit1="off"
 BWLimit1Time="01:00"
 BWLimit2="15M"
@@ -34,16 +34,16 @@ BWLimit3Time="16:00"
 # OPTIONAL SETTINGS
 
 # Bind the mount to an IP address
-CreateBindMount="Y" # Y/N. Choose whether to bind traffic to a particular network adapter
-RCloneMountIP="172.30.12.22" # My unraid IP is 172.30.12.2 so I create another similar IP address
-NetworkAdapter="eth0" # choose your network adapter. eth0 recommended
-VirtualIPNumber="2" # creates eth0:x e.g. eth0:1.  I create a unique virtual IP addresses for each mount & upload so I can monitor and traffic shape for each of them
+CreateBindMount="Y" # Y/N. Choose whether or not to bind traffic to a particular network adapter.
+RCloneMountIP="192.168.1.253" # Choose IP to bind upload to.
+NetworkAdapter="eth0" # choose your network adapter. eth0 recommended.
+VirtualIPNumber="1" # creates eth0:x e.g. eth0:1.
 
-# Use Multiple upload remotes for multiple quotas
-UseMultipleUploadRemotes="Y" # Y/N. Choose whether want to rotate multiple upload remotes for increased quota (750GB x number of remotes)
-RemoteNumber="15" # Integer number of remotes to use.  
-RcloneUploadRemoteStart="gdrive_counter" # Enter characters before counter in your remote names ## i.e. for gdrive_counter1_vfs, gdrive_counter2_vfs, ...gdrive_counter15_vfs,gdrive_counter16_vfs enter 'gdrive_counter'
-RcloneUploadRemoteEnd="_vfs" # Enter characters after counter ## i.e. for gdrive_counter1_vfs, gdrive_counter2_vfs, ...gdrive_counter15_vfs,gdrive_counter16_vfs enter '_vfs'
+# Use Service Accounts.  Instructions: https://github.com/xyou365/AutoRclone
+UseServiceAccountUpload="Y" # Y/N. Choose whether or not to use Service Accounts.
+ServiceAccountDirectory="/mnt/user/appdata/other/rclone/sa_accounts" # Path to your Service Account's .json files.
+ServiceAccountFile="sa_gdrive_upload" # Enter charactters before counter in your json files e.g for sa_gdrive_upload1.json -->sa_gdrive_upload100.json, enter "sa_gdrive_upload".
+CountServiceAccounts="16" # Integer number of serivce accounts to use.
 
 ####### END SETTINGS #######
 
@@ -52,10 +52,10 @@ RcloneUploadRemoteEnd="_vfs" # Enter characters after counter ## i.e. for gdrive
 ###############################################################################
 
 ####### Preparing mount location variables #######
-LocalFilesLocation="$LocalFilesShare/$RcloneRemoteName" # Location for local files to be merged with rclone mount
-RcloneMountLocation="$RcloneMountShare/$RcloneRemoteName" # Location for rclone mount
+LocalFilesLocation="$LocalFilesShare/$RcloneRemoteName" # Location of local files that rclone will process
+RcloneMountLocation="$RcloneMountShare/$RcloneRemoteName" # Location of rclone mount
 
-####### create directories for rclone mount and mergerfs mounts #######
+####### create directory for sript files #######
 mkdir -p /mnt/user/appdata/other/rclone/$RcloneRemoteName #for script files
 
 #######  Check if script already running  ##########
@@ -79,8 +79,8 @@ else
 	exit
 fi
 
-####### Adjusting RcloneUploadRemoteName if using multiple remotes #######
-if [[  $UseMultipleUploadRemotes == 'Y' ]]; then
+####### Adjusting RcloneUploadRemoteName if using Service Accounts #######
+if [[ $UseServiceAccountUpload == 'Y' ]]; then
 	CounterNumber=$(find /mnt/user/appdata/other/rclone/$RcloneRemoteName/ -name 'counter_*' | cut -d"_" -f3)
 	echo $CounterNumber
 	CounterCheck="1"
@@ -91,13 +91,15 @@ if [[  $UseMultipleUploadRemotes == 'Y' ]]; then
 		touch /mnt/user/appdata/other/rclone/$RcloneRemoteName/counter_1
 		CounterNumber="1"
 	fi
-# creating new $RcloneUploadRemoteName based on counter
-	RcloneUploadRemoteName=$RcloneUploadRemoteStart
-	RcloneUploadRemoteName+=$CounterNumber
-	RcloneUploadRemoteName+=$RcloneUploadRemoteEnd
-	echo "$(date "+%d.%m.%Y %T") INFO: Adjusted upload remote name to ${RcloneUploadRemoteName} based on counter ${CounterNumber}."
+fi
+
+# Adjusting service_account_file if using Service Accounts
+if [[ $UseServiceAccountUpload == 'Y' ]]; then
+	ServiceAccountFile+=$CounterNumber.json
+	rclone config update $RcloneUploadRemoteName service_account_file $ServiceAccountDirectory/$ServiceAccountFile.json
+	echo "$(date "+%d.%m.%Y %T") INFO: Adjusted service_account_file for upload remote ${RcloneUploadRemoteName} to ${ServiceAccountFile} based on counter ${CounterNumber}."
 else
-	echo "$(date "+%d.%m.%Y %T") INFO: Uploading using one remote"
+	echo "$(date "+%d.%m.%Y %T") INFO: Uploading using upload remote ${RcloneUploadRemoteName}"
 fi
 
 #######  Upload files  ##########
@@ -162,7 +164,7 @@ fi
 #######  Remove Control Files  ##########
 
 # update counter and remove other control files
-if [[  $UseMultipleUploadRemotes == 'Y' ]]; then
+if [[  $UseServiceAccountUpload == 'Y' ]]; then
 	if [[ "$CounterNumber" == "$RemoteNumber" ]];then
 		rm /mnt/user/appdata/other/rclone/$RcloneRemoteName/counter_$CounterNumber
 		touch /mnt/user/appdata/other/rclone/$RcloneRemoteName/counter_1
@@ -175,7 +177,7 @@ if [[  $UseMultipleUploadRemotes == 'Y' ]]; then
 		echo "$(date "+%d.%m.%Y %T") INFO: Created counter_${CounterNumber} for next upload run."
 	fi
 else
-	echo "$(date "+%d.%m.%Y %T") INFO: Not utilising multiple upload remotes."
+	echo "$(date "+%d.%m.%Y %T") INFO: Not utilising service accounts."
 fi
 
 # remove dummy file
