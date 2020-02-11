@@ -41,7 +41,7 @@ VirtualIPNumber="1" # creates eth0:x e.g. eth0:1.
 
 # Use Service Accounts.  Instructions: https://github.com/xyou365/AutoRclone
 UseServiceAccountUpload="Y" # Y/N. Choose whether or not to use Service Accounts.
-ServiceAccountDirectory="/mnt/user/appdata/other/rclone/sa_accounts" # Path to your Service Account's .json files.
+ServiceAccountDirectory="/mnt/user/appdata/other/rclone/service_accounts" # Path to your Service Account's .json files.
 ServiceAccountFile="sa_gdrive_upload" # Enter charactters before counter in your json files e.g for sa_gdrive_upload1.json -->sa_gdrive_upload100.json, enter "sa_gdrive_upload".
 CountServiceAccounts="16" # Integer number of serivce accounts to use.
 
