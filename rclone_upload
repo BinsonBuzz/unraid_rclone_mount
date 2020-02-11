@@ -76,7 +76,7 @@ if [[ -f "$RcloneMountLocation/mountcheck" ]]; then
 	echo "$(date "+%d.%m.%Y %T") INFO: rclone installed successfully - proceeding with upload."
 else
 	echo "$(date "+%d.%m.%Y %T") INFO: rclone not installed - will try again later."
-	rm /mnt/user/appdata/other/rclone/$RcloneRemoteName/upload_running
+	rm /mnt/user/appdata/other/rclone/$RcloneUploadRemoteName/upload_running
 	exit
 fi
 
