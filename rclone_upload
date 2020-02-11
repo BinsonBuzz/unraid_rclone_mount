@@ -3,7 +3,7 @@
 ######################
 ### Upload Script ####
 ######################
-#### Version 0.94 ####
+### Version 0.94.1 ###
 ######################
 
 ####### EDIT ONLY THESE SETTINGS #######
@@ -59,14 +59,14 @@ RcloneMountLocation="$RcloneMountShare/$RcloneRemoteName" # Location of rclone m
 mkdir -p /mnt/user/appdata/other/rclone/$RcloneRemoteName #for script files
 
 #######  Check if script already running  ##########
-echo "$(date "+%d.%m.%Y %T") INFO: *** Starting rclone_upload script for ${RcloneRemoteName} ***"
-if [[ -f "/mnt/user/appdata/other/rclone/$RcloneRemoteName/upload_running" ]]; then
+echo "$(date "+%d.%m.%Y %T") INFO: *** Starting rclone_upload script for ${RcloneUploadRemoteName} ***"
+if [[ -f "/mnt/user/appdata/other/rclone/$RcloneUploadRemoteName/upload_running" ]]; then
 	echo "$(date "+%d.%m.%Y %T") INFO: Exiting as script already running."
 	exit
 else
 	echo "$(date "+%d.%m.%Y %T") INFO: Script not running - proceeding."
-	touch /mnt/user/appdata/other/rclone/$RcloneRemoteName/upload_running
-	CounterNumber=$(find /mnt/user/appdata/other/rclone/$RcloneRemoteName/ -name 'counter_*' | cut -d"_" -f3)
+	touch /mnt/user/appdata/other/rclone/$RcloneUploadRemoteName/upload_running
+	CounterNumber=$(find /mnt/user/appdata/other/rclone/$RcloneUploadRemoteName/ -name 'counter_*' | cut -d"_" -f3)
 fi
 
 #######  check if rclone installed  ##########
@@ -81,14 +81,14 @@ fi
 
 ####### Adjusting RcloneUploadRemoteName if using Service Accounts #######
 if [[ $UseServiceAccountUpload == 'Y' ]]; then
-	CounterNumber=$(find /mnt/user/appdata/other/rclone/$RcloneRemoteName/ -name 'counter_*' | cut -d"_" -f3)
+	CounterNumber=$(find /mnt/user/appdata/other/rclone/$RcloneUploadRemoteName/ -name 'counter_*' | cut -d"_" -f3)
 	echo $CounterNumber
 	CounterCheck="1"
 	if [[ "$CounterNumber" -ge "$CounterCheck" ]];then
-		echo "$(date "+%d.%m.%Y %T") INFO: Counter file found for ${RcloneRemoteName}."
+		echo "$(date "+%d.%m.%Y %T") INFO: Counter file found for ${RcloneUploadRemoteName}."
 	else
-		echo "$(date "+%d.%m.%Y %T") INFO: No counter file found for ${RcloneRemoteName}. Creating counter_1."
-		touch /mnt/user/appdata/other/rclone/$RcloneRemoteName/counter_1
+		echo "$(date "+%d.%m.%Y %T") INFO: No counter file found for ${RcloneUploadRemoteName}. Creating counter_1."
+		touch /mnt/user/appdata/other/rclone/$RcloneUploadRemoteName/counter_1
 		CounterNumber="1"
 	fi
 fi
@@ -106,15 +106,15 @@ fi
 
 if [[  $CreateBindMount == 'Y' ]]; then
 # upload with bind option
-	echo "$(date "+%d.%m.%Y %T") INFO: *** Checking if IP address ${RCloneMountIP} already created for upload to remote ${RcloneRemoteName}"
+	echo "$(date "+%d.%m.%Y %T") INFO: *** Checking if IP address ${RCloneMountIP} already created for upload to remote ${RcloneUploadRemoteName}"
 	ping -q -c2 $RCloneMountIP > /dev/null # -q quiet, -c number of pings to perform
 	if [ $? -eq 0 ]; then # ping returns exit status 0 if successful
-		echo "$(date "+%d.%m.%Y %T") INFO: *** IP address ${RCloneMountIP} already created for upload to remote ${RcloneRemoteName}"
+		echo "$(date "+%d.%m.%Y %T") INFO: *** IP address ${RCloneMountIP} already created for upload to remote ${RcloneUploadRemoteName}"
 	else
-		echo "$(date "+%d.%m.%Y %T") INFO: *** Creating IP address ${RCloneMountIP} for upload to remote ${RcloneRemoteName}"
+		echo "$(date "+%d.%m.%Y %T") INFO: *** Creating IP address ${RCloneMountIP} for upload to remote ${RcloneUploadRemoteName}"
 		ip addr add $RCloneMountIP/24 dev $NetworkAdapter label $NetworkAdapter:$VirtualIPNumber
 	fi
-	echo "$(date "+%d.%m.%Y %T") INFO: *** Using IP address ${RCloneMountIP} to upload to remote ${RcloneRemoteName}"
+	echo "$(date "+%d.%m.%Y %T") INFO: *** Using IP address ${RCloneMountIP} for remote ${RcloneUploadRemoteName}"
 	rclone $RcloneCommand $LocalFilesLocation $RcloneUploadRemoteName: \
 	--user-agent="$RcloneUploadRemoteName" \
 	-vv \
@@ -138,7 +138,7 @@ if [[  $CreateBindMount == 'Y' ]]; then
 	--bind=$RCloneMountIP
 # upload without bind option
 else
-	echo "$(date "+%d.%m.%Y %T") INFO: *** Uploading to remote ${RcloneRemoteName}"
+	echo "$(date "+%d.%m.%Y %T") INFO: *** Uploading to remote ${RcloneUploadRemoteName}"
 	rclone $RcloneCommand $LocalFilesLocation $RcloneUploadRemoteName: \
 	--user-agent="$RcloneUploadRemoteName" \
 	-vv \
@@ -166,14 +166,14 @@ fi
 # update counter and remove other control files
 if [[  $UseServiceAccountUpload == 'Y' ]]; then
 	if [[ "$CounterNumber" == "$CountServiceAccounts" ]];then
-		rm /mnt/user/appdata/other/rclone/$RcloneRemoteName/counter_$CounterNumber
-		touch /mnt/user/appdata/other/rclone/$RcloneRemoteName/counter_1
+		rm /mnt/user/appdata/other/rclone/$RcloneUploadRemoteName/counter_$CounterNumber
+		touch /mnt/user/appdata/other/rclone/$RcloneUploadRemoteName/counter_1
 		echo "$(date "+%d.%m.%Y %T") INFO: Final counter used - resetting loop and created counter_1."
-		CounterNumber=$(find /mnt/user/appdata/other/rclone/$RcloneRemoteName/ -name 'counter_*' | cut -d"_" -f3)
+		CounterNumber=$(find /mnt/user/appdata/other/rclone/$RcloneUploadRemoteName/ -name 'counter_*' | cut -d"_" -f3)
 	else
-		rm /mnt/user/appdata/other/rclone/$RcloneRemoteName/counter_$CounterNumber
+		rm /mnt/user/appdata/other/rclone/$RcloneUploadRemoteName/counter_$CounterNumber
 		CounterNumber=$((CounterNumber+1))
-		touch /mnt/user/appdata/other/rclone/$RcloneRemoteName/counter_$CounterNumber
+		touch /mnt/user/appdata/other/rclone/$RcloneUploadRemoteName/counter_$CounterNumber
 		echo "$(date "+%d.%m.%Y %T") INFO: Created counter_${CounterNumber} for next upload run."
 	fi
 else
@@ -181,7 +181,7 @@ else
 fi
 
 # remove dummy file
-rm /mnt/user/appdata/other/rclone/$RcloneRemoteName/upload_running
+rm /mnt/user/appdata/other/rclone/$RcloneUploadRemoteName/upload_running
 echo "$(date "+%d.%m.%Y %T") INFO: Script complete"
 
 exit
