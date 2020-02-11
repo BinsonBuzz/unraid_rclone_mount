@@ -57,7 +57,7 @@ LocalFilesLocation="$LocalFilesShare/$RcloneRemoteName" # Location of local file
 RcloneMountLocation="$RcloneMountShare/$RcloneRemoteName" # Location of rclone mount
 
 ####### create directory for sript files #######
-mkdir -p /mnt/user/appdata/other/rclone/$RcloneRemoteName #for script files
+mkdir -p /mnt/user/appdata/other/rclone/$RcloneUploadRemoteName #for script files
 
 #######  Check if script already running  ##########
 echo "$(date "+%d.%m.%Y %T") INFO: *** Starting rclone_upload script for ${RcloneUploadRemoteName} ***"
