@@ -86,7 +86,7 @@ Other users need to install rclone and use their preferred way to schedule cron 
 <br/>directory_name_encryption = true
 <br/>password = PASSWORD1
 <br/>password2 = PASSWORD2
-	</i></p/>	
+	</i><p/>	
 	
 	
 If you need help doing this, please consult the forum thread above.
