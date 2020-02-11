@@ -24,7 +24,7 @@ Thanks to <a href="https://github.com/SenpaiBox">SenPaiBox</a> and the Unraid co
 <b>Non-unRaid Users</b>
 <p/><p/>
 Other users need to install rclone and use their preferred way to schedule cron jobs.  The scripts install mergerfs, which I think should work for other systems.
-<p/><p/><li>Optional: Create <a href="https://github.com/xyou365/AutoRclone">Service Accounts</a>.</li>
+<p/><p/><li><b>Optional: Create <a href="https://github.com/xyou365/AutoRclone">Service Accounts</a>.</b></li>
 
 <p/><p/>
 <b>How It Works </b>
