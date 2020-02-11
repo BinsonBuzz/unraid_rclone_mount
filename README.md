@@ -2,29 +2,30 @@
 
 Collection of scripts to create rclone google mounts to allow fast launch times with Plex (or Emby).  
 
-The main thread for more support:
-
-https://forums.unraid.net/topic/75436-guide-how-to-use-rclone-to-mount-cloud-drives-and-play-files/ and this post for how to use <b><a href="https://forums.unraid.net/topic/75436-guide-how-to-use-rclone-to-mount-cloud-drives-and-play-files/page/51/?tab=comments#comment-819559">multiple upload remotes</a></b>.
+The main thread for more support: https://forums.unraid.net/topic/75436-guide-how-to-use-rclone-to-mount-cloud-drives-and-play-files/.
 
 Credits:
 
 Thanks to <a href="https://github.com/SenpaiBox">SenPaiBox</a> and the Unraid community for help in refining the scripts.
 
-<b>Unraid Plugins Needed</b>
+<b>Unraid Users Requirements:</b>
 <ul>
 	<li><b>Unraid Rclone Plugin</b>
 		<ul>
 			<li>1.5.1 or higher needed <b><a href="https://forums.unraid.net/topic/51633-plugin-rclone/">Details</a></b></li>
 			<li>Installs rclone and allows the creation of remotes and mounts</li>
 		</ul>
-	<li><b>Unraid CA User Scripts Plugin</b></li>
+	<li>Optional: <b>Unraid CA User Scripts Plugin</b></li>
 		<ul>
 			<li>Best way to run scripts<b> <a href="https://forums.unraid.net/topic/48286-plugin-ca-user-scripts/">Details</a></b>
 		</ul>
+	<li>Optional: Create <a href="https://github.com/xyou365/AutoRclone">Service Accounts</a>.</li>
 </ul>
 <b>Non-unRaid Users</b>
 <p/><p/>
 Other users need to install rclone and use their preferred way to schedule cron jobs.  The scripts install mergerfs, which I think should work for other systems.
+<p/><p/><li>Optional: Create <a href="https://github.com/xyou365/AutoRclone">Service Accounts</a>.</li>
+
 <p/>
 <b>How It Works </b>
 <ol>
