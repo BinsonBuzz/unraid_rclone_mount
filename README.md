@@ -15,11 +15,11 @@ Thanks to <a href="https://github.com/SenpaiBox">SenPaiBox</a> and the Unraid co
 			<li>1.5.1 or higher needed <b><a href="https://forums.unraid.net/topic/51633-plugin-rclone/">Details</a></b></li>
 			<li>Installs rclone and allows the creation of remotes and mounts</li>
 		</ul>
-	<li>Optional: <b>Unraid CA User Scripts Plugin</b></li>
+	<li><b>Optional: Unraid CA User Scripts Plugin</b></li>
 		<ul>
 			<li>Best way to run scripts<b> <a href="https://forums.unraid.net/topic/48286-plugin-ca-user-scripts/">Details</a></b>
 		</ul>
-	<li>Optional: Create <a href="https://github.com/xyou365/AutoRclone">Service Accounts</a>.</li>
+	<li><b>Optional: Create <a href="https://github.com/xyou365/AutoRclone">Service Accounts</a>.</b></li>
 </ul>
 <b>Non-unRaid Users</b>
 <p/><p/>
