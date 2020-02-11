@@ -3,7 +3,7 @@
 ######################
 ### Upload Script ####
 ######################
-### Version 0.94.1 ###
+### Version 0.94.2 ###
 ######################
 
 ####### EDIT ONLY THESE SETTINGS #######
@@ -41,6 +41,7 @@ VirtualIPNumber="1" # creates eth0:x e.g. eth0:1.
 
 # Use Service Accounts.  Instructions: https://github.com/xyou365/AutoRclone
 UseServiceAccountUpload="Y" # Y/N. Choose whether or not to use Service Accounts.
+ServiceAccountRemote="gdrive_upload" # Name of Remote which authenticates via service_account.json files
 ServiceAccountDirectory="/mnt/user/appdata/other/rclone/service_accounts" # Path to your Service Account's .json files.
 ServiceAccountFile="sa_gdrive_upload" # Enter charactters before counter in your json files e.g for sa_gdrive_upload1.json -->sa_gdrive_upload100.json, enter "sa_gdrive_upload".
 CountServiceAccounts="16" # Integer number of serivce accounts to use.
@@ -79,7 +80,7 @@ else
 	exit
 fi
 
-####### Adjusting RcloneUploadRemoteName if using Service Accounts #######
+####### Adjusting CounterNumber if using Service Accounts #######
 if [[ $UseServiceAccountUpload == 'Y' ]]; then
 	CounterNumber=$(find /mnt/user/appdata/other/rclone/$RcloneUploadRemoteName/ -name 'counter_*' | cut -d"_" -f3)
 	echo $CounterNumber
@@ -96,7 +97,7 @@ fi
 # Adjusting service_account_file if using Service Accounts
 if [[ $UseServiceAccountUpload == 'Y' ]]; then
 	ServiceAccountFile+=$CounterNumber.json
-	rclone config update $RcloneUploadRemoteName service_account_file $ServiceAccountDirectory/$ServiceAccountFile
+	rclone config update $ServiceAccountRemote service_account_file $ServiceAccountDirectory/$ServiceAccountFile
 	echo "$(date "+%d.%m.%Y %T") INFO: Adjusted service_account_file for upload remote ${RcloneUploadRemoteName} to ${ServiceAccountFile} based on counter ${CounterNumber}."
 else
 	echo "$(date "+%d.%m.%Y %T") INFO: Uploading using upload remote ${RcloneUploadRemoteName}"
