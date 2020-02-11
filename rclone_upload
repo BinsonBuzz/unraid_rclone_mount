@@ -165,7 +165,7 @@ fi
 
 # update counter and remove other control files
 if [[  $UseServiceAccountUpload == 'Y' ]]; then
-	if [[ "$CounterNumber" == "$RemoteNumber" ]];then
+	if [[ "$CounterNumber" == "$CountServiceAccounts" ]];then
 		rm /mnt/user/appdata/other/rclone/$RcloneRemoteName/counter_$CounterNumber
 		touch /mnt/user/appdata/other/rclone/$RcloneRemoteName/counter_1
 		echo "$(date "+%d.%m.%Y %T") INFO: Final counter used - resetting loop and created counter_1."
