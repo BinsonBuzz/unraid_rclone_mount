@@ -4,7 +4,7 @@ Collection of scripts to create rclone google mounts to allow fast launch times 
 
 The main thread for more support: https://forums.unraid.net/topic/75436-guide-how-to-use-rclone-to-mount-cloud-drives-and-play-files/.
 
-Credits:
+<b>Credits:</b>
 
 Thanks to <a href="https://github.com/SenpaiBox">SenPaiBox</a> and the Unraid community for help in refining the scripts.
 
