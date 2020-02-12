@@ -3,7 +3,7 @@
 ######################
 #### Mount Script ####
 ######################
-### Version 0.93.2 ###
+### Version 0.94.0 ###
 ######################
 
 ####### EDIT ONLY THESE SETTINGS #######
@@ -15,19 +15,19 @@
 
 # REQUIRED SETTINGS
 RcloneRemoteName="gdrive_vfs" # Name of rclone remote mount WITHOUT ':'. NOTE: Choose your encrypted remote for sensitive data
-LocalFilesShare="/mnt/user/local" # location of the local files you want to upload without trailing slash to rclone e.g. /mnt/user/local
+LocalFilesShare="//mnt/user/local" # location of the local files you want to upload without trailing slash to rclone e.g. /mnt/user/local
 RcloneMountShare="/mnt/user/mount_rclone" # where your rclone remote will be located without trailing slash  e.g. /mnt/user/mount_rclone
 MergerfsMountShare="/mnt/user/mount_mergerfs" # location without trailing slash  e.g. /mnt/user/mount_mergerfs of the share you will use for Plex, Sonarr etc that combines files on your server's 'LocalFilesShare' with files on gdrive 'RcloneMountShare'
-DockerStart="nzbget qbittorrentvpn lidarr radarr sonarr emby plex ombi tautulli" # list of dockers, separated by space, to start once mergerfs mount verified. Remember to disable AUTOSTART in docker settings page
-MountFolders=\{"movies,tv,downloads/complete,downloads/intermediate,downloads/seeds"\} # comma separated list of folders to create within the mount
+DockerStart="nzbget plex sonarr radarr ombi" # list of dockers, separated by space, to start once mergerfs mount verified. Remember to disable AUTOSTART in docker settings page
+MountFolders=\{"downloads/complete,downloads/intermediate,downloads/seeds,movies,tv"\} # comma separated list of folders to create within the mount
 
 # Note: Again - remember to NOT use ':' in your remote name above
 
 # OPTIONAL SETTINGS
-CreateBindMount="Y" # Y/N. Choose whether to bind traffic to a particular network adapter
-RCloneMountIP="172.30.12.21" # My unraid IP is 172.30.12.2 so I create another similar IP address
+CreateBindMount="N" # Y/N. Choose whether to bind traffic to a particular network adapter
+RCloneMountIP="192.168.252" # My unraid IP is 172.30.12.2 so I create another similar IP address
 NetworkAdapter="eth0" # choose your network adapter. eth0 recommended
-VirtualIPNumber="1" # creates eth0:x e.g. eth0:1.  I create a unique virtual IP addresses for each mount & upload so I can monitor and traffic shape for each of them
+VirtualIPNumber="2" # creates eth0:x e.g. eth0:1.  I create a unique virtual IP addresses for each mount & upload so I can monitor and traffic shape for each of them
 
 ####### END SETTINGS #######
 
@@ -42,7 +42,7 @@ RcloneMountLocation="$RcloneMountShare/$RcloneRemoteName" # Location for rclone 
 MergerFSMountLocation="$MergerfsMountShare/$RcloneRemoteName" # Rclone data folder location
 
 ####### create directories for rclone mount and mergerfs mounts #######
-mkdir -p /mnt/user/appdata/other/rclone/$RcloneRemoteName #for script files
+mkdir -p /mnt/user/appdata/other/rclone/remotes/$RcloneRemoteName #for script files
 eval mkdir -p $LocalFilesLocation/"$MountFolders"
 mkdir -p $RcloneMountLocation
 mkdir -p $MergerFSMountLocation
@@ -50,12 +50,12 @@ mkdir -p $MergerFSMountLocation
 #######  Check if script is already running  #######
 echo "$(date "+%d.%m.%Y %T") INFO: *** Starting mount of remote ${RcloneRemoteName}"
 echo "$(date "+%d.%m.%Y %T") INFO: Checking if this script is already running."
-if [[ -f "/mnt/user/appdata/other/rclone/$RcloneRemoteName/mount_running" ]]; then
+if [[ -f "/mnt/user/appdata/other/rclone/remotes/$RcloneRemoteName/mount_running" ]]; then
 	echo "$(date "+%d.%m.%Y %T") INFO: Exiting script as already running."
 	exit
 else
 	echo "$(date "+%d.%m.%Y %T") INFO: Script not running - proceeding."
-	touch /mnt/user/appdata/other/rclone/$RcloneRemoteName/mount_running
+	touch /mnt/user/appdata/other/rclone/remotes/$RcloneRemoteName/mount_running
 fi
 
 #######  Check If Rclone Mount Already Created  #######
@@ -119,7 +119,7 @@ else
 		echo "$(date "+%d.%m.%Y %T") INFO: Successful mount of ${RcloneRemoteName} mount."
 	else
 		echo "$(date "+%d.%m.%Y %T") CRITICAL: ${RcloneRemoteName} mount failed - please check for problems."
-		rm /mnt/user/appdata/other/rclone/$RcloneRemoteName/mount_running
+		rm /mnt/user/appdata/other/rclone/remotes/$RcloneRemoteName/mount_running
 		exit
 	fi
 fi
@@ -135,8 +135,9 @@ else
 	else
 # Build mergerfs binary
 		echo "$(date "+%d.%m.%Y %T") INFO: Mergerfs not installed - installing now."
-		docker run -v /mnt/user/appdata/other/rclone:/build --rm trapexit/mergerfs-static-build
-		mv /mnt/user/appdata/other/rclone/mergerfs /bin
+		mkdir -p /mnt/user/appdata/other/rclone/mergerfs
+		docker run -v /mnt/user/appdata/other/rclone/mergerfs:/build --rm trapexit/mergerfs-static-build
+		mv /mnt/user/appdata/other/rclone/mergerfs/mergerfs /bin
 	fi
 # Create mergerfs mount
 	echo "$(date "+%d.%m.%Y %T") INFO: Creating ${RcloneRemoteName} mergerfs mount."
@@ -147,7 +148,7 @@ else
 		echo "$(date "+%d.%m.%Y %T") INFO: Check successful, ${RcloneRemoteName} mergerfs mount created."
 	else
 		echo "$(date "+%d.%m.%Y %T") CRITICAL: ${RcloneRemoteName} mergerfs mount failed."
-		rm /mnt/user/appdata/other/rclone/$RcloneRemoteName/mount_running
+		rm /mnt/user/appdata/other/rclone/remotes/$RcloneRemoteName/mount_running
 		exit
 	fi
 fi
@@ -155,15 +156,15 @@ fi
 ####### Starting Dockers That Need Mergerfs Mount To Work Properly #######
 
 # only start dockers once
-if [[ -f "/mnt/user/appdata/other/rclone/$RcloneRemoteName/dockers_started" ]]; then
+if [[ -f "/mnt/user/appdata/other/rclone/remotes/$RcloneRemoteName/dockers_started" ]]; then
 	echo "$(date "+%d.%m.%Y %T") INFO: dockers already started."
 else
-	touch /mnt/user/appdata/other/rclone/$RcloneRemoteName/dockers_started
+	touch /mnt/user/appdata/other/rclone/remotes/$RcloneRemoteName/dockers_started
 	echo "$(date "+%d.%m.%Y %T") INFO: Starting dockers."
 	docker start $DockerStart
 fi
 
-rm /mnt/user/appdata/other/rclone/$RcloneRemoteName/mount_running
+rm /mnt/user/appdata/other/rclone/remotes/$RcloneRemoteName/mount_running
 echo "$(date "+%d.%m.%Y %T") INFO: Script complete"
 
 exit
