@@ -3,7 +3,7 @@
 ######################
 ### Upload Script ####
 ######################
-### Version 0.95.0 ###
+### Version 0.95.1 ###
 ######################
 
 ####### EDIT ONLY THESE SETTINGS #######
@@ -11,7 +11,7 @@
 # INSTRUCTIONS
 # 1. Edit the settings below to match your setup
 # 2. NOTE: enter RcloneRemoteName WITHOUT ':'
-# 3. Optional: Add Exclusion rules
+# 3. Optional: Add additional commands or filters
 # 4. Optional: Use bind mount settings for potential traffic shaping/monitoring
 # 5. Optional: Use service accounts in your upload remote
 # 6. Optional: Use backup directory for rclone sync jobs
@@ -36,15 +36,15 @@ BWLimit3Time="16:00"
 
 # OPTIONAL SETTINGS
 
-# Add Exclusions
-Exclusion1=".Recycle.Bin/**"
-Exclusion2="downloads/**"
-Exclusion3=""
-Exclusion4=""
-Exclusion5=""
-Exclusion6=""
-Exclusion7=""
-Exclusion8=""
+# Add extra commands or filters
+Command1="--exclude downloads/**"
+Command2=""
+Command3=""
+Command4=""
+Command5=""
+Command6=""
+Command7=""
+Command8=""
 
 # Bind the mount to an IP address
 CreateBindMount="N" # Y/N. Choose whether or not to bind traffic to a network adapter.
@@ -176,17 +176,11 @@ fi
 	--transfers 4 \
 	--order-by modtime,ascending \
 	--min-age $MinimumAge \
-	--exclude $Exclusion1 \
-	--exclude $Exclusion2 \
-	--exclude $Exclusion3 \
-	--exclude $Exclusion4 \
-	--exclude $Exclusion5 \
-	--exclude $Exclusion6 \
-	--exclude $Exclusion7 \
-	--exclude $Exclusion8 \
+	$Command1 $Command2 $Command3 $Command4 $Command5 $Command6 $Command7 $Command8 \
 	--exclude *fuse_hidden* \
 	--exclude *_HIDDEN \
 	--exclude .recycle** \
+	--exclude .Recycle.Bin/** \
 	--exclude *.backup~* \
 	--exclude *.partial~* \
 	--drive-stop-on-upload-limit \
