@@ -3,7 +3,7 @@
 ######################
 #### Mount Script ####
 ######################
-### Version 0.94.0 ###
+### Version 0.95.0 ###
 ######################
 
 ####### EDIT ONLY THESE SETTINGS #######
@@ -11,7 +11,7 @@
 # INSTRUCTIONS
 # 1. Edit the change the name of the rclone remote and shares to match your setup
 # 2. NOTE: enter RcloneRemoteName WITHOUT ':'
-# 3. Optional: include bind mount settings
+# 3. Optional: include custom command and bind mount settings
 
 # REQUIRED SETTINGS
 RcloneRemoteName="gdrive_vfs" # Name of rclone remote mount WITHOUT ':'. NOTE: Choose your encrypted remote for sensitive data
@@ -24,6 +24,17 @@ MountFolders=\{"downloads/complete,downloads/intermediate,downloads/seeds,movies
 # Note: Again - remember to NOT use ':' in your remote name above
 
 # OPTIONAL SETTINGS
+
+# Add extra commands or filters
+Command1="--rc"
+Command2=""
+Command3=""
+Command4=""
+Command5=""
+Command6=""
+Command7=""
+Command8=""
+
 CreateBindMount="N" # Y/N. Choose whether to bind traffic to a particular network adapter
 RCloneMountIP="192.168.252" # My unraid IP is 172.30.12.2 so I create another similar IP address
 NetworkAdapter="eth0" # choose your network adapter. eth0 recommended
@@ -84,6 +95,7 @@ else
 		fi
 		echo "$(date "+%d.%m.%Y %T") INFO: *** Creating bind mount ${RCloneMountIP} for remote ${RcloneRemoteName}"
 		rclone mount \
+		$Command1 $Command2 $Command3 $Command4 $Command5 $Command6 $Command7 $Command8 \
 		--allow-other \
 		--buffer-size 256M \
 		--dir-cache-time 720h \
