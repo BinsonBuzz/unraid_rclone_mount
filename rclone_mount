@@ -3,7 +3,7 @@
 ######################
 #### Mount Script ####
 ######################
-### Version 0.96.0 ###
+### Version 0.96.1 ###
 ######################
 
 ####### EDIT ONLY THESE SETTINGS #######
@@ -103,11 +103,12 @@ else
 			echo "$(date "+%d.%m.%Y %T") INFO: *** Creating IP address ${RCloneMountIP} for remote ${RcloneRemoteName}"
 			ip addr add $RCloneMountIP/24 dev $NetworkAdapter label $NetworkAdapter:$VirtualIPNumber
 		fi
+		echo "$(date "+%d.%m.%Y %T") INFO: *** Creating bind mount ${RCloneMountIP} for remote ${RcloneRemoteName}"
 	else
 		RCloneMountIP=""
+		echo "$(date "+%d.%m.%Y %T") INFO: *** Creating mount for remote ${RcloneRemoteName}"
 	fi
 # create rclone mount
-	echo "$(date "+%d.%m.%Y %T") INFO: *** Creating bind mount ${RCloneMountIP} for remote ${RcloneRemoteName}"
 	rclone mount \
 	--allow-other \
 	--buffer-size 256M \
