@@ -42,10 +42,10 @@ Other users need to install rclone and use their preferred way to schedule cron 
 <ol>
 	<li>Rclone remote setup </li> 
 		<ul>
-			<li>Install the rclone plugin and via command line run rclone config and create 2 remotes:</li> 
+			<li>Install the rclone plugin and via command line run rclone config and create 1-2 remotes:</li> 
 				<ol>
-					<li>gdrive: - a drive remote that connects to your gdrive account.  Recommend creating your own client_id</li>
-					<li>gdrive_media_vfs: - a crypt remote that is mounted locally and decrypts the encrypted files uploaded to gdrive:</li>
+					<li>Required: gdrive: - a drive remote that connects to your gdrive account.  Recommend creating your <a href="https://rclone.org/drive/#drive-client-id">own client_id</a></li>
+					<li>Recommended: gdrive_media_vfs: - a crypt remote that is mounted locally and decrypts the encrypted files uploaded to gdrive:</li>
 				</ol>
 		</ul>
 	<p/>
