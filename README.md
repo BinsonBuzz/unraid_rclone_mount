@@ -78,6 +78,7 @@ Other users need to install rclone and use their preferred way to schedule cron 
 <br/>scope = drive
 <br/>service_account_file = /mnt/user/appdata/other/rclone/service_accounts/sa_registry_upload1.json
 <br/>team_drive = TEAM DRIVE ID
+<br/>server_side_across_configs = true
 
 [gdrive_media_vfs]
 <br/>type = crypt
