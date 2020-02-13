@@ -69,7 +69,7 @@ Other users need to install rclone and use their preferred way to schedule cron 
 <br/>password = PASSWORD1
 <br/>password2 = PASSWORD2
 	</i></p/>
-<li>Or, like this is using service accounts:</li>
+<li>Or, like this if using service accounts:</li>
 	<p/><p/><i>	
 	
 	
