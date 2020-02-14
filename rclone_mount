@@ -3,7 +3,7 @@
 ######################
 #### Mount Script ####
 ######################
-### Version 0.96.1 ###
+### Version 0.96.2 ###
 ######################
 
 ####### EDIT ONLY THESE SETTINGS #######
@@ -92,7 +92,16 @@ else
 	echo "$(date "+%d.%m.%Y %T") INFO: Recreating mountcheck file for ${RcloneRemoteName} remote."
 	touch mountcheck
 	rclone copy mountcheck $RcloneRemoteName: -vv --no-traverse
-	echo "$(date "+%d.%m.%Y %T") INFO: Completed creation of mountcheck file for ${RcloneRemoteName} remote."
+
+# Creating if mountcheck successfully copied
+	if [[ -f "$RcloneMountLocation/mountcheck" ]]; then
+		echo "$(date "+%d.%m.%Y %T") INFO: Success ${RcloneRemoteName} Mountcheck successfully copied.  Proceeding."
+	else
+		echo "$(date "+%d.%m.%Y %T") INFO: Success ${RcloneRemoteName} mountcheck copy failed.  Please investigate your rclone config and settings."
+		rm /mnt/user/appdata/other/rclone/remotes/$RcloneRemoteName/mount_running
+		exit
+	fi
+
 # Check bind option
 	if [[  $CreateBindMount == 'Y' ]]; then
 		echo "$(date "+%d.%m.%Y %T") INFO: *** Checking if IP address ${RCloneMountIP} already created for remote ${RcloneRemoteName}"
