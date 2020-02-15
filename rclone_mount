@@ -3,20 +3,20 @@
 ######################
 #### Mount Script ####
 ######################
-### Version 0.96.2 ###
+### Version 0.96.3 ###
 ######################
 
 ####### EDIT ONLY THESE SETTINGS #######
 
 # INSTRUCTIONS
-# 1. Edit the change the name of the rclone remote and shares to match your setup
+# 1. Change the name of the rclone remote and shares to match your setup
 # 2. NOTE: enter RcloneRemoteName WITHOUT ':'
 # 3. Optional: include custom command and bind mount settings
 # 4. Optional: include extra folders in mergerfs mount
 
 # REQUIRED SETTINGS
 RcloneRemoteName="gdrive_vfs" # Name of rclone remote mount WITHOUT ':'. NOTE: Choose your encrypted remote for sensitive data
-LocalFilesShare="//mnt/user/local" # location of the local files you want to upload without trailing slash to rclone e.g. /mnt/user/local
+LocalFilesShare="/mnt/user/local" # location of the local files you want to upload without trailing slash to rclone e.g. /mnt/user/local
 RcloneMountShare="/mnt/user/mount_rclone" # where your rclone remote will be located without trailing slash  e.g. /mnt/user/mount_rclone
 MergerfsMountShare="/mnt/user/mount_mergerfs" # location without trailing slash  e.g. /mnt/user/mount_mergerfs. Enter 'ignore' to disable
 DockerStart="nzbget plex sonarr radarr ombi" # list of dockers, separated by space, to start once mergerfs mount verified. Remember to disable AUTOSTART in docker settings page
