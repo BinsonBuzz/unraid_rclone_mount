@@ -3,7 +3,7 @@
 ######################
 #### Mount Script ####
 ######################
-### Version 0.96.3 ###
+### Version 0.96.4 ###
 ######################
 
 ####### EDIT ONLY THESE SETTINGS #######
@@ -42,7 +42,7 @@ Command7=""
 Command8=""
 
 CreateBindMount="N" # Y/N. Choose whether to bind traffic to a particular network adapter
-RCloneMountIP="192.168.252" # My unraid IP is 172.30.12.2 so I create another similar IP address
+RCloneMountIP="192.168.1.252" # My unraid IP is 172.30.12.2 so I create another similar IP address
 NetworkAdapter="eth0" # choose your network adapter. eth0 recommended
 VirtualIPNumber="2" # creates eth0:x e.g. eth0:1.  I create a unique virtual IP addresses for each mount & upload so I can monitor and traffic shape for each of them
 
@@ -58,7 +58,7 @@ RcloneMountLocation="$RcloneMountShare/$RcloneRemoteName" # Location for rclone 
 MergerFSMountLocation="$MergerfsMountShare/$RcloneRemoteName" # Rclone data folder location
 
 ####### create directories for rclone mount and mergerfs mounts #######
-mkdir -p /mnt/user/appdata/other/rclone/remotes/$RcloneRemoteName # for script files
+mkdir -p /mnt/user/appdata/other/rclone/remotes/$RcloneRemoteName #for script files
 eval mkdir -p $LocalFilesLocation/"$MountFolders"
 mkdir -p $RcloneMountLocation
 mkdir -p $MergerFSMountLocation
@@ -74,13 +74,6 @@ else
 	touch /mnt/user/appdata/other/rclone/remotes/$RcloneRemoteName/mount_running
 fi
 
-#######  Check If Rclone Mount Already Created  #######
-
-if [[ -f "$RcloneMountLocation/mountcheck" ]]; then
-	echo "$(date "+%d.%m.%Y %T") INFO: Success ${RcloneRemoteName} remote is already mounted."
-else
-	echo "$(date "+%d.%m.%Y %T") INFO: Mount not running. Will now mount ${RcloneRemoteName} remote."
-
 #######  Create RClone Mount  #######
 
 # Check If Rclone Mount Already Created
@@ -92,16 +85,6 @@ else
 	echo "$(date "+%d.%m.%Y %T") INFO: Recreating mountcheck file for ${RcloneRemoteName} remote."
 	touch mountcheck
 	rclone copy mountcheck $RcloneRemoteName: -vv --no-traverse
-
-# Creating if mountcheck successfully copied
-	if [[ -f "$RcloneMountLocation/mountcheck" ]]; then
-		echo "$(date "+%d.%m.%Y %T") INFO: Success ${RcloneRemoteName} Mountcheck successfully copied.  Proceeding."
-	else
-		echo "$(date "+%d.%m.%Y %T") INFO: Success ${RcloneRemoteName} mountcheck copy failed.  Please investigate your rclone config and settings."
-		rm /mnt/user/appdata/other/rclone/remotes/$RcloneRemoteName/mount_running
-		exit
-	fi
-
 # Check bind option
 	if [[  $CreateBindMount == 'Y' ]]; then
 		echo "$(date "+%d.%m.%Y %T") INFO: *** Checking if IP address ${RCloneMountIP} already created for remote ${RcloneRemoteName}"
