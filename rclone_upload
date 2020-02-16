@@ -3,7 +3,7 @@
 ######################
 ### Upload Script ####
 ######################
-### Version 0.95.1 ###
+### Version 0.95.2 ###
 ######################
 
 ####### EDIT ONLY THESE SETTINGS #######
@@ -54,8 +54,7 @@ VirtualIPNumber="1" # creates eth0:x e.g. eth0:1.
 
 # Use Service Accounts.  Instructions: https://github.com/xyou365/AutoRclone
 UseServiceAccountUpload="N" # Y/N. Choose whether to use Service Accounts.
-ServiceAccountRemote="gdrive_upload_vfs" # Name of Remote which authenticates via service_account.json files
-ServiceAccountDirectory="/mnt/user/appdata/other/rclone/service_accounts" # Path to your Service Account's .json files.
+ServiceAccountDirectory="/mnt/user/appdata/other/rclone/service_accounts" # Path to your Service Account's .json files  WITHOUT trailing slash eg: /mnt/user/appdata/other/rclone/service_accounts
 ServiceAccountFile="sa_gdrive_upload" # Enter characters before counter in your json files e.g. for sa_gdrive_upload1.json -->sa_gdrive_upload100.json, enter "sa_gdrive_upload".
 CountServiceAccounts="15" # Integer number of service accounts to use.
 
@@ -70,6 +69,9 @@ BackupRetention="90d" # How long to keep deleted sync files suffix ms|s|m|h|d|w|
 ###############################################################################
 #####    DO NOT EDIT BELOW THIS LINE UNLESS YOU KNOW WHAT YOU ARE DOING   #####
 ###############################################################################
+
+####### Set ServiceAccount Variable #######
+ServiceAccount="" # Intentionally Left Blank (variable requires blank value if service accounts are not in use)
 
 ####### Preparing mount location variables #######
 if [[  $BackupJob == 'Y' ]]; then
@@ -121,9 +123,10 @@ fi
 
 # Adjusting service_account_file if using Service Accounts
 if [[ $UseServiceAccountUpload == 'Y' ]]; then
-	ServiceAccountFile+=$CounterNumber.json
-	rclone config update $ServiceAccountRemote service_account_file $ServiceAccountDirectory/$ServiceAccountFile
-	echo "$(date "+%d.%m.%Y %T") INFO: Adjusted service_account_file for upload remote ${RcloneUploadRemoteName} to ${ServiceAccountFile} based on counter ${CounterNumber}."
+	ServiceAccount=$ServiceAccountDirectory/
+	ServiceAccount+=$ServiceAccountFile
+	ServiceAccount+=$CounterNumber.json
+	echo "$(date "+%d.%m.%Y %T") INFO: Adjusted Service Account Flag for Remote ${RcloneUploadRemoteName} to ${ServiceAccount} based on counter ${CounterNumber}."
 else
 	echo "$(date "+%d.%m.%Y %T") INFO: Uploading using upload remote ${RcloneUploadRemoteName}"
 fi
@@ -167,8 +170,9 @@ fi
 
 # process files
 	rclone $RcloneCommand $LocalFilesLocation $RcloneUploadRemoteName:$BackupRemoteLocation $BackupDir \
-	--user-agent="$RcloneUploadRemoteName" \
+	--user-agent "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/70.0.3538.77 Safari/537.36" \
 	-vv \
+	--drive-service-account-file="$ServiceAccount" \
 	--buffer-size 512M \
 	--drive-chunk-size 512M \
 	--tpslimit 8 \
