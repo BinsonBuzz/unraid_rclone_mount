@@ -1,49 +1,20 @@
 #!/bin/bash
-###########################################################################
-#                    <>       rclone_unmount       <>                     #
-###########################################################################
-#
-# unmount to be safe
-echo "$(date "+%d.%m.%Y %T") INFO: *** Starting rclone_unmount script ***"
-fusermount -uz /mnt/user/mount_mergerfs/google_vfs
-fusermount -uz /mnt/user/mount_rclone/google_vfs
 
-#######################   Cleanup tracking files   #######################
+#######################
+### Cleanup Script ####
+#######################
+#### Version 0.9.1 ####
+#######################
 
-if [[ -f "/mnt/user/appdata/other/rclone/rclone_mount_running" ]]; then
+echo "$(date "+%d.%m.%Y %T") INFO: *** Starting rclone_cleanup script ***"
 
-echo "install file present - removing dummy file"
+####### Cleanup Tracking Files #######
 
-rm /mnt/user/appdata/other/rclone/rclone_mount_running
+echo "$(date "+%d.%m.%Y %T") INFO: *** Removing Tracking Files ***"
 
-else
-
-echo "Passed: install already exited properly"
-
-fi
-
-if [[ -f "/mnt/user/appdata/other/rclone/rclone_upload" ]]; then
-
-echo "upload file present - removing dummy file"
-
-rm /mnt/user/appdata/other/rclone/rclone_upload
-
-else
-
-echo "rclone upload already exited properly"
-
-fi
-
-if [[ -f "/mnt/user/appdata/other/rclone/dockers_started" ]]; then
-
-echo "removing dummy docker check file"
-
-rm /mnt/user/appdata/other/rclone/dockers_started
-
-else
-
-echo "docker run once already removed"
-
-fi
+find /mnt/user/appdata/other/rclone/remotes -name dockers_started -delete
+find /mnt/user/appdata/other/rclone/remotes -name mount_running -delete
+find /mnt/user/appdata/other/rclone/remotes -name upload_running -delete
+echo "$(date "+%d.%m.%Y %T") INFO: ***Finished Cleanup! ***"
 
 exit
