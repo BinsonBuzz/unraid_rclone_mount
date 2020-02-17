@@ -19,13 +19,32 @@ Thanks to <a href="https://github.com/SenpaiBox">SenPaiBox</a> and the Unraid co
 		<ul>
 			<li>Best way to run scripts<b> <a href="https://forums.unraid.net/topic/48286-plugin-ca-user-scripts/">Details</a></b>
 		</ul>
-	<li><b>Optional: Create <a href="https://github.com/xyou365/AutoRclone">Service Accounts</a>.</b></li>
+	<li><b>Optional: Create <a href="https://github.com/xyou365/AutoRclone">Service Accounts (follow steps 1-4)</a>.</b>
+		<ul>
+			<li>To mass rename the service accounts use the following steps:</li>
+			<ul>
+				<li>Place Auto-Genortated Service Accounts into /mnt/user/appdata/other/rclone/service_accounts/</li>
+				<li>Run the following in terminal/ssh</li>
+				<ul>
+					<li>Move to directory: cd /mnt/user/appdata/other/rclone/service_accounts/</li>
+					<li>Dry Run:</li>
+						<ul>
+							<li>n=1; for f in *.json; do echo mv "$f" "sa_gdrive_upload$((n++)).json"; done</li>
+						</ul>				
+					<li>Mass Rename:
+						<ul>
+							<li>n=1; for f in *.json; do mv "$f" "sa_gdrive_upload$((n++)).json"; done</li>
+						</ul>
+				</ul>
+			</ul>
+		</ul>
 </ul>
 <b>Non-unRaid Users</b>
 <p/><p/>
 Other users need to install rclone and use their preferred way to schedule cron jobs.  The scripts install mergerfs, which I think should work for other systems.
-<p/><p/><li><b>Optional: Create <a href="https://github.com/xyou365/AutoRclone">Service Accounts</a>.</b></li>
-
+<p/><p/><li><b>Optional: Create <a href="https://github.com/xyou365/AutoRclone">Service Accounts (follow steps 1-4)</a>.</b></li>
+		<ul>For mass renaming: See steps in Unraid Requirements above
+		</ul>
 <p/><p/>
 <b>How It Works </b>
 <ol>
@@ -57,7 +76,6 @@ Other users need to install rclone and use their preferred way to schedule cron 
 <br/>client_secret = MATCHING_UNIQUE_SECRET
 <br/>scope = drive
 <br/>root_folder_id = xxxx
-<br/>service_account_file = 
 <br/>token = {"xxxxx"}
 <br/>server_side_across_configs = true
 <p/>
@@ -76,7 +94,6 @@ Other users need to install rclone and use their preferred way to schedule cron 
 [gdrive]
 <br/>type = drive
 <br/>scope = drive
-<br/>service_account_file = /mnt/user/appdata/other/rclone/service_accounts/sa_registry_upload1.json
 <br/>team_drive = TEAM DRIVE ID
 <br/>server_side_across_configs = true
 
