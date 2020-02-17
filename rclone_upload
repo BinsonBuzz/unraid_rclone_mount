@@ -123,15 +123,6 @@ else
 	ServiceAccount=""
 fi
 
-# Adjusting service_account_file if using Service Accounts
-if [[ $UseServiceAccountUpload == 'Y' ]]; then
-	ServiceAccountFile+=$CounterNumber.json
-	rclone config update $ServiceAccountRemote service_account_file $ServiceAccountDirectory/$ServiceAccountFile
-	echo "$(date "+%d.%m.%Y %T") INFO: Adjusted service_account_file for upload remote ${RcloneUploadRemoteName} to ${ServiceAccountFile} based on counter ${CounterNumber}."
-else
-	echo "$(date "+%d.%m.%Y %T") INFO: Uploading using upload remote ${RcloneUploadRemoteName}"
-fi
-
 #######  Upload files  ##########
 
 # Check bind option
