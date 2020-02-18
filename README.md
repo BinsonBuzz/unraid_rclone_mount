@@ -159,3 +159,8 @@ Once the scripts are added you should have a new folder created at /mnt/user/mou
 <li><b>DO NOT create mappings like /downloads or /media for your dockers.  Only use /user --> /mnt/user if you want to ensure the best performance from mergerfs when moving and editing files within the mount</b></li>
 </ul>
 </ul>
+<b>Troubleshooting</b>
+<p/><p/>
+If you need to unmount manually the command to use is:
+
+<code>fusermount -uz /path/to/remote</code
