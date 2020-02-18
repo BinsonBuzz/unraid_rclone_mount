@@ -163,4 +163,4 @@ Once the scripts are added you should have a new folder created at /mnt/user/mou
 <p/><p/>
 If you need to unmount manually the command to use is:
 
-<code>fusermount -uz /path/to/remote</code
+<code>fusermount -uz /path/to/remote</code>
