@@ -3,7 +3,7 @@
 ######################
 ### Upload Script ####
 ######################
-### Version 0.95.3 ###
+### Version 0.95.4 ###
 ######################
 
 ####### EDIT ONLY THESE SETTINGS #######
@@ -23,16 +23,17 @@ RcloneUploadRemoteName="gdrive_upload_vfs" # If you have a second remote created
 LocalFilesShare="/mnt/user/local" # location of the local files without trailing slash you want to rclone to use
 RcloneMountShare="/mnt/user/mount_rclone" # where your rclone mount is located without trailing slash  e.g. /mnt/user/mount_rclone
 MinimumAge="15m" # sync files suffix ms|s|m|h|d|w|M|y
+ModSort="ascending" # "ascending" oldest files first, "descending" newest files first
 
 # Note: Again - remember to NOT use ':' in your remote name above
 
 # Bandwidth limits: specify the desired bandwidth in kBytes/s, or use a suffix b|k|M|G. Or 'off' or '0' for unlimited.  The script uses --drive-stop-on-upload-limit which stops the script if the 750GB/day limit is achieved, so you no longer have to slow 'trickle' your files all day if you don't want to e.g. could just do an unlimited job overnight.
-BWLimit1="off"
 BWLimit1Time="01:00"
-BWLimit2="15M"
+BWLimit1="off"
 BWLimit2Time="08:00"
-BWLimit3="12M"
+BWLimit2="15M"
 BWLimit3Time="16:00"
+BWLimit3="12M"
 
 # OPTIONAL SETTINGS
 
@@ -169,7 +170,7 @@ fi
 	--tpslimit 8 \
 	--checkers 8 \
 	--transfers 4 \
-	--order-by modtime,ascending \
+	--order-by modtime,$ModSort \
 	--min-age $MinimumAge \
 	$Command1 $Command2 $Command3 $Command4 $Command5 $Command6 $Command7 $Command8 \
 	--exclude *fuse_hidden* \
