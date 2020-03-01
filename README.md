@@ -48,8 +48,8 @@ Other users need to install rclone and use their preferred way to schedule cron 
 <p/><p/>
 <b>How It Works </b>
 <ol>
-	<li>Rclone is used to access files on your google drive and to mount them in a folder on your server e.g. mount a gdrive remote called gdrive_vfs: at /mnt/user/mount_rlone/gdrive_vfs </li>
-	<li>Mergerfs is used to merge files from your rclone mount (/mnt/user/mount_rlone/gdrive_vfs) with local files that exist on your server and haven't been uploaded yet (e.g. /mnt/user/local/gdrive_vfs) in a new mount /mnt/user/mount_unionfs/gdrive_vfs</li>
+	<li>Rclone is used to access files on your google drive and to mount them in a folder on your server e.g. mount a gdrive remote called gdrive_vfs: at /mnt/user/mount_rclone/gdrive_vfs </li>
+	<li>Mergerfs is used to merge files from your rclone mount (/mnt/user/mount_rclone/gdrive_vfs) with local files that exist on your server and haven't been uploaded yet (e.g. /mnt/user/local/gdrive_vfs) in a new mount /mnt/user/mount_unionfs/gdrive_vfs</li>
 		<ul>
 			<li>This mergerfs mount allows files to be played by dockers such as Plex, or added to by dockers like radarr etc without the dockers even being aware that some files are local and some are remote.  It just doesn't matter</li>
 			<li>The use of a rclone vfs remote allows fast playback, with files streaming within seconds</li>
