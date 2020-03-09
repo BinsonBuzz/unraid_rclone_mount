@@ -3,7 +3,7 @@
 ######################
 #### Mount Script ####
 ######################
-### Version 0.96.4 ###
+### Version 0.96.5 ###
 ######################
 
 ####### EDIT ONLY THESE SETTINGS #######
@@ -74,7 +74,7 @@ else
 	touch /mnt/user/appdata/other/rclone/remotes/$RcloneRemoteName/mount_running
 fi
 
-#######  Create RClone Mount  #######
+#######  Create Rclone Mount  #######
 
 # Check If Rclone Mount Already Created
 if [[ -f "$RcloneMountLocation/mountcheck" ]]; then
@@ -95,7 +95,7 @@ else
 			echo "$(date "+%d.%m.%Y %T") INFO: *** Creating IP address ${RCloneMountIP} for remote ${RcloneRemoteName}"
 			ip addr add $RCloneMountIP/24 dev $NetworkAdapter label $NetworkAdapter:$VirtualIPNumber
 		fi
-		echo "$(date "+%d.%m.%Y %T") INFO: *** Creating bind mount ${RCloneMountIP} for remote ${RcloneRemoteName}"
+		echo "$(date "+%d.%m.%Y %T") INFO: *** Created bind mount ${RCloneMountIP} for remote ${RcloneRemoteName}"
 	else
 		RCloneMountIP=""
 		echo "$(date "+%d.%m.%Y %T") INFO: *** Creating mount for remote ${RcloneRemoteName}"
@@ -144,6 +144,16 @@ else
 			mkdir -p /mnt/user/appdata/other/rclone/mergerfs
 			docker run -v /mnt/user/appdata/other/rclone/mergerfs:/build --rm trapexit/mergerfs-static-build
 			mv /mnt/user/appdata/other/rclone/mergerfs/mergerfs /bin
+# check if mergerfs install successful
+			echo "$(date "+%d.%m.%Y %T") INFO: *sleeping for 5 seconds"
+			sleep 5
+			if [[ -f "/bin/mergerfs" ]]; then
+				echo "$(date "+%d.%m.%Y %T") INFO: Mergerfs installed successfully, proceeding to create mergerfs mount."
+			else
+				echo "$(date "+%d.%m.%Y %T") ERROR: Mergerfs not installed successfully.  Please check for errors.  Exiting."
+				rm /mnt/user/appdata/other/rclone/remotes/$RcloneRemoteName/mount_running
+				exit
+			fi
 		fi
 # Create mergerfs mount
 		echo "$(date "+%d.%m.%Y %T") INFO: Creating ${RcloneRemoteName} mergerfs mount."
@@ -160,7 +170,6 @@ else
 		else
 			LocalFilesShare3=""
 		fi
-
 		if [[  $LocalFilesShare4 != 'ignore' ]]; then
 			echo "$(date "+%d.%m.%Y %T") INFO: Adding ${LocalFilesShare4} to ${RcloneRemoteName} mergerfs mount."
 			LocalFilesShare4=":$LocalFilesShare4"
@@ -176,7 +185,7 @@ else
 		else
 			echo "$(date "+%d.%m.%Y %T") CRITICAL: ${RcloneRemoteName} mergerfs mount failed."
 			rm /mnt/user/appdata/other/rclone/remotes/$RcloneRemoteName/mount_running
-		exit
+			exit
 		fi
 	fi
 fi
