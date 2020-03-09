@@ -3,7 +3,7 @@
 ######################
 ### Upload Script ####
 ######################
-### Version 0.95.4 ###
+### Version 0.95.5 ###
 ######################
 
 ####### EDIT ONLY THESE SETTINGS #######
@@ -36,6 +36,9 @@ BWLimit3Time="16:00"
 BWLimit3="12M"
 
 # OPTIONAL SETTINGS
+
+# Add name to upload job
+JobName="_daily_upload" # Adds custom string to end of checker file.  Useful if you're running multiple jobs against the same remote.
 
 # Add extra commands or filters
 Command1="--exclude downloads/**"
@@ -87,12 +90,12 @@ mkdir -p /mnt/user/appdata/other/rclone/remotes/$RcloneUploadRemoteName #for scr
 
 #######  Check if script already running  ##########
 echo "$(date "+%d.%m.%Y %T") INFO: *** Starting rclone_upload script for ${RcloneUploadRemoteName} ***"
-if [[ -f "/mnt/user/appdata/other/rclone/remotes/$RcloneUploadRemoteName/upload_running" ]]; then
+if [[ -f "/mnt/user/appdata/other/rclone/remotes/$RcloneUploadRemoteName/upload_running$JobName" ]]; then
 	echo "$(date "+%d.%m.%Y %T") INFO: Exiting as script already running."
 	exit
 else
 	echo "$(date "+%d.%m.%Y %T") INFO: Script not running - proceeding."
-	touch /mnt/user/appdata/other/rclone/remotes/$RcloneUploadRemoteName/upload_running
+	touch /mnt/user/appdata/other/rclone/remotes/$RcloneUploadRemoteName/upload_running$JobName
 fi
 
 #######  check if rclone installed  ##########
@@ -101,7 +104,7 @@ if [[ -f "$RcloneMountLocation/mountcheck" ]]; then
 	echo "$(date "+%d.%m.%Y %T") INFO: rclone installed successfully - proceeding with upload."
 else
 	echo "$(date "+%d.%m.%Y %T") INFO: rclone not installed - will try again later."
-	rm /mnt/user/appdata/other/rclone/remotes/$RcloneUploadRemoteName/upload_running
+	rm /mnt/user/appdata/other/rclone/remotes/$RcloneUploadRemoteName/upload_running$JobName
 	exit
 fi
 
@@ -208,7 +211,7 @@ else
 fi
 
 # remove dummy file
-rm /mnt/user/appdata/other/rclone/remotes/$RcloneUploadRemoteName/upload_running
+rm /mnt/user/appdata/other/rclone/remotes/$RcloneUploadRemoteName/upload_running$JobName
 echo "$(date "+%d.%m.%Y %T") INFO: Script complete"
 
 exit
