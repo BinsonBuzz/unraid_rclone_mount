@@ -75,7 +75,6 @@ Other users need to install rclone and use their preferred way to schedule cron 
 <br/>client_id = UNIQUE CLIENT_ID
 <br/>client_secret = MATCHING_UNIQUE_SECRET
 <br/>scope = drive
-<br/>service_account_file = /mnt/user/appdata/other/rclone/service_accounts/sa_gdrive.json
 <br/>root_folder_id = xxxx
 <br/>token = {"xxxxx"}
 <br/>server_side_across_configs = true
@@ -95,6 +94,7 @@ Other users need to install rclone and use their preferred way to schedule cron 
 [gdrive]
 <br/>type = drive
 <br/>scope = drive
+<br/>service_account_file = /mnt/user/appdata/other/rclone/service_accounts/sa_gdrive.json
 <br/>team_drive = TEAM DRIVE ID
 <br/>server_side_across_configs = true
 
