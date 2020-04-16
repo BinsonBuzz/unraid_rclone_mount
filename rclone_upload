@@ -3,7 +3,7 @@
 ######################
 ### Upload Script ####
 ######################
-### Version 0.95.6 ###
+### Version 0.95.5 ###
 ######################
 
 ####### EDIT ONLY THESE SETTINGS #######
@@ -67,15 +67,6 @@ BackupJob="N" # Y/N. Syncs or Copies files from LocalFilesLocation to BackupRemo
 BackupRemoteLocation="backup" # choose location on mount for deleted sync files
 BackupRemoteDeletedLocation="backup_deleted" # choose location on mount for deleted sync files
 BackupRetention="90d" # How long to keep deleted sync files suffix ms|s|m|h|d|w|M|y
-
-# Discord Notification
-Discord_webhook_url="" # Enter your Discord Webhook URL for notifications. Otherwise leave empty to disable
-Discord_icon_override="https://raw.githubusercontent.com/rclone/rclone/master/graphics/logo/logo_symbol/logo_symbol_color_256px.png" # Change to use custom image for Discord bot
-Discord_name_override="RCLONE" # The Discord bots user name
-
-# Log Files Location
-Logfile="/mnt/user/appdata/other/rclone/upload.log" #Location where upload log files will be stored
-Scrublog="Y" # Y/N. Choose to scrub log files after succussfull upload (prevention of slowly growing log size).
 
 ####### END SETTINGS #######
 
@@ -174,15 +165,11 @@ else
 fi
 
 # process files
-echo "====== RCLONE DEBUG ======"
-	Rclone_output=$(
-	rclone $RcloneCommand $LocalFilesLocation $RcloneUploadRemoteName:$BackupRemoteLocation $ServiceAccount $BackupDir -vP \
+	rclone $RcloneCommand $LocalFilesLocation $RcloneUploadRemoteName:$BackupRemoteLocation $ServiceAccount $BackupDir \
 	--user-agent="$RcloneUploadRemoteName" \
+	-vv \
 	--buffer-size 512M \
 	--drive-chunk-size 512M \
-	--stats 9999m \
-	--use-mmap \
-	--log-file=$Logfile \
 	--tpslimit 8 \
 	--checkers 8 \
 	--transfers 4 \
@@ -198,80 +185,6 @@ echo "====== RCLONE DEBUG ======"
 	--drive-stop-on-upload-limit \
 	--bwlimit "${BWLimit1Time},${BWLimit1} ${BWLimit2Time},${BWLimit2} ${BWLimit3Time},${BWLimit3}" \
 	--bind=$RCloneMountIP $DeleteEmpty
-	)
-	echo "$Rclone_output"
- 
-echo "=========================="
-
-# Discord Notification via webhook
-if [ "$Discord_webhook_url" != "" ]; then
-    
-    RCLONE_SANI_COMMAND="$(echo $Rclone_output | sed 's/\x1b\[[0-9;]*[a-zA-Z]//g')" # Remove all escape sequences
-    
-    # Notifications assume following rclone ouput from Rclone:
-		
-		################################################################
-		###Transferred:  0 / 0 MBytes, 100%, 0 kBytes/s, ETA 0s      ###
-		###Checks:       0 / 0, 100%                                 ###
-		###Deleted:      0                                           ###
-		###Transferred:  0 / 0, 100%                                 ###
-		###Elapsed time: 0.0s                                        ###
-		################################################################
-		
-		
-    TRANSFERRED_AMOUNT=${RCLONE_SANI_COMMAND#*Transferred: }
-    TRANSFERRED_AMOUNT=${TRANSFERRED_AMOUNT%% /*}
-    
-    SEND_NOTIFICATION() {
-		OUTPUT_TRANSFERRED_MAIN=${RCLONE_SANI_COMMAND#*Transferred: }
-        OUTPUT_TRANSFERRED_MAIN=${OUTPUT_TRANSFERRED_MAIN% Checks*}
-        OUTPUT_CHECKS=${RCLONE_SANI_COMMAND#*Checks: }
-        OUTPUT_CHECKS=${OUTPUT_CHECKS% Deleted*}
-        OUTPUT_TRANSFERRED=${RCLONE_SANI_COMMAND##*Transferred: }
-        OUTPUT_TRANSFERRED=${OUTPUT_TRANSFERRED% Elapsed*}
-        OUTPUT_ELAPSED=${RCLONE_SANI_COMMAND##*Elapsed time: }
-        
-        NOTIFICATION_DATA='{
-            "username": "'"$Discord_name_override"'",
-            "avatar_url": "'"$Discord_icon_override"'",
-            "content": null,
-            "embeds": [
-                {
-                    "title": "Rclone Upload Task: Success!",
-                    "color": 4094126,
-                    "fields": [
-						{
-                            "name": "Transferred",
-                            "value": "'"$OUTPUT_TRANSFERRED_MAIN"'"
-                        },
-                        {
-                            "name": "Checks",
-                            "value": "'"$OUTPUT_CHECKS"'"
-                        },
-                        {
-                            "name": "Transferred",
-                            "value": "'"$OUTPUT_TRANSFERRED"'"
-                        },
-                        {
-                            "name": "Elapsed time",
-                            "value": "'"$OUTPUT_ELAPSED"'"
-                        }
-                    ],
-                    "thumbnail": {
-                        "url": null
-                    }
-                }
-            ]
-        }'
-        
-        curl -H "Content-Type: application/json" -d "$NOTIFICATION_DATA" $Discord_webhook_url
-    }
-    
-    if [ "$TRANSFERRED_AMOUNT" != "0" ]; then
-        SEND_NOTIFICATION
-    fi
-    
-fi
 
 # Delete old files from mount
 if [[  $UseBackupDirectory == 'Y' ]]; then
@@ -295,14 +208,6 @@ if [[  $UseServiceAccountUpload == 'Y' ]]; then
 	fi
 else
 	echo "$(date "+%d.%m.%Y %T") INFO: Not utilising service accounts."
-fi
-
-# scubbing logs
-if [[  $Scrublog == 'Y' ]]; then
-	rm $Logfile	
-	echo "$(date "+%d.%m.%Y %T") INFO: Log files scrubbed"
-else
-echo "$(date "+%d.%m.%Y %T") INFO: Log files not scrubbed"
 fi
 
 # remove dummy file
