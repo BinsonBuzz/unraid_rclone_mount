@@ -1,47 +1,74 @@
 #!/bin/bash
 
-######################
-### Upload Script ####
-######################
-### Version 0.95.5 ###
-######################
+#############################################################################
+######################          Upload Script          ######################
+######################            GUI Build            ######################
+#############################################################################
+#############################################################################
+######################         Version 0.97.X          ######################
+#############################################################################
+#############################################################################
+#############################################################################
+# INSTRUCTIONS                                                              #
+# Edit the settings below to match your setup                               #
+# NOTE: Enter Remote Names WITHOUT ':'                                      #
+# Optional: Add additional commands or filters                              #
+# Optional: Use bind mount settings for potential traffic shaping           #
+# Optional: Use service accounts in your upload remote                      #
+# Optional: Use Backup Directory for rclone sync jobs                       #
+# Optional: Utilize Beta WebGUI. Note - This may still be prone to errors   #
+#############################################################################
 
-####### EDIT ONLY THESE SETTINGS #######
 
-# INSTRUCTIONS
-# 1. Edit the settings below to match your setup
-# 2. NOTE: enter RcloneRemoteName WITHOUT ':'
-# 3. Optional: Add additional commands or filters
-# 4. Optional: Use bind mount settings for potential traffic shaping/monitoring
-# 5. Optional: Use service accounts in your upload remote
-# 6. Optional: Use backup directory for rclone sync jobs
+#############################################################################
+########################          ----------          #######################
+########################      Required Settings       #######################
+########################          ----------          #######################
+#############################################################################
 
-# REQUIRED SETTINGS
-RcloneCommand="move" # choose your rclone command e.g. move, copy, sync
-RcloneRemoteName="gdrive_vfs" # Name of rclone remote mount WITHOUT ':'.
-RcloneUploadRemoteName="gdrive_upload_vfs" # If you have a second remote created for uploads put it here.  Otherwise use the same remote as RcloneRemoteName.
+RcloneCommand="copy" # choose your rclone command. Options are: move, copy, sync.
+RcloneRemoteName="gcrypt" # Name of rclone remote mount WITHOUT ':'.
+RcloneUploadRemoteName="gcrypt" # If you have a second remote created for uploads put it here.  Otherwise use the same remote as RcloneRemoteName.
 LocalFilesShare="/mnt/user/local" # location of the local files without trailing slash you want to rclone to use
 RcloneMountShare="/mnt/user/mount_rclone" # where your rclone mount is located without trailing slash  e.g. /mnt/user/mount_rclone
-MinimumAge="15m" # sync files suffix ms|s|m|h|d|w|M|y
+MinimumAge="15m" # sync files suffix ms|s|m|h|d|w|M|y *Not applicable for Rclone Beta GUI
 ModSort="ascending" # "ascending" oldest files first, "descending" newest files first
 
-# Note: Again - remember to NOT use ':' in your remote name above
 
-# Bandwidth limits: specify the desired bandwidth in kBytes/s, or use a suffix b|k|M|G. Or 'off' or '0' for unlimited.  The script uses --drive-stop-on-upload-limit which stops the script if the 750GB/day limit is achieved, so you no longer have to slow 'trickle' your files all day if you don't want to e.g. could just do an unlimited job overnight.
+#############################################################################
+########################          ----------          #######################
+########################      Optional Settings       #######################
+########################          ----------          #######################
+#############################################################################
+
+#############################################################################
+########################     Add Upload Job Name      #######################
+#############################################################################
+
+JobName="_daily_upload" # Adds custom string to end of checker file.  Useful if you're running multiple jobs against the same remote.
+
+#############################################################################
+######################        Bandwidth Limits?        ######################
+##############  Suffix b|k|M|G. Or 'off' or '0' for Unlimited  ##############
+# The script uses --drive-stop-on-upload-limit which stops the script if    #
+# the 750GB/day limit is achieved, so you no longer have to slow 'trickle'  #
+# your files all day if you don't want to e.g. could just do an unlimited   #
+# job overnight.                                                            #
+#############################################################################
+
 BWLimit1Time="01:00"
 BWLimit1="off"
 BWLimit2Time="08:00"
-BWLimit2="15M"
+BWLimit2="off"
 BWLimit3Time="16:00"
-BWLimit3="12M"
+BWLimit3="off"
 
-# OPTIONAL SETTINGS
+#############################################################################
+###################         Custom Rclone Commands        ###################
+################### **Not Applicable with Rclone WebGUI** ###################
+#############################################################################
 
-# Add name to upload job
-JobName="_daily_upload" # Adds custom string to end of checker file.  Useful if you're running multiple jobs against the same remote.
-
-# Add extra commands or filters
-Command1="--exclude downloads/**"
+Command1=""
 Command2=""
 Command3=""
 Command4=""
@@ -50,31 +77,74 @@ Command6=""
 Command7=""
 Command8=""
 
-# Bind the mount to an IP address
+#############################################################################
+##########                    Use Beta WebGUI                       #########
+##########   Settings for GUI must match settings in Mount script   #########
+#############################################################################
+
+Webgui="Y" # Y/N. Choose whether to enable rclones beta web-gui
+Webgui_Username="watchmeexplode5" # Username for WebGUI
+Webgui_Password="V8Ranger" # Password for WebGUI
+Webgui_Address=":5572" #IP:Port for your local webGUI. Default ":5572" will host WebGUI at http://Unraid's-IP:5572
+Exclusionfilter="/downloads/**" #Ruleset to be placed in the exclusion filter (IE what rclone mover will ignore). Leave as default "/downloads/**" unless you have a special case. 
+
+
+#############################################################################
+###########               Bind Upload to Unique IP                ###########
+###########    Do not set to "Y" if you are using Beta WebGUI     ###########
+#############################################################################
+
 CreateBindMount="N" # Y/N. Choose whether or not to bind traffic to a network adapter.
 RCloneMountIP="192.168.1.253" # Choose IP to bind upload to.
 NetworkAdapter="eth0" # choose your network adapter. eth0 recommended.
 VirtualIPNumber="1" # creates eth0:x e.g. eth0:1.
 
-# Use Service Accounts.  Instructions: https://github.com/xyou365/AutoRclone
-UseServiceAccountUpload="N" # Y/N. Choose whether to use Service Accounts.
-ServiceAccountDirectory="/mnt/user/appdata/other/rclone/service_accounts" # Path to your Service Account's .json files.
-ServiceAccountFile="sa_gdrive_upload" # Enter characters before counter in your json files e.g. for sa_gdrive_upload1.json -->sa_gdrive_upload100.json, enter "sa_gdrive_upload".
-CountServiceAccounts="15" # Integer number of service accounts to use.
+#############################################################################
+#############                 Service Accounts                 ##############
+#############   Guide: https://github.com/xyou365/AutoRclone   ##############
+#############################################################################
 
-# Is this a backup job
+UseServiceAccountUpload="Y" # Y/N. Choose whether to use Service Accounts.
+ServiceAccountDirectory="/mnt/user/appdata/other/rclone/service_accounts" # Path to your Service Account's .json files.
+ServiceAccountFile="sa_gdrive_upload" # Enter characters before counter in your json files e.g. for sa_gdrive_upload1.json, sa_gdrive_upload2.json, ect: enter "sa_gdrive_upload".
+CountServiceAccounts="99" # Integer number of service accounts to use.
+
+#############################################################################
+#####   Additional Settings required for Service Accounts WITH WebGUI   #####
+#####                            ------------                           #####
+#####        Due to -RC you must have another additional remotes        #####
+#####         dedicated to Service accounts in your rclone.conf         #####
+#####                            ------------                           #####
+#####            See github project Read.me for more detail             #####
+#############################################################################
+
+ServiceAccountRemoteName="gui_service" #Remote name of non-crypt share for service account (eg. "service_account"). If you are not using encryption put single service remote name ("service_account")
+ServiceAccountCryptName="gui_service_crypt" #Remote name of crypt share for service account (eg. "service_account_crypt"). If you are not using encryption use the same remote as ServiceAccountRemoteName
+
+#############################################################################
+######################      Is this a Backup Job?      ######################
+#############################################################################
+
 BackupJob="N" # Y/N. Syncs or Copies files from LocalFilesLocation to BackupRemoteLocation, rather than moving from LocalFilesLocation/RcloneRemoteName
 BackupRemoteLocation="backup" # choose location on mount for deleted sync files
 BackupRemoteDeletedLocation="backup_deleted" # choose location on mount for deleted sync files
 BackupRetention="90d" # How long to keep deleted sync files suffix ms|s|m|h|d|w|M|y
 
-####### END SETTINGS #######
 
-###############################################################################
-#####    DO NOT EDIT BELOW THIS LINE UNLESS YOU KNOW WHAT YOU ARE DOING   #####
-###############################################################################
+#############################################################################
+#############################################################################
+#####                                                                   #####
+#####                          -------------                            #####
+#####                       END OF USER SETTINGS                        #####
+#####                          -------------                            #####
+#####                                                                   #####
+#####  DO NOT EDIT BELOW THIS LINE UNLESS YOU KNOW WHAT YOU ARE DOING   #####
+#############################################################################
+#############################################################################
+#############################################################################
 
-####### Preparing mount location variables #######
+
+######################  Prep Mount Location Variables  ######################
 if [[  $BackupJob == 'Y' ]]; then
 	LocalFilesLocation="$LocalFilesShare"
 	echo "$(date "+%d.%m.%Y %T") INFO: *** Backup selected.  Files will be copied or synced from ${LocalFilesLocation} for ${RcloneUploadRemoteName} ***"
@@ -85,10 +155,24 @@ fi
 
 RcloneMountLocation="$RcloneMountShare/$RcloneRemoteName" # Location of rclone mount
 
-####### create directory for script files #######
-mkdir -p /mnt/user/appdata/other/rclone/remotes/$RcloneUploadRemoteName #for script files
+######################   Create Dir for Script Files   ######################
+mkdir -p /mnt/user/appdata/other/rclone/remotes/$RcloneUploadRemoteName
 
-#######  Check if script already running  ##########
+####################   Create Exclusion File for WebGUI  ####################
+if [[  $Webgui == 'Y' ]]; then
+	Excludepath="/mnt/user/appdata/other/rclone/remotes/$RcloneUploadRemoteName/exclude.txt"
+	if [[ -f /mnt/user/appdata/other/rclone/remotes/$RcloneUploadRemoteName/exclude.txt ]]; then
+		echo "$(date "+%d.%m.%Y %T") INFO: Exclude.txt file already present."
+	else
+		echo "$(date "+%d.%m.%Y %T") INFO: Adding exclude.txt file for mount."
+		cat <<-EOF > /mnt/user/appdata/other/rclone/remotes/$RcloneUploadRemoteName/exclude.txt
+		$Exclusionfilter
+		*partial~
+		EOF
+	fi
+fi
+
+###################### Check if Upload Already Running ######################
 echo "$(date "+%d.%m.%Y %T") INFO: *** Starting rclone_upload script for ${RcloneUploadRemoteName} ***"
 if [[ -f "/mnt/user/appdata/other/rclone/remotes/$RcloneUploadRemoteName/upload_running$JobName" ]]; then
 	echo "$(date "+%d.%m.%Y %T") INFO: Exiting as script already running."
@@ -98,7 +182,7 @@ else
 	touch /mnt/user/appdata/other/rclone/remotes/$RcloneUploadRemoteName/upload_running$JobName
 fi
 
-#######  check if rclone installed  ##########
+######################  Check if Mount is Functioning  ######################
 echo "$(date "+%d.%m.%Y %T") INFO: Checking if rclone installed successfully."
 if [[ -f "$RcloneMountLocation/mountcheck" ]]; then
 	echo "$(date "+%d.%m.%Y %T") INFO: rclone installed successfully - proceeding with upload."
@@ -108,7 +192,7 @@ else
 	exit
 fi
 
-####### Rotating serviceaccount.json file if using Service Accounts #######
+######################  Set Service Account Variables  ######################
 if [[ $UseServiceAccountUpload == 'Y' ]]; then
 	cd /mnt/user/appdata/other/rclone/remotes/$RcloneUploadRemoteName/
 	CounterNumber=$(find -name 'counter*' | cut -c 11,12)
@@ -121,15 +205,61 @@ if [[ $UseServiceAccountUpload == 'Y' ]]; then
 		CounterNumber="1"
 	fi
 	ServiceAccount="--drive-service-account-file=$ServiceAccountDirectory/$ServiceAccountFile$CounterNumber.json"
-	echo "$(date "+%d.%m.%Y %T") INFO: Adjusted service_account_file for upload remote ${RcloneUploadRemoteName} to ${ServiceAccountFile}${CounterNumber}.json based on counter ${CounterNumber}."
+	ServiceAccountGUI="$ServiceAccountDirectory/$ServiceAccountFile$CounterNumber.json"
+	echo "$(date "+%d.%m.%Y %T") INFO: Upload will occur using ${RcloneUploadRemoteName} remote with ${ServiceAccountFile}${CounterNumber}.json associated."
 else
-	echo "$(date "+%d.%m.%Y %T") INFO: Uploading using upload remote ${RcloneUploadRemoteName}"
+	echo "$(date "+%d.%m.%Y %T") INFO: Upload will occur using ${RcloneUploadRemoteName} remote"
 	ServiceAccount=""
 fi
 
-#######  Upload files  ##########
+######################     Set Delete Dir for Move     ######################
 
-# Check bind option
+if [[  $RcloneCommand == 'move' ]]; then
+	echo "$(date "+%d.%m.%Y %T") INFO: *** Using rclone move command - will add attribute delete-empty-src-dirs to upload."
+	if [[  $Webgui == 'Y' ]]; then
+	DeleteEmpty="true"
+	else
+	DeleteEmpty="--delete-empty-src-dirs "
+	fi
+else
+	echo "$(date "+%d.%m.%Y %T") INFO: *** Not using rclone move - will not issue delete-empty-src-dirs to upload"
+	if [[  $Webgui == 'Y' ]]; then
+	DeleteEmpty="false"
+	else
+	DeleteEmpty=""
+	fi
+fi
+
+######################   Check for Backup Directory    ######################
+if [[  $BackupJob == 'Y' ]]; then
+	echo "$(date "+%d.%m.%Y %T") INFO: *** Will backup to ${BackupRemoteLocation} and use  ${BackupRemoteDeletedLocation} as --backup-directory with ${BackupRetention} retention for ${RcloneUploadRemoteName}."
+	LocalFilesLocation="$LocalFilesShare"
+	BackupDir="--backup-dir $RcloneUploadRemoteName:$BackupRemoteDeletedLocation"
+else
+	BackupRemoteLocation=""
+	BackupRemoteDeletedLocation=""
+	BackupRetention=""
+	BackupDir=""
+fi
+
+######################   Set Rclone WebGUI Variables   ######################
+if [[  $Webgui == 'Y' ]]; then
+	echo "$(date "+%d.%m.%Y %T") INFO: *** WebGUI Enabled - Note this is still currently in beta and may have errors or issues associated with it"
+	Webguicommands="--rc-user=$Webgui_Username --rc-pass=$Webgui_Password --rc-addr=192.168.1.219:5572"
+		if [[ $UseServiceAccountUpload == 'Y' ]]; then
+			echo "$(date "+%d.%m.%Y %T") INFO: Modifying ${ServiceAccountRemoteName} to utilize service account with ${ServiceAccountFile}${CounterNumber} as credentials"
+			Uploadremote="$ServiceAccountCryptName:$BackupRemoteLocation"
+			rclone rc $Webguicommands config/update --json '{"name": "'"$ServiceAccountRemoteName"'", "parameters": {"service_account_file": "'"$ServiceAccountGUI"'"}}'
+		else
+		Uploadremote="$RcloneUploadRemoteName:$BackupRemoteLocation"
+		fi
+	echo "$(date "+%d.%m.%Y %T") INFO: Modifying GLOBAL RC Flags for Upload Settings"
+	rclone rc $Webguicommands options/set --json '{"filter": {"ExcludeFrom": ["'"$Excludepath"'"]}}'
+	RcloneCommandRC="sync/$RcloneCommand"
+	CreateBindMount="N"
+fi
+
+######################      Check Binding Options      ######################
 if [[  $CreateBindMount == 'Y' ]]; then
 	echo "$(date "+%d.%m.%Y %T") INFO: *** Checking if IP address ${RCloneMountIP} already created for upload to remote ${RcloneUploadRemoteName}"
 	ping -q -c2 $RCloneMountIP > /dev/null # -q quiet, -c number of pings to perform
@@ -143,33 +273,20 @@ else
 	RCloneMountIP=""
 fi
 
-#  Remove --delete-empty-src-dirs if rclone sync or copy
-if [[  $RcloneCommand == 'move' ]]; then
-	echo "$(date "+%d.%m.%Y %T") INFO: *** Using rclone move - will add --delete-empty-src-dirs to upload."
-	DeleteEmpty="--delete-empty-src-dirs "
+######################     Rclone Upload Commands      ###################### 
+if [[  $Webgui == 'Y' ]]; then
+	echo "$(date "+%d.%m.%Y %T") INFO: Uploading through RC with WebGUI Enabled"
+	rclone rc $Webguicommands \
+	$RcloneCommandRC \
+	--json '{"srcFs":"'"$LocalFilesLocation"'", "dstFs":"'"$Uploadremote"'", "deleteEmptySrcDirs":"'"$DeleteEmpty"'"}'
 else
-	echo "$(date "+%d.%m.%Y %T") INFO: *** Not using rclone move - will remove --delete-empty-src-dirs to upload."
-	DeleteEmpty=""
-fi
-
-#  Check --backup-directory
-if [[  $BackupJob == 'Y' ]]; then
-	echo "$(date "+%d.%m.%Y %T") INFO: *** Will backup to ${BackupRemoteLocation} and use  ${BackupRemoteDeletedLocation} as --backup-directory with ${BackupRetention} retention for ${RcloneUploadRemoteName}."
-	LocalFilesLocation="$LocalFilesShare"
-	BackupDir="--backup-dir $RcloneUploadRemoteName:$BackupRemoteDeletedLocation"
-else
-	BackupRemoteLocation=""
-	BackupRemoteDeletedLocation=""
-	BackupRetention=""
-	BackupDir=""
-fi
-
-# process files
-	rclone $RcloneCommand $LocalFilesLocation $RcloneUploadRemoteName:$BackupRemoteLocation $ServiceAccount $BackupDir \
+	echo "$(date "+%d.%m.%Y %T") INFO: Uploading With WebGUI Disabled"
+	rclone $RcloneCommand $LocalFilesLocation $RcloneUploadRemoteName:$BackupRemoteLocation $ServiceAccount $BackupDir -vP \
 	--user-agent="$RcloneUploadRemoteName" \
-	-vv \
 	--buffer-size 512M \
 	--drive-chunk-size 512M \
+	--stats 9999m \
+	--use-mmap \
 	--tpslimit 8 \
 	--checkers 8 \
 	--transfers 4 \
@@ -185,16 +302,18 @@ fi
 	--drive-stop-on-upload-limit \
 	--bwlimit "${BWLimit1Time},${BWLimit1} ${BWLimit2Time},${BWLimit2} ${BWLimit3Time},${BWLimit3}" \
 	--bind=$RCloneMountIP $DeleteEmpty
-
-# Delete old files from mount
+fi
+ 
 if [[  $UseBackupDirectory == 'Y' ]]; then
+######################   Delete old files from mount   ######################
 	echo "$(date "+%d.%m.%Y %T") INFO: *** Removing files older than ${BackupRetention} from ${BackupDirectoryLocation} for ${RcloneUploadRemoteName}."
 	rclone delete --min-age $BackupRetention $RcloneUploadRemoteName:$BackupRemoteDeletedLocation
 fi
 
-#######  Remove Control Files  ##########
-
-# update counter and remove other control files
+#############################################################################
+######################       Update Counter File       ######################
+######################     Clean-up and Final Tasks    ######################
+#############################################################################
 if [[  $UseServiceAccountUpload == 'Y' ]]; then
 	if [[ "$CounterNumber" == "$CountServiceAccounts" ]];then
 		rm /mnt/user/appdata/other/rclone/remotes/$RcloneUploadRemoteName/counter_*
@@ -210,7 +329,6 @@ else
 	echo "$(date "+%d.%m.%Y %T") INFO: Not utilising service accounts."
 fi
 
-# remove dummy file
 rm /mnt/user/appdata/other/rclone/remotes/$RcloneUploadRemoteName/upload_running$JobName
 echo "$(date "+%d.%m.%Y %T") INFO: Script complete"
 
