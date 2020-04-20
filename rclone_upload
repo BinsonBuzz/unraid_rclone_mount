@@ -187,8 +187,8 @@ fi
 	--bind=$RCloneMountIP $DeleteEmpty
 
 # Delete old files from mount
-if [[  $UseBackupDirectory == 'Y' ]]; then
-	echo "$(date "+%d.%m.%Y %T") INFO: *** Removing files older than ${BackupRetention} from ${BackupDirectoryLocation} for ${RcloneUploadRemoteName}."
+if [[  $BackupJob == 'Y' ]]; then
+	echo "$(date "+%d.%m.%Y %T") INFO: *** Removing files older than ${BackupRetention} from $BackupRemoteLocation for ${RcloneUploadRemoteName}."
 	rclone delete --min-age $BackupRetention $RcloneUploadRemoteName:$BackupRemoteDeletedLocation
 fi
 
