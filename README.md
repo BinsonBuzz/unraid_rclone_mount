@@ -7,12 +7,17 @@ This branch utilizes the new Beta GUI for Rclone created by negative0. It should
 
 <b>Caveats to the WebGui</b>
 <ul>
-<b>Ensure you are using the latest rclone stable or rclone beta pluggin via Community Apps</b><p/>
+<b>Ensure you are using the latest rclone stable or rclone beta pluggin via Community Apps</b>
+<p/>
+
+
 <b>Service Accounts:</b> Since it relies on a single instance of rclone, we cannot utilize many common flags.  For most instances this doesn't cause issues but does require us to utilize Service Accounts differntly. To utilize service accounts within the WebGui mode you must have another remote (or 2 if you use encryption) which reference the service account. On upload, the service account remote will be configured to use the correct sa_rotation for authorization. 
 	<ul>
 	<li>This method ensures that your primary remote (used during the mount script) is not modified. This method removes the possible issues that could occur by changing the remote authorization level while the remote is being accessed.</li>
 	<li>See rclone.conf for example of configuration file with separate service account remotes</li>
 	</ul>
+	<p/>
+
 <p/>
 <b>Exclusion/Inclusion rules:</b> (as of present) Rules are currently handled differently through RC. Exclusion rules are now set within appdata/other/rclone/remotes/YOURREMOTE/exclusion.txt. File is automatically created when running the script with WebGui enabled. The script is written to exlucude /downloads and partial files (just like the original script). Presently, minimum age exclusion does not work due to a bug in rclone (known and should and is pending fixes by rclone developers). 
 <p/>
