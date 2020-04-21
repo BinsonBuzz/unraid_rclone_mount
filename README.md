@@ -37,10 +37,13 @@ For detailed documentation about Rclones RC functions see: https://rclone.org/rc
 <img src="screenshots/remoteexplorer.png" witdth=100 >
 
 ### Remotes
-<img src="screenshots/remotes.png)
+<img src="screenshots/remotes.png>
 
 
-<b>Original Documentation:</b>
+
+
+##Original Documentation:
+
  
 Collection of scripts to create rclone google mounts to allow fast launch times with Plex (or Emby).  
 
