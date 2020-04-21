@@ -5,7 +5,7 @@
 ######################            GUI Build            ######################
 #############################################################################
 #############################################################################
-######################         Version 0.97.X          ######################
+######################         Version 0.97.0          ######################
 #############################################################################
 #############################################################################
 #############################################################################
@@ -26,7 +26,7 @@
 ########################          ----------          #######################
 #############################################################################
 
-RcloneCommand="copy" # choose your rclone command. Options are: move, copy, sync.
+RcloneCommand="move" # choose your rclone command. Options are: move, copy, sync.
 RcloneRemoteName="gcrypt" # Name of rclone remote mount WITHOUT ':'.
 RcloneUploadRemoteName="gcrypt" # If you have a second remote created for uploads put it here.  Otherwise use the same remote as RcloneRemoteName.
 LocalFilesShare="/mnt/user/local" # location of the local files without trailing slash you want to rclone to use
@@ -83,11 +83,11 @@ Command8=""
 #############################################################################
 
 Webgui="Y" # Y/N. Choose whether to enable rclones beta web-gui
-Webgui_Username="watchmeexplode5" # Username for WebGUI
-Webgui_Password="V8Ranger" # Password for WebGUI
+Webgui_Username="USERNAME" # Username for WebGUI
+Webgui_Password="PASSWORD" # Password for WebGUI
 Webgui_Address=":5572" #IP:Port for your local webGUI. Default ":5572" will host WebGUI at http://Unraid's-IP:5572
-Exclusionfilter="/downloads/**" #Ruleset to be placed in the exclusion filter (IE what rclone mover will ignore). Leave as default "/downloads/**" unless you have a special case. 
-
+Exclusionfilter1="/downloads/**" #Ruleset to be placed in the exclusion filter (IE what rclone mover will ignore). Leave as default "/downloads/**" unless you have a special case. 
+Exclusionfilter2="*partial~" #Default Filter 2
 
 #############################################################################
 ###########               Bind Upload to Unique IP                ###########
@@ -166,8 +166,8 @@ if [[  $Webgui == 'Y' ]]; then
 	else
 		echo "$(date "+%d.%m.%Y %T") INFO: Adding exclude.txt file for mount."
 		cat <<-EOF > /mnt/user/appdata/other/rclone/remotes/$RcloneUploadRemoteName/exclude.txt
-		$Exclusionfilter
-		*partial~
+		$Exclusionfilter1
+		$Exclusionfilter2
 		EOF
 	fi
 fi
@@ -245,7 +245,7 @@ fi
 ######################   Set Rclone WebGUI Variables   ######################
 if [[  $Webgui == 'Y' ]]; then
 	echo "$(date "+%d.%m.%Y %T") INFO: *** WebGUI Enabled - Note this is still currently in beta and may have errors or issues associated with it"
-	Webguicommands="--rc-user=$Webgui_Username --rc-pass=$Webgui_Password --rc-addr=192.168.1.219:5572"
+	Webguicommands="--rc-user=$Webgui_Username --rc-pass=$Webgui_Password --rc-addr=$Webgui_Address"
 		if [[ $UseServiceAccountUpload == 'Y' ]]; then
 			echo "$(date "+%d.%m.%Y %T") INFO: Modifying ${ServiceAccountRemoteName} to utilize service account with ${ServiceAccountFile}${CounterNumber} as credentials"
 			Uploadremote="$ServiceAccountCryptName:$BackupRemoteLocation"

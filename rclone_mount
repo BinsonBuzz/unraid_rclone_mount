@@ -4,7 +4,7 @@
 ######################            GUI Build            ######################
 #############################################################################
 #############################################################################
-######################         Version 0.97.x          ######################
+######################         Version 0.97.0          ######################
 #############################################################################
 #############################################################################
 #############################################################################
@@ -25,11 +25,11 @@
 ########################          ----------          #######################
 #############################################################################
 
-RcloneRemoteName="gui_test_crypt" # Name of rclone remote mount WITHOUT ':'. NOTE: Choose your encrypted remote for sensitive data
-RcloneMountShare="/mnt/user/gui_rclone" # where your rclone remote will be located without trailing slash  e.g. /mnt/user/mount_rclone
-MergerfsMountShare="/mnt/user/gui_mergerfs" # location without trailing slash  e.g. /mnt/user/mount_mergerfs. Enter 'ignore' to disable
+RcloneRemoteName="gcrypt" # Name of rclone remote mount WITHOUT ':'. NOTE: Choose your encrypted remote for sensitive data
+RcloneMountShare="/mnt/user/mount_rclone" # where your rclone remote will be located without trailing slash  e.g. /mnt/user/mount_rclone
+MergerfsMountShare="/mnt/user/mount_mergerfs" # location without trailing slash  e.g. /mnt/user/mount_mergerfs. Enter 'ignore' to disable
 DockerStart="" # list of dockers, separated by space, to start once mergerfs mount verified. Remember to disable AUTOSTART for dockers added in docker settings page
-LocalFilesShare="/mnt/user/gui_local" # location of the local files and MountFolders you want to upload without trailing slash to rclone e.g. /mnt/user/local. Enter 'ignore' to disable
+LocalFilesShare="/mnt/user/local" # location of the local files and MountFolders you want to upload without trailing slash to rclone e.g. /mnt/user/local. Enter 'ignore' to disable
 MountFolders=\{"downloads/complete,downloads/intermediate,downloads/seeds,movies,tv"\} # comma separated list of folders to create within the mount
 
 #############################################################################
@@ -54,7 +54,7 @@ LocalFilesShare4="ignore"
 ################### **Not Applicable with Rclone WebGUI** ###################
 #############################################################################
 
-Command1="--config /mnt/user/Extra/.rclone.conf"
+Command1="" #Examples: "/mnt/user/appdata/other/rclone/.rclone.conf"
 Command2=""
 Command3=""
 Command4=""
@@ -144,7 +144,7 @@ else
 fi
  
 ######################      Check Binding Options      ######################
-	 
+	if [[  $CreateBindMount == 'Y' ]]; then
 		echo "$(date "+%d.%m.%Y %T") INFO: *** Checking if IP address ${RCloneMountIP} already created for remote ${RcloneRemoteName}"
 		ping -q -c2 $RCloneMountIP > /dev/null # -q quiet, -c number of pings to perform
 		if [ $? -eq 0 ]; then # ping returns exit status 0 if successful
@@ -169,7 +169,7 @@ fi
 	--drive-chunk-size 512M \
 	--log-level INFO \
 	--vfs-read-chunk-size 128M \
-	--poll-interval 15s \
+	--poll-interval 30s \
 	--vfs-read-chunk-size-limit off \
 	--vfs-cache-mode writes \
 	--bind=$RCloneMountIP \

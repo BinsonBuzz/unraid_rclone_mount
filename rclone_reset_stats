@@ -1,0 +1,25 @@
+#!/bin/bash
+
+#######################
+###   Reset Stats  ####
+#######################
+###  Version 0.1.0 ####
+#######################
+
+#############################################################################
+##########                    Use Beta WebGUI                       #########
+##########   Settings for GUI must match settings in Mount script   #########
+#############################################################################
+
+Webgui_Username="USERNAME" # Username for WebGUI
+Webgui_Password="PASSWORD" # Password for WebGUI
+Webgui_Address=":5572" #IP:Port for your local webGUI. Default ":5572" will host WebGUI at http://Unraid's-IP:5572
+
+
+####### Script #######
+Webguicommands="--rc-user=$Webgui_Username --rc-pass=$Webgui_Password --rc-addr=$Webgui_Address"
+echo "$(date "+%d.%m.%Y %T") INFO: *** Resetting Rclone Stats via RC ***"
+
+rclone rc $Webguicommands core/stats-reset
+
+exit
