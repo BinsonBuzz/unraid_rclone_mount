@@ -5,30 +5,34 @@ Modifications by Watchmeexplode5 based on <a href="https://github.com/BinsonBuzz
 
 This branch utilizes the new Beta GUI for Rclone created by negative0. It should be noted that this is early in development phase and many settings/features within the gui may not function fully. For rclone stats to be displayed properly all rclone activity (mount/move/copy) must be pushed through a single rclone instance. This is different when compared to the original scripts which can a new instance of rclone for every function. To achieve this all functions related to the gui utilize rclones Remote Control commands (RC). RC, although fairly mature at this point, comes with its own set of challenges and limitations. Documentation within the script settings should note any limitations within the specific user settings. 
 
+<b>Caveats to the WebGui</b>
 <ul>
-<b>Caveats to the WebGuiM</b>
-<ul>
-<b>Ensure you are using the latest rclone stable or rclone beta pluggin via Community Apps</b> 
+<b>Ensure you are using the latest rclone stable or rclone beta pluggin via Community Apps</b><p/>
 <b>Service Accounts:</b> Since it relies on a single instance of rclone, we cannot utilize many common flags.  For most instances this doesn't cause issues but does require us to utilize Service Accounts differntly. To utilize service accounts within the WebGui mode you must have another remote (or 2 if you use encryption) which reference the service account. On upload, the service account remote will be configured to use the correct sa_rotation for authorization. 
+	<ul>
 	<li>This method ensures that your primary remote (used during the mount script) is not modified. This method removes the possible issues that could occur by changing the remote authorization level while the remote is being accessed.</li>
 	<li>See rclone.conf for example of configuration file with separate service account remotes</li>
- 
+	</ul>
+<p/>
 <b>Exclusion/Inclusion rules:</b> (as of present) Rules are currently handled differently through RC. Exclusion rules are now set within appdata/other/rclone/remotes/YOURREMOTE/exclusion.txt. File is automatically created when running the script with WebGui enabled. The script is written to exlucude /downloads and partial files (just like the original script). Presently, minimum age exclusion does not work due to a bug in rclone (known and should and is pending fixes by rclone developers). 
+<p/>
 
 <b>Additional Scripts:</b> Other scripts have been included which may be useful. This includes shutting down the rclone instance and a script to reset rclones statistics
+<p/>
 
+</ul>
 For detailed documentation about Rclones RC functions see: https://rclone.org/rc/
  
 
 ## Screenshots
 ### Dashboard
-<img src "screenshots/dashboard.png" witdth=100 >
+<img src="screenshots/dashboard.png" witdth=100 >
 
 ### Remote Explorer
-<img src "screenshots/remoteexplorer.png" witdth=100 >
+<img src="screenshots/remoteexplorer.png" witdth=100 >
 
 ### Remotes
-<img src "screenshots/remotes.png)
+<img src="screenshots/remotes.png)
 
 
 <b>Original Documentation:</b>
