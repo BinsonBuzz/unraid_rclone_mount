@@ -42,7 +42,7 @@ For detailed documentation about Rclones RC functions see: https://rclone.org/rc
 
 
 
-##Original Documentation:
+## Original Documentation
 
  
 Collection of scripts to create rclone google mounts to allow fast launch times with Plex (or Emby).  
