@@ -92,7 +92,7 @@ VirtualIPNumber="2" # creates eth0:x e.g. eth0:1.  I create a unique virtual IP 
 #                 each quality (ie /movies_1080, /movies_4k)                #
 #                    ----------------------------------_                    #
 #       Plex/Emby only sees a single folder structure so the player can     #
-#	       determine the best directplay/transcode option on a client       #
+#          determine the best directplay/transcode option on a client       #
 #                    ----------------------------------_                    #
 #              Sonarr/Radar folder naming schemes to be identical           #
 #                    ----------------------------------_                    #                                                                           #
@@ -101,7 +101,7 @@ VirtualIPNumber="2" # creates eth0:x e.g. eth0:1.  I create a unique virtual IP 
 # Ex: ./mount_merger_fs/gcrypt/movies_4k/Movie Name/Movie Remux-2160p.mkv   #
 #                                                                           #
 # Plex will see: /combined_media/movies/The Movie (2020)/                   #
-#	                            Movie - Remux-1080p.mkv                     #
+#                               Movie - Remux-1080p.mkv                     #
 #                               Movie - Remux-2160p.mkv                     #
 #############################################################################
 
