@@ -278,7 +278,7 @@ if [[  $Webgui == 'Y' ]]; then
 	echo "$(date "+%d.%m.%Y %T") INFO: Uploading through RC with WebGUI Enabled"
 	rclone rc $Webguicommands \
 	$RcloneCommandRC \
-	--json '{"srcFs":"'"$LocalFilesLocation"'", "dstFs":"'"$Uploadremote"'", "deleteEmptySrcDirs":"'"$DeleteEmpty"'"}'
+	--json '{"srcFs":"'"$LocalFilesLocation"'", "dstFs":"'"$Uploadremote"'", "deleteEmptySrcDirs":"'"$DeleteEmpty"'", "_async": true}'
 else
 	echo "$(date "+%d.%m.%Y %T") INFO: Uploading With WebGUI Disabled"
 	rclone $RcloneCommand $LocalFilesLocation $RcloneUploadRemoteName:$BackupRemoteLocation $ServiceAccount $BackupDir -vP \
