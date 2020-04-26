@@ -31,7 +31,7 @@ RcloneRemoteName="gcrypt" # Name of rclone remote mount WITHOUT ':'.
 RcloneUploadRemoteName="gcrypt" # If you have a second remote created for uploads put it here.  Otherwise use the same remote as RcloneRemoteName.
 LocalFilesShare="/mnt/user/local" # location of the local files without trailing slash you want to rclone to use
 RcloneMountShare="/mnt/user/mount_rclone" # where your rclone mount is located without trailing slash  e.g. /mnt/user/mount_rclone
-MinimumAge="15m" # sync files suffix ms|s|m|h|d|w|M|y *Not applicable for Rclone Beta GUI
+MinimumAge="15m" # sync files suffix ms|s|m|h|d|w|M|y *Ignored and uses default 15m with Beta GUI
 ModSort="ascending" # "ascending" oldest files first, "descending" newest files first
 
 
@@ -255,6 +255,7 @@ if [[  $Webgui == 'Y' ]]; then
 		fi
 	echo "$(date "+%d.%m.%Y %T") INFO: Modifying GLOBAL RC Flags for Upload Settings"
 	rclone rc $Webguicommands options/set --json '{"filter": {"ExcludeFrom": ["'"$Excludepath"'"]}}'
+	rclone rc $Webguicommands options/set --json '{"filter": {"MinAge": "900000000000"}}'
 	RcloneCommandRC="sync/$RcloneCommand"
 	CreateBindMount="N"
 fi
