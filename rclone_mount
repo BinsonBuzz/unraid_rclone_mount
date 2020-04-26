@@ -31,6 +31,7 @@ MergerfsMountShare="/mnt/user/mount_mergerfs" # location without trailing slash 
 DockerStart="" # list of dockers, separated by space, to start once mergerfs mount verified. Remember to disable AUTOSTART for dockers added in docker settings page
 LocalFilesShare="/mnt/user/local" # location of the local files and MountFolders you want to upload without trailing slash to rclone e.g. /mnt/user/local. Enter 'ignore' to disable
 MountFolders=\{"downloads/complete,downloads/intermediate,downloads/seeds,movies,tv"\} # comma separated list of folders to create within the mount
+loglevel="NOTICE" # Log Level: (DEBUG, INFO, NOTICE, ERROR). Default is NOTICE which will show large events, warnings, errors. DEBUG is useful if you are having issues. 
 
 #############################################################################
 ########################          ----------          #######################
@@ -220,7 +221,7 @@ fi
 	--buffer-size 256M \
 	--dir-cache-time 720h \
 	--drive-chunk-size 512M \
-	--log-level INFO \
+	--log-level $loglevel \
 	--vfs-read-chunk-size 128M \
 	--poll-interval 30s \
 	--vfs-read-chunk-size-limit off \
