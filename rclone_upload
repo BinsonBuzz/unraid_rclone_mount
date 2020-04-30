@@ -255,7 +255,7 @@ if [[  $Webgui == 'Y' ]]; then
 		fi
 	echo "$(date "+%d.%m.%Y %T") INFO: Modifying GLOBAL RC Flags for Upload Settings"
 	rclone rc $Webguicommands options/set --json '{"filter": {"ExcludeFrom": ["'"$Excludepath"'"]}}'
-	rclone rc $Webguicommands options/set --json '{"filter": {"MinAge": "900000000000"}}'
+	rclone rc $Webguicommands options/set --json '{"filter": {"MinAge":900000000000}}'
 	RcloneCommandRC="sync/$RcloneCommand"
 	CreateBindMount="N"
 fi
