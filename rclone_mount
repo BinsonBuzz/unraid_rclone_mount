@@ -317,15 +317,11 @@ else
 	if [[  $Additional_Mount1_location != 'ignore' ]]; then
 		echo "$(date "+%d.%m.%Y %T") INFO: Running Additional mergerfs command."
 		mergerfs $Mount1_merge_dir1:$Mount1_merge_dir2$Mount1_merge_dir3$Mount1_merge_dir4 $Additional_Mount1_location -o $Write1_properties,$adv_options
-		else
 	fi
-	
 	if [[  $Additional_Mount2_location != 'ignore' ]]; then
 		echo "$(date "+%d.%m.%Y %T") INFO: Running Additional mergerfs command."
 		mergerfs $Mount2_merge_dir1:$Mount2_merge_dir2$Mount2_merge_dir3$Mount2_merge_dir4 $Additional_Mount2_location -o $Write2_properties,$adv_options
-		else
 	fi
-
 # check if mergerfs mount successful
 		echo "$(date "+%d.%m.%Y %T") INFO: Checking if ${RcloneRemoteName} mergerfs mount created."
 		if [[ -f "$MergerFSMountLocation/mountcheck" ]]; then
