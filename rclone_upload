@@ -5,143 +5,48 @@
 ######################            GUI Build            ######################
 #############################################################################
 #############################################################################
-######################         Version 0.97.0          ######################
-#############################################################################
+######################         Version 0.98.0          ######################
 #############################################################################
 #############################################################################
 # INSTRUCTIONS                                                              #
-# Edit the settings below to match your setup                               #
-# NOTE: Enter Remote Names WITHOUT ':'                                      #
-# Optional: Add additional commands or filters                              #
-# Optional: Use bind mount settings for potential traffic shaping           #
-# Optional: Use service accounts in your upload remote                      #
-# Optional: Use Backup Directory for rclone sync jobs                       #
-# Optional: Utilize Beta WebGUI. Note - This may still be prone to errors   #
-#############################################################################
-
-
-#############################################################################
-########################          ----------          #######################
-########################      Required Settings       #######################
-########################          ----------          #######################
-#############################################################################
-
-RcloneCommand="move" # choose your rclone command. Options are: move, copy, sync.
-RcloneRemoteName="gcrypt" # Name of rclone remote mount WITHOUT ':'.
-RcloneUploadRemoteName="gcrypt" # If you have a second remote created for uploads put it here.  Otherwise use the same remote as RcloneRemoteName.
-LocalFilesShare="/mnt/user/local" # location of the local files without trailing slash you want to rclone to use
-RcloneMountShare="/mnt/user/mount_rclone" # where your rclone mount is located without trailing slash  e.g. /mnt/user/mount_rclone
-MinimumAge="15m" # sync files suffix ms|s|m|h|d|w|M|y *Ignored and uses default 15m with Beta GUI
-ModSort="ascending" # "ascending" oldest files first, "descending" newest files first
-
-
-#############################################################################
-########################          ----------          #######################
-########################      Optional Settings       #######################
-########################          ----------          #######################
-#############################################################################
-
-#############################################################################
-########################     Add Upload Job Name      #######################
-#############################################################################
-
-JobName="_daily_upload" # Adds custom string to end of checker file.  Useful if you're running multiple jobs against the same remote.
-
-#############################################################################
-######################        Bandwidth Limits?        ######################
-##############  Suffix b|k|M|G. Or 'off' or '0' for Unlimited  ##############
-# The script uses --drive-stop-on-upload-limit which stops the script if    #
-# the 750GB/day limit is achieved, so you no longer have to slow 'trickle'  #
-# your files all day if you don't want to e.g. could just do an unlimited   #
-# job overnight.                                                            #
-#############################################################################
-
-BWLimit1Time="01:00"
-BWLimit1="off"
-BWLimit2Time="08:00"
-BWLimit2="off"
-BWLimit3Time="16:00"
-BWLimit3="off"
-
-#############################################################################
-###################         Custom Rclone Commands        ###################
-################### **Not Applicable with Rclone WebGUI** ###################
-#############################################################################
-
-Command1=""
-Command2=""
-Command3=""
-Command4=""
-Command5=""
-Command6=""
-Command7=""
-Command8=""
-
-#############################################################################
-##########                    Use Beta WebGUI                       #########
-##########   Settings for GUI must match settings in Mount script   #########
-#############################################################################
-
-Webgui="Y" # Y/N. Choose whether to enable rclones beta web-gui
-Webgui_Username="USERNAME" # Username for WebGUI
-Webgui_Password="PASSWORD" # Password for WebGUI
-Webgui_Address=":5572" #IP:Port for your local webGUI. Default ":5572" will host WebGUI at http://Unraid's-IP:5572
-Exclusionfilter1="/downloads/**" #Ruleset to be placed in the exclusion filter (IE what rclone mover will ignore). Leave as default "/downloads/**" unless you have a special case. 
-Exclusionfilter2="*partial~" #Default Filter 2
-
-#############################################################################
-###########               Bind Upload to Unique IP                ###########
-###########    Do not set to "Y" if you are using Beta WebGUI     ###########
-#############################################################################
-
-CreateBindMount="N" # Y/N. Choose whether or not to bind traffic to a network adapter.
-RCloneMountIP="192.168.1.253" # Choose IP to bind upload to.
-NetworkAdapter="eth0" # choose your network adapter. eth0 recommended.
-VirtualIPNumber="1" # creates eth0:x e.g. eth0:1.
-
-#############################################################################
-#############                 Service Accounts                 ##############
-#############   Guide: https://github.com/xyou365/AutoRclone   ##############
-#############################################################################
-
-UseServiceAccountUpload="Y" # Y/N. Choose whether to use Service Accounts.
-ServiceAccountDirectory="/mnt/user/appdata/other/rclone/service_accounts" # Path to your Service Account's .json files.
-ServiceAccountFile="sa_gdrive_upload" # Enter characters before counter in your json files e.g. for sa_gdrive_upload1.json, sa_gdrive_upload2.json, ect: enter "sa_gdrive_upload".
-CountServiceAccounts="99" # Integer number of service accounts to use.
-
-#############################################################################
-#####   Additional Settings required for Service Accounts WITH WebGUI   #####
-#####                            ------------                           #####
-#####        Due to -RC you must have another additional remotes        #####
-#####         dedicated to Service accounts in your rclone.conf         #####
-#####                            ------------                           #####
-#####            See github project Read.me for more detail             #####
-#############################################################################
-
-ServiceAccountRemoteName="gui_service" #Remote name of non-crypt share for service account (eg. "service_account"). If you are not using encryption put single service remote name ("service_account")
-ServiceAccountCryptName="gui_service_crypt" #Remote name of crypt share for service account (eg. "service_account_crypt"). If you are not using encryption use the same remote as ServiceAccountRemoteName
-
-#############################################################################
-######################      Is this a Backup Job?      ######################
-#############################################################################
-
-BackupJob="N" # Y/N. Syncs or Copies files from LocalFilesLocation to BackupRemoteLocation, rather than moving from LocalFilesLocation/RcloneRemoteName
-BackupRemoteLocation="backup" # choose location on mount for deleted sync files
-BackupRemoteDeletedLocation="backup_deleted" # choose location on mount for deleted sync files
-BackupRetention="90d" # How long to keep deleted sync files suffix ms|s|m|h|d|w|M|y
-
-
+# Make Sure to edit config settings to your prefernces                      #
+#                                                                           #
+# Script Config located at: /mnt/user/appdata/other/rclone/config.cfg       #
+#                                                                           #
 #############################################################################
 #############################################################################
 #####                                                                   #####
-#####                          -------------                            #####
-#####                       END OF USER SETTINGS                        #####
-#####                          -------------                            #####
+#####    DO NOT EDIT THIS SCRIPT UNLESS YOU KNOW WHAT YOU ARE DOING     #####
 #####                                                                   #####
-#####  DO NOT EDIT BELOW THIS LINE UNLESS YOU KNOW WHAT YOU ARE DOING   #####
 #############################################################################
 #############################################################################
 #############################################################################
+
+######################  Load and Prep Config Variables  #####################
+
+if [[ -f "mnt/user/appdata/other/rclone/config.cfg" ]]; then
+		echo "$(date "+%d.%m.%Y %T") INFO: Found Config Files"
+	else
+		echo "$(date "+%d.%m.%Y %T") ERROR: No Config File found."
+		echo "$(date "+%d.%m.%Y %T") ERROR: Please edit config file at /mnt/user/appdata/other/rclone/config.cfg."
+		exit
+fi
+
+echo "$(date "+%d.%m.%Y %T") INFO: Loading Config File."
+
+shopt -s extglob
+configfile="/mnt/user/appdata/other/rclone/config.cfg" # set the actual path name of your (DOS or Unix) config file
+tr -d '\r' < $configfile > $config.cfg
+while IFS='= ' read -r lhs rhs
+do
+    if [[ ! $lhs =~ ^\ *# && -n $lhs ]]; then
+        rhs="${rhs%%\#*}"    # Del in line right comments
+        rhs="${rhs%%*( )}"   # Del trailing spaces
+        rhs="${rhs%\"*}"     # Del opening string quotes 
+        rhs="${rhs#\"*}"     # Del closing string quotes 
+        declare $lhs="$rhs"
+    fi
+done < $config.cfg
 
 
 ######################  Prep Mount Location Variables  ######################
@@ -257,21 +162,21 @@ if [[  $Webgui == 'Y' ]]; then
 	rclone rc $Webguicommands options/set --json '{"filter": {"ExcludeFrom": ["'"$Excludepath"'"]}}'
 	rclone rc $Webguicommands options/set --json '{"filter": {"MinAge":900000000000}}'
 	RcloneCommandRC="sync/$RcloneCommand"
-	CreateBindMount="N"
+	CreateBindMount_upload="N"
 fi
 
 ######################      Check Binding Options      ######################
-if [[  $CreateBindMount == 'Y' ]]; then
-	echo "$(date "+%d.%m.%Y %T") INFO: *** Checking if IP address ${RCloneMountIP} already created for upload to remote ${RcloneUploadRemoteName}"
-	ping -q -c2 $RCloneMountIP > /dev/null # -q quiet, -c number of pings to perform
+if [[  $CreateBindMount_upload == 'Y' ]]; then
+	echo "$(date "+%d.%m.%Y %T") INFO: *** Checking if IP address ${RCloneMountIP_upload} already created for upload to remote ${RcloneUploadRemoteName}"
+	ping -q -c2 $RCloneMountIP_upload > /dev/null # -q quiet, -c number of pings to perform
 	if [ $? -eq 0 ]; then # ping returns exit status 0 if successful
-		echo "$(date "+%d.%m.%Y %T") INFO: *** IP address ${RCloneMountIP} already created for upload to remote ${RcloneUploadRemoteName}"
+		echo "$(date "+%d.%m.%Y %T") INFO: *** IP address ${RCloneMountIP_upload} already created for upload to remote ${RcloneUploadRemoteName}"
 	else
-		echo "$(date "+%d.%m.%Y %T") INFO: *** Creating IP address ${RCloneMountIP} for upload to remote ${RcloneUploadRemoteName}"
-		ip addr add $RCloneMountIP/24 dev $NetworkAdapter label $NetworkAdapter:$VirtualIPNumber
+		echo "$(date "+%d.%m.%Y %T") INFO: *** Creating IP address ${RCloneMountIP_upload} for upload to remote ${RcloneUploadRemoteName}"
+		ip addr add $RCloneMountIP_upload/24 dev $NetworkAdapter_upload label $NetworkAdapter_upload:$VirtualIPNumber_upload
 	fi
 else
-	RCloneMountIP=""
+	RCloneMountIP_upload=""
 fi
 
 ######################     Rclone Upload Commands      ###################### 
@@ -293,7 +198,7 @@ else
 	--transfers 4 \
 	--order-by modtime,$ModSort \
 	--min-age $MinimumAge \
-	$Command1 $Command2 $Command3 $Command4 $Command5 $Command6 $Command7 $Command8 \
+	$Command1_upload $Command2_upload $Command3_upload $Command4_upload $Command5_upload $Command6_upload $Command7_upload $Command8_upload \
 	--exclude *fuse_hidden* \
 	--exclude *_HIDDEN \
 	--exclude .recycle** \
@@ -302,7 +207,7 @@ else
 	--exclude *.partial~* \
 	--drive-stop-on-upload-limit \
 	--bwlimit "${BWLimit1Time},${BWLimit1} ${BWLimit2Time},${BWLimit2} ${BWLimit3Time},${BWLimit3}" \
-	--bind=$RCloneMountIP $DeleteEmpty
+	--bind=$RCloneMountIP_upload $DeleteEmpty
 fi
  
 if [[  $UseBackupDirectory == 'Y' ]]; then
