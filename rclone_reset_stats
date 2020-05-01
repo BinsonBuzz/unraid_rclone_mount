@@ -11,9 +11,31 @@
 ##########   Settings for GUI must match settings in Mount script   #########
 #############################################################################
 
-Webgui_Username="USERNAME" # Username for WebGUI
-Webgui_Password="PASSWORD" # Password for WebGUI
-Webgui_Address=":5572" #IP:Port for your local webGUI. Default ":5572" will host WebGUI at http://Unraid's-IP:5572
+######################  Load and Prep Config Variables  #####################
+
+if [[ -f "mnt/user/appdata/other/rclone/config.cfg" ]]; then
+		echo "$(date "+%d.%m.%Y %T") INFO: Found Config Files"
+	else
+		echo "$(date "+%d.%m.%Y %T") ERROR: No Config File found."
+		echo "$(date "+%d.%m.%Y %T") ERROR: Please edit config file at /mnt/user/appdata/other/rclone/config.cfg."
+		exit
+fi
+
+echo "$(date "+%d.%m.%Y %T") INFO: Loading Config File."
+
+shopt -s extglob
+configfile="/mnt/user/appdata/other/rclone/config.cfg" # set the actual path name of your (DOS or Unix) config file
+tr -d '\r' < $configfile > $config.cfg
+while IFS='= ' read -r lhs rhs
+do
+    if [[ ! $lhs =~ ^\ *# && -n $lhs ]]; then
+        rhs="${rhs%%\#*}"    # Del in line right comments
+        rhs="${rhs%%*( )}"   # Del trailing spaces
+        rhs="${rhs%\"*}"     # Del opening string quotes 
+        rhs="${rhs#\"*}"     # Del closing string quotes 
+        declare $lhs="$rhs"
+    fi
+done < $config.cfg
 
 
 ####### Script #######
