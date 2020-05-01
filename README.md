@@ -8,6 +8,7 @@ To migrate to this build from previous scripts, simply make your own config.cfg 
 <ul>
 <b>Use of a config file will make updates much easier. You will simply have to copy and paste the updated script and will not need to re-enter all your old values. </b>
 <p/>
+</ul>
 
 <b>Rclone BETA WebGUI</b>
 Modifications by Watchmeexplode5 based on <a href="https://github.com/BinsonBuzz/unraid_rclone_mount">BisonBuzz's</a> amazing rclone mount/move scripts for Unraid.
