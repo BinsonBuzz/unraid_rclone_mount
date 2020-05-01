@@ -84,46 +84,6 @@ NetworkAdapter="eth0" # choose your network adapter. eth0 recommended
 VirtualIPNumber="2" # creates eth0:x e.g. eth0:1.  I create a unique virtual IP addresses for each mount & upload so I can monitor and traffic shape for each of them
 
 #############################################################################
-##########              Additional MergerFs **Mounts**              #########
-##########       (Don't confuse with extra file paths above)        #########
-#############################################################################
-
-#############################################################################
-#   Use case for me - allows multiple instances of Sonarr/Radarr to handle  #
-#                 each quality (ie /movies_1080, /movies_4k)                #
-#                    ----------------------------------                     #
-#       Plex/Emby only sees a single folder structure so the player can     #
-#          determine the best directplay/transcode option on a client       #
-#                    ----------------------------------                     #
-#              Sonarr/Radar folder naming schemes to be identical           #
-#                    ----------------------------------                     #
-#                    ----------------------------------                     #
-# Ex: ./mount_merger_fs/gcrypt/movies_1080/Movie Name/Movie Remux-1080p.mkv #
-# Ex: ./mount_merger_fs/gcrypt/movies_4k/Movie Name/Movie Remux-2160p.mkv   #
-#                                                                           #
-# Plex will see: /combined_media/movies/The Movie (2020)/                   #
-#                               Movie - Remux-1080p.mkv                     #
-#                               Movie - Remux-2160p.mkv                     #
-#############################################################################
-
-Additional_Mount1_location="ignore" #Ignore to disable function. Ex: "/mnt/user/combined_media/movies"
-Write1_properties="ro" #Default: "ro" --> read-only. Nothing should need to write this drive in most cases. Options: ro/rw
-Mount1_merge_dir1="" # First directory to merge. Ex: "/mnt/user/mount_mergerfs/gcrypt/movies/"  --> Where "gcrypt" is your rcloneremotename above. Blank to disable. 
-Mount1_merge_dir2="" # Second directory to merge. Ex: "/mnt/user/mount_mergerfs/gcrypt/movies\ 4k/". Blank to disable
-Mount1_merge_dir3="" # Blank to disable
-Mount1_merge_dir4="" # Blank to disable
-
-Additional_Mount2_location="ignore" #Ignore to disable function. Ex: "/mnt/user/combined_media/tv"
-Write2_properties="ro" #Default: "ro" --> read-only. Nothing should need to write this drive in most cases. Options: ro/rw
-Mount2_merge_dir1="" # Ex. "/mnt/user/mount_mergerfs/gcrypt/tv/". Blank to disable
-Mount2_merge_dir2="" # Ex. "/mnt/user/mount_mergerfs/gcrypt/tv\ 4k/"
-Mount2_merge_dir3="" # Blank to disable
-Mount2_merge_dir4="" # Blank to disable
-
-#Advanced merger_fs options, modify for special use, otherwise leave as default.
-adv_options="async_read=false,use_ino,allow_other,func.getattr=newest,category.action=all,category.create=ff,cache.files=off,dropcacheonclose=true" 
-
-#############################################################################
 #############################################################################
 #####                                                                   #####
 #####                          -------------                            #####
@@ -150,21 +110,6 @@ else
 fi
 mkdir -p $RcloneMountLocation
 mkdir -p $MergerFSMountLocation
-
-if [[  $Additional_Mount1_location == 'ignore' ]]; then
-	echo "$(date "+%d.%m.%Y %T") INFO: Not creating additional mergerfs mount shares as requested."
-else
-	echo "$(date "+%d.%m.%Y %T") INFO: Creating additional mergerfs mount shares."
-	mkdir -p $Additional_Mount1_location
-fi
-
-if [[  $Additional_Mount2_location == 'ignore' ]]; then
-	echo "$(date "+%d.%m.%Y %T") INFO: Not creating second additional mergerfs mount shares as requested."
-else
-	echo "$(date "+%d.%m.%Y %T") INFO: Creating second additional mergerfs mount shares."
-	mkdir -p $Additional_Mount2_location
-fi
-
 ###################### Check if Upload Already Running ######################
 echo "$(date "+%d.%m.%Y %T") INFO: *** Starting mount of remote ${RcloneRemoteName}"
 echo "$(date "+%d.%m.%Y %T") INFO: Checking if this script is already running."
@@ -290,38 +235,8 @@ else
 		else
 			LocalFilesShare4=""
 		fi
-		if [[  $Mount1_merge_dir3 != 'ignore' ]]; then
-			Mount1_merge_dir3=":$Mount1_merge_dir3"
-		else
-			Mount1_merge_dir3=""
-		fi
-		if [[  $Mount1_merge_dir4 != 'ignore' ]]; then
-			Mount1_merge_dir4=":$Mount1_merge_dir4"
-		else
-			Mount1_merge_dir4=""
-		fi
-		if [[  $Mount2_merge_dir3 != 'ignore' ]]; then
-			Mount2_merge_dir3=":$Mount2_merge_dir3"
-		else
-			Mount2_merge_dir3=""
-		fi
-		if [[  $Mount2_merge_dir4 != 'ignore' ]]; then
-			Mount2_merge_dir4=":$Mount2_merge_dir4"
-		else
-			Mount2_merge_dir4=""
-		fi
 # mergerfs mount command
 		mergerfs $LocalFilesLocation:$RcloneMountLocation$LocalFilesShare2$LocalFilesShare3$LocalFilesShare4 $MergerFSMountLocation -o rw,async_read=false,use_ino,allow_other,func.getattr=newest,category.action=all,category.create=ff,cache.files=partial,dropcacheonclose=true
-		
-# Additional mergerfs mount command
-	if [[  $Additional_Mount1_location != 'ignore' ]]; then
-		echo "$(date "+%d.%m.%Y %T") INFO: Running Additional mergerfs command."
-		mergerfs $Mount1_merge_dir1:$Mount1_merge_dir2$Mount1_merge_dir3$Mount1_merge_dir4 $Additional_Mount1_location -o $Write1_properties,$adv_options
-	fi
-	if [[  $Additional_Mount2_location != 'ignore' ]]; then
-		echo "$(date "+%d.%m.%Y %T") INFO: Running Additional mergerfs command."
-		mergerfs $Mount2_merge_dir1:$Mount2_merge_dir2$Mount2_merge_dir3$Mount2_merge_dir4 $Additional_Mount2_location -o $Write2_properties,$adv_options
-	fi
 # check if mergerfs mount successful
 		echo "$(date "+%d.%m.%Y %T") INFO: Checking if ${RcloneRemoteName} mergerfs mount created."
 		if [[ -f "$MergerFSMountLocation/mountcheck" ]]; then
