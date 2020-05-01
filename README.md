@@ -1,5 +1,14 @@
 # Rclone Mount & Upload Scripts for Plex Users
 
+<b>New Configuration File Setup</b>
+All user settings are now definfined in the config.cfg file which, if not present, is automatically created on the initial run of the mount script.
+
+To migrate to this build from previous scripts, simply make your own config.cfg or run the mount script without it and it will create one. Then copy and paste your old values into the new config.cfg. Be mindful that the format of some items have changed so use the new format (particularly on mountfolders which is now: MountFolders={downloads/{complete,intermediate,seeds},movies,tv}). Please use the new format for MountFolder or it will not create/mount the correct folders. 
+
+<ul>
+<b>Use of a config file will make updates much easier. You will simply have to copy and paste the updated script and will not need to re-enter all your old values. </b>
+<p/>
+
 <b>Rclone BETA WebGUI</b>
 Modifications by Watchmeexplode5 based on <a href="https://github.com/BinsonBuzz/unraid_rclone_mount">BisonBuzz's</a> amazing rclone mount/move scripts for Unraid.
 
