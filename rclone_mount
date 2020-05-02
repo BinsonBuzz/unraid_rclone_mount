@@ -4,18 +4,30 @@
 ######################            GUI Build            ######################
 #############################################################################
 #############################################################################
-######################         Version 0.98.0          ######################
+######################         Version 0.98.1          ######################
 #############################################################################
 #############################################################################
 #############################################################################
-# INSTRUCTIONS                                                              #
-# Make Sure to edit config settings to your prefernces                      #
+#                               INSTRUCTIONS                                #
+#           Make Sure to edit config settings to your prefernces            #
 #                                                                           #
-# Script Config located at: /mnt/user/appdata/other/rclone/config.cfg       #
+#    Script Config located at: /mnt/user/appdata/other/rclone/config.cfg    #
 #                                                                           #
-# If config.cfg not present script will automatically create                #
-# a config file for you to edit                                             #
+#    If config.cfg not present script will automatically create             #
+#    a config file for you to edit                                          #
 #                                                                           #
+#    If you need to change the config_file or path feel free below          #
+#    (Eg. Multiple mount/upload scripts running)                            #
+#                                                                           #
+#              Otherwise, no need to edit this script                       #
+#############################################################################
+#############################################################################
+
+
+configfile="/mnt/user/appdata/other/rclone/config.cfg" #Leave as default unless you need to run multiple configs. Example - multiple mount/upload scripts
+
+
+
 #############################################################################
 #############################################################################
 #####                                                                   #####
@@ -27,7 +39,7 @@
 
 ######################  Load and Prep Config Variables  #####################
 
-if [[ -f "mnt/user/appdata/other/rclone/config.cfg" ]]; then
+if [[ -f "$configfile" ]]; then
 		echo "$(date "+%d.%m.%Y %T") INFO: Found Config Files"
 	else
 		mkdir -p /mnt/user/appdata/other/rclone/
@@ -40,7 +52,6 @@ fi
 echo "$(date "+%d.%m.%Y %T") INFO: Loading Config File."
 
 shopt -s extglob
-configfile="/mnt/user/appdata/other/rclone/config.cfg" # set the actual path name of your (DOS or Unix) config file
 tr -d '\r' < $configfile > $config.cfg
 while IFS='= ' read -r lhs rhs
 do
