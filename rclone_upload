@@ -5,7 +5,7 @@
 ######################            GUI Build            ######################
 #############################################################################
 #############################################################################
-######################         Version 0.98.0          ######################
+######################         Version 0.98.1          ######################
 #############################################################################
 #############################################################################
 # INSTRUCTIONS                                                              #
@@ -184,7 +184,7 @@ if [[  $Webgui == 'Y' ]]; then
 	echo "$(date "+%d.%m.%Y %T") INFO: Uploading through RC with WebGUI Enabled"
 	rclone rc $Webguicommands \
 	$RcloneCommandRC \
-	--json '{"srcFs":"'"$LocalFilesLocation"'", "dstFs":"'"$Uploadremote"'", "deleteEmptySrcDirs":"'"$DeleteEmpty"'", "_async": true}'
+	--json '{"srcFs":"'"$LocalFilesLocation"'", "dstFs":"'"$Uploadremote"'", "deleteEmptySrcDirs":"'"$DeleteEmpty"'", "_async": true, "_group":"upload"}'
 else
 	echo "$(date "+%d.%m.%Y %T") INFO: Uploading With WebGUI Disabled"
 	rclone $RcloneCommand $LocalFilesLocation $RcloneUploadRemoteName:$BackupRemoteLocation $ServiceAccount $BackupDir -vP \
@@ -210,8 +210,9 @@ else
 	--bind=$RCloneMountIP_upload $DeleteEmpty
 fi
  
-if [[  $UseBackupDirectory == 'Y' ]]; then
+
 ######################   Delete old files from mount   ######################
+if [[  $UseBackupDirectory == 'Y' ]]; then
 	echo "$(date "+%d.%m.%Y %T") INFO: *** Removing files older than ${BackupRetention} from ${BackupDirectoryLocation} for ${RcloneUploadRemoteName}."
 	rclone delete --min-age $BackupRetention $RcloneUploadRemoteName:$BackupRemoteDeletedLocation
 fi
@@ -220,6 +221,32 @@ fi
 ######################       Update Counter File       ######################
 ######################     Clean-up and Final Tasks    ######################
 #############################################################################
+
+
+####################   Sleep for upload initiation time  ####################
+sleep 15
+
+######################   Monitor for RC Upload Finish  ######################
+if [[  $Webgui == 'Y' ]]; then
+    rc_job_status=$(
+	rclone rc $Webguicommands --json '{ "group": "upload" }' core/stats
+	)
+for (( ; ; )); do
+   if [[ $rc_job_status != *transferring* ]]; then
+	echo "$(date "+%d.%m.%Y %T") INFO: Upload job has finished"
+        break
+   else
+	echo "$(date "+%d.%m.%Y %T") INFO: Upload job is still in progress - will recheck in 1 minute"
+        sleep 60
+        rc_job_status=$(
+	rclone rc $Webguicommands --json '{ "group": "upload" }' core/stats
+	)
+	continue
+   fi
+done
+fi
+
+###################### Modify Service Accounts Counter ######################
 if [[  $UseServiceAccountUpload == 'Y' ]]; then
 	if [[ "$CounterNumber" == "$CountServiceAccounts" ]];then
 		rm /mnt/user/appdata/other/rclone/remotes/$RcloneUploadRemoteName/counter_*
