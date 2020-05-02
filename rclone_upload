@@ -39,8 +39,6 @@ configfile="/mnt/user/appdata/other/rclone/config.cfg" #Leave as default unless 
 if [[ -f "$configfile" ]]; then
 		echo "$(date "+%d.%m.%Y %T") INFO: Found Config Files"
 	else
-		mkdir -p /mnt/user/appdata/other/rclone/
-		wget https://raw.githubusercontent.com/watchmeexplode5/unraid_rclone_mount/rclone-beta-gui/config.cfg -P /mnt/user/appdata/other/rclone/
 		echo "$(date "+%d.%m.%Y %T") ERROR: No Config File found."
 		echo "$(date "+%d.%m.%Y %T") ERROR: Please edit config file at /mnt/user/appdata/other/rclone/config.cfg."
 		exit

@@ -11,9 +11,14 @@
 ##########   Settings for GUI must match settings in Mount script   #########
 #############################################################################
 
+configfile="/mnt/user/appdata/other/rclone/config.cfg" #Leave as default unless you need to run multiple configs. Example - multiple mount/upload scripts
+
+
+######################       END OF USER SETTINGS       #####################
+
 ######################  Load and Prep Config Variables  #####################
 
-if [[ -f "mnt/user/appdata/other/rclone/config.cfg" ]]; then
+if [[ -f "$configfile" ]]; then
 		echo "$(date "+%d.%m.%Y %T") INFO: Found Config Files"
 	else
 		echo "$(date "+%d.%m.%Y %T") ERROR: No Config File found."
@@ -24,7 +29,6 @@ fi
 echo "$(date "+%d.%m.%Y %T") INFO: Loading Config File."
 
 shopt -s extglob
-configfile="/mnt/user/appdata/other/rclone/config.cfg" # set the actual path name of your (DOS or Unix) config file
 tr -d '\r' < $configfile > $config.cfg
 while IFS='= ' read -r lhs rhs
 do
@@ -36,6 +40,7 @@ do
         declare $lhs="$rhs"
     fi
 done < $config.cfg
+
 
 
 ####### Script #######
