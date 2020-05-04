@@ -23,6 +23,10 @@ Modifications by Watchmeexplode5 based on <a href="https://github.com/BinsonBuzz
 
 This branch utilizes the new Beta GUI for Rclone. It should be noted that this is early in development phase and many settings/features within the gui may not function fully. For rclone stats to be displayed properly all rclone activity (mount/move/copy) must be pushed through a single rclone instance. This is different when compared to the original scripts which called a new instance of rclone for every function. For this to function correctly the scripts now utilize rclones Remote Control commands (RC). RC, although fairly mature at this point, comes with its own set of challenges and limitations. Documentation within the script settings should note any limitations within the specific user settings. 
 
+<p/>
+For detailed documentation about Rclones RC functions see: https://rclone.org/rc/
+<p/>
+
 <b>Caveats to the WebGui</b>
 <ul>
 <b>Ensure you are using the latest rclone stable or rclone beta pluggin via Community Apps</b>
@@ -42,15 +46,13 @@ This branch utilizes the new Beta GUI for Rclone. It should be noted that this i
 <b>Exclusion/Inclusion rules:</b> (as of present) Rules are currently handled differently through RC. RC Api struggles with filter commands which requires a work around for exclusion rules. Exclusion rules are now set within appdata/other/rclone/remotes/YOURREMOTE/exclusion.txt. This file is automatically created when running the script with WebGui enabled. The script is written to exlucude /downloads and partial files (just like the original script). Feel free to manually edit the exclusion.txt file if you require more exclusions (or simply stash exclude files witin your /local/downloads/ where they will not be touched). 
 <p/> Presently, a custom minimum age exclusion does not work due to a parsing bug in rclone (known and should and is pending fixes by rclone developers). The scripts have included a work around for this issue and place a minimum age of 15 minutes for the pending upload files. This may/may not be fixed quickly depending on rclone devs (it's a minor issue so it may take time). 
 <p/>
+</ul>
 
 ###Additional Scripts 
 
 Other scripts have been included within the "other useful scripts" folder. This includes shutting down the rclone rc instance (created by mount script), a script to reset/clear rclones statistics, and a fusermount script (credit: teh0wner) if you are having hanging array on stop.
 <p/>
 
-</ul>
-For detailed documentation about Rclones RC functions see: https://rclone.org/rc/
- 
 
 ## Screenshots
 ### Dashboard
