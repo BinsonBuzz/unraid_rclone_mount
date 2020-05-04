@@ -1,15 +1,10 @@
 #!/bin/bash
 
 #######################
-###   Reset Stats  ####
+###  Terminate RC  ####
 #######################
 ###  Version 0.1.0 ####
 #######################
-
-#############################################################################
-##########                    Use Beta WebGUI                       #########
-##########   Settings for GUI must match settings in Mount script   #########
-#############################################################################
 
 configfile="/mnt/user/appdata/other/rclone/config.cfg" #Leave as default unless you need to run multiple configs. Example - multiple mount/upload scripts
 
@@ -42,10 +37,11 @@ do
 done < $config.cfg
 
 
+
 ####### Script #######
 Webguicommands="--rc-user=$Webgui_Username --rc-pass=$Webgui_Password --rc-addr=$Webgui_Address"
-echo "$(date "+%d.%m.%Y %T") INFO: *** Resetting Rclone Stats via RC ***"
+echo "$(date "+%d.%m.%Y %T") INFO: *** Terminating Rclone Mount and RC ***"
 
-rclone rc $Webguicommands core/stats-reset
+rclone rc $Webguicommands core/quit
 
 exit
