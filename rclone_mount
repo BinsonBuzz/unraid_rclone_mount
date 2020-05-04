@@ -42,10 +42,8 @@ configfile="/mnt/user/appdata/other/rclone/config.cfg" #Leave as default unless 
 if [[ -f "$configfile" ]]; then
 		echo "$(date "+%d.%m.%Y %T") INFO: Found Config Files"
 	else
-		mkdir -p /mnt/user/appdata/other/rclone/
-		wget https://raw.githubusercontent.com/watchmeexplode5/unraid_rclone_mount/rclone-beta-gui/config.cfg -P /mnt/user/appdata/other/rclone/
 		echo "$(date "+%d.%m.%Y %T") ERROR: No Config File found."
-		echo "$(date "+%d.%m.%Y %T") ERROR: Please edit config file at /mnt/user/appdata/other/rclone/config.cfg."
+		echo "$(date "+%d.%m.%Y %T") ERROR: Please run modify and run setup config script with your settings OR manually setup a config file at /mnt/user/appdata/other/rclone/config.cfg (see github for examples)"
 		exit
 fi
 
@@ -80,7 +78,7 @@ else
 fi
 mkdir -p $RcloneMountLocation
 mkdir -p $MergerFSMountLocation
-###################### Check if Upload Already Running ######################
+###################### Check if script Already Running ######################
 echo "$(date "+%d.%m.%Y %T") INFO: *** Starting mount of remote ${RcloneRemoteName}"
 echo "$(date "+%d.%m.%Y %T") INFO: Checking if this script is already running."
 if [[ -f "/mnt/user/appdata/other/rclone/remotes/$RcloneRemoteName/mount_running" ]]; then
