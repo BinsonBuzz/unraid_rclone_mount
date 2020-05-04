@@ -1,0 +1,59 @@
+#!/bin/bash
+
+#############################
+###   Fusermount Script  ####
+#############################
+###     Version 0.1.0    ####
+#############################
+
+
+configfile="/mnt/user/appdata/other/rclone/config.cfg" #Leave as default unless you need to run multiple configs. Example - multiple mount/upload scripts
+
+
+######################       END OF USER SETTINGS       #####################
+
+
+######################  Load and Prep Config Variables  #####################
+
+if [[ -f "$configfile" ]]; then
+		echo "$(date "+%d.%m.%Y %T") INFO: Found Config Files"
+	else
+		echo "$(date "+%d.%m.%Y %T") ERROR: No Config File found."
+		echo "$(date "+%d.%m.%Y %T") ERROR: Please edit config file at /mnt/user/appdata/other/rclone/config.cfg."
+		exit
+fi
+
+echo "$(date "+%d.%m.%Y %T") INFO: Loading Config File."
+
+shopt -s extglob
+tr -d '\r' < $configfile > $config.cfg
+while IFS='= ' read -r lhs rhs
+do
+    if [[ ! $lhs =~ ^\ *# && -n $lhs ]]; then
+        rhs="${rhs%%\#*}"    # Del in line right comments
+        rhs="${rhs%%*( )}"   # Del trailing spaces
+        rhs="${rhs%\"*}"     # Del opening string quotes 
+        rhs="${rhs#\"*}"     # Del closing string quotes 
+        declare $lhs="$rhs"
+    fi
+done < $config.cfg
+
+
+echo "$(date "+%d.%m.%Y %T") INFO: *** Starting rclone_fusermount script ***"
+
+while [[ -f "/mnt/user/appdata/other/rclone/remotes/$RcloneRemoteName/mount_running" ]]; do
+echo "$(date "+%d.%m.%Y %T") INFO: mount is running, sleeping"
+sleep 5
+done
+
+while [[ -f "/mnt/user/appdata/other/rclone/remotes/$RcloneUploadRemoteName/upload_running" ]]; do
+echo "$(date "+%d.%m.%Y %T") INFO: upload is running, sleeping"
+sleep 15
+done
+
+fusermount -uz "$MergerfsMountShare"
+fusermount -uz "$RcloneMountShare"
+
+echo "$(date "+%d.%m.%Y %T") INFO: ***rclone_fusermount script finished ***"
+
+exit
