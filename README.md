@@ -6,12 +6,12 @@ All user settings for the script are now definfined in the config.cfg (or user s
 
 To migrate to this build from previous scripts, simply input your config values into the rclone_setup_config and run the script. Be mindful that the format of some items have changed so use the new format (particularly on mountfolders which is now: MountFolders={downloads/{complete,intermediate,seeds},movies,tv}). Please use the new format for MountFolder or it will not create/mount the correct folders. 
 
-<b>Note: All scripts reference the config file location. This setting is present in all the scripts and found within the first few lines (configfile="/mnt/../rclone/config.cfg") - Please ensure that this points to the correct file location which was set when you ran the rclone_setup_config script. If you left this as the default location, no need to modify any scripts besides the setup_config script.</b>
+<b>Important Note:</b> All scripts reference the user defined config file location. This setting is present in all the scripts and found within the first few lines (configfile="/mnt/../rclone/config.cfg") - Please ensure that this points to the correct file location which was set when you ran the rclone_setup_config script. If you left this as the default location, no need to modify any scripts besides the setup_config_script.
 
 <b>Use of a config file will make any script updates much easier. You will simply have to copy and paste the updated script and will not need to re-enter all your old values.</b>
 <ul>
 <p/>
-If you use multiple instances of the upload/mount script, you can create multiple config files. Change the configfile="/mnt/.../rclone/XXXX.cfg" to reflect the name for the new config script and re-run the setup_config script. Then edit the configfile value manually in the mount/upload scripts to reflect the new config name. 
+If you use multiple instances of the upload/mount script, you can create multiple config files. Change the configfile="/mnt/.../rclone/XXXX.cfg" to reflect the name for your new config and re-run the setup_config script. Then edit the configfile value manually in the mount/upload/other scripts to reflect the new config name. 
 <p/>
 </ul>
 
