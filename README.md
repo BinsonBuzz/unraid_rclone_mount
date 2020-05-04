@@ -1,12 +1,14 @@
 # Rclone Mount & Upload Scripts for Plex Users
 
 <b>New Configuration File Setup</b>
-All user settings are now definfined in the config.cfg file which, if not present, is automatically created on the initial run of the mount script.
+All user settings for the script are now definfined in the config.cfg (or user specified) file which, if not present, can be automatically created using the rclone_setup_config script.
 
-To migrate to this build from previous scripts, simply make your own config.cfg or run the mount script without it and it will create one. Then copy and paste your old values into the new config.cfg. Be mindful that the format of some items have changed so use the new format (particularly on mountfolders which is now: MountFolders={downloads/{complete,intermediate,seeds},movies,tv}). Please use the new format for MountFolder or it will not create/mount the correct folders. 
+To migrate to this build from previous scripts, simply input your config values into the rclone_setup_config and run the script. Be mindful that the format of some items have changed so use the new format (particularly on mountfolders which is now: MountFolders={downloads/{complete,intermediate,seeds},movies,tv}). Please use the new format for MountFolder or it will not create/mount the correct folders. 
 
 <ul>
-<b>Use of a config file will make updates much easier. You will simply have to copy and paste the updated script and will not need to re-enter all your old values. </b>
+<b>Use of a config file will make any script updates much easier. You will simply have to copy and paste the updated script and will not need to re-enter all your old values. </b>
+<p/>
+If you use multiple instances of the script, you can create multiple config files. Change the configfile="/mnt/.../rclone/XXXX.cfg" to reflect the name for the new config script and re-run the setup_config script. Then edit the configfile value manually in the mount/upload scripts to reflect the new config name. 
 <p/>
 </ul>
 
@@ -20,6 +22,8 @@ This branch utilizes the new Beta GUI for Rclone created by negative0. It should
 <b>Caveats to the WebGui</b>
 <ul>
 <b>Ensure you are using the latest rclone stable or rclone beta pluggin via Community Apps</b>
+<p/>
+<b>WebGui is still fairly beta. Although editing settings within the gui may work in many cases.....there is a decent change it won't work. Best to leave the config edits to be done through the scripts.</b>
 <p/>
 
 
