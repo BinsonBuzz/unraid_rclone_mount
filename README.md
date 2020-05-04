@@ -43,7 +43,9 @@ This branch utilizes the new Beta GUI for Rclone. It should be noted that this i
 <p/> Presently, a custom minimum age exclusion does not work due to a parsing bug in rclone (known and should and is pending fixes by rclone developers). The scripts have included a work around for this issue and place a minimum age of 15 minutes for the pending upload files. This may/may not be fixed quickly depending on rclone devs (it's a minor issue so it may take time). 
 <p/>
 
-<b>Additional Scripts:</b> Other scripts have been included within the "other useful scripts" folder. This includes shutting down the rclone rc instance (created by mount script), a script to reset/clear rclones statistics, and a fusermount script (credit: teh0wner) if you are having hanging array on stop.
+###Additional Scripts 
+
+Other scripts have been included within the "other useful scripts" folder. This includes shutting down the rclone rc instance (created by mount script), a script to reset/clear rclones statistics, and a fusermount script (credit: teh0wner) if you are having hanging array on stop.
 <p/>
 
 </ul>
