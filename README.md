@@ -50,7 +50,7 @@ For detailed documentation about Rclones RC functions see: https://rclone.org/rc
 
 ### Additional Scripts 
 
-Other scripts have been included within the "other useful scripts" folder. This includes shutting down the rclone rc instance (created by mount script), a script to reset/clear rclones statistics, and a fusermount script (credit: teh0wner) if you are having hanging array on stop.
+Other scripts have been included within the "other useful scripts" folder. This includes shutting down the rclone rc instance (created by mount script), a script to reset/clear rclones statistics, and a fusermount script (credit: teh0wner).
 <p/>
 
 
