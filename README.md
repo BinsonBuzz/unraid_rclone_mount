@@ -1,23 +1,27 @@
 # Rclone Mount & Upload Scripts for Plex Users
 
 <b>New Configuration File Setup</b>
+<p/>
 All user settings for the script are now definfined in the config.cfg (or user specified) file which, if not present, can be automatically created using the rclone_setup_config script.
 
 To migrate to this build from previous scripts, simply input your config values into the rclone_setup_config and run the script. Be mindful that the format of some items have changed so use the new format (particularly on mountfolders which is now: MountFolders={downloads/{complete,intermediate,seeds},movies,tv}). Please use the new format for MountFolder or it will not create/mount the correct folders. 
 
+<b>Note: All scripts reference the config file location. This setting is present in all the scripts and found within the first few lines (configfile="/mnt/../rclone/config.cfg") - Please ensure that this points to the correct file location which was set when you ran the rclone_setup_config script. If you left this as the default location, no need to modify any scripts besides the setup_config script.</b>
+
+<b>Use of a config file will make any script updates much easier. You will simply have to copy and paste the updated script and will not need to re-enter all your old values.</b>
 <ul>
-<b>Use of a config file will make any script updates much easier. You will simply have to copy and paste the updated script and will not need to re-enter all your old values. </b>
 <p/>
-If you use multiple instances of the script, you can create multiple config files. Change the configfile="/mnt/.../rclone/XXXX.cfg" to reflect the name for the new config script and re-run the setup_config script. Then edit the configfile value manually in the mount/upload scripts to reflect the new config name. 
+If you use multiple instances of the upload/mount script, you can create multiple config files. Change the configfile="/mnt/.../rclone/XXXX.cfg" to reflect the name for the new config script and re-run the setup_config script. Then edit the configfile value manually in the mount/upload scripts to reflect the new config name. 
 <p/>
 </ul>
 
 <p/>
 
-<b>Rclone BETA WebGUI</b>
-Modifications by Watchmeexplode5 based on <a href="https://github.com/BinsonBuzz/unraid_rclone_mount">BisonBuzz's</a> amazing rclone mount/move scripts for Unraid.
+## Rclone Beta WebGUI
 
-This branch utilizes the new Beta GUI for Rclone created by negative0. It should be noted that this is early in development phase and many settings/features within the gui may not function fully. For rclone stats to be displayed properly all rclone activity (mount/move/copy) must be pushed through a single rclone instance. This is different when compared to the original scripts which can a new instance of rclone for every function. To achieve this all functions related to the gui utilize rclones Remote Control commands (RC). RC, although fairly mature at this point, comes with its own set of challenges and limitations. Documentation within the script settings should note any limitations within the specific user settings. 
+Modifications by Watchmeexplode5 based on <a href="https://github.com/BinsonBuzz/unraid_rclone_mount">BisonBuzz's</a> rclone mount/move scripts for Unraid.
+
+This branch utilizes the new Beta GUI for Rclone. It should be noted that this is early in development phase and many settings/features within the gui may not function fully. For rclone stats to be displayed properly all rclone activity (mount/move/copy) must be pushed through a single rclone instance. This is different when compared to the original scripts which called a new instance of rclone for every function. For this to function correctly the scripts now utilize rclones Remote Control commands (RC). RC, although fairly mature at this point, comes with its own set of challenges and limitations. Documentation within the script settings should note any limitations within the specific user settings. 
 
 <b>Caveats to the WebGui</b>
 <ul>
@@ -27,18 +31,19 @@ This branch utilizes the new Beta GUI for Rclone created by negative0. It should
 <p/>
 
 
-<b>Service Accounts:</b> Since it relies on a single instance of rclone, we cannot utilize many common flags.  For most instances this doesn't cause issues but does require us to utilize Service Accounts differntly. To utilize service accounts within the WebGui mode you must have another remote (or 2 if you use encryption) which reference the service account. On upload, the service account remote will be configured to use the correct sa_rotation for authorization. 
+<b>Service Accounts:</b> Since it relies on a single instance of rclone, we cannot utilize the traditional flags that make rclone function so smoothly. For most instances this doesn't cause issues but does require us to utilize Service Accounts differntly. To utilize service accounts within the WebGui mode you must have another remote (or 2 if you use encryption) within your rclone.conf which reference the service account. On upload, the service account remote will be configured to use the correct sa_rotation for authorization. 
 	<ul>
-	<li>This method ensures that your primary remote (used during the mount script) is not modified. This method removes the possible issues that could occur by changing the remote authorization level while the remote is being accessed.</li>
+	<li>This method ensures that your primary remote (used during the mount script and any time you read files from the mount!) is not modified. This method removes the possible issues that could occur by changing the remote authorization level while the remote is being accessed.</li>
 	<li>See rclone.conf for example of configuration file with separate service account remotes</li>
 	</ul>
 	<p/>
 
 <p/>
-<b>Exclusion/Inclusion rules:</b> (as of present) Rules are currently handled differently through RC. Exclusion rules are now set within appdata/other/rclone/remotes/YOURREMOTE/exclusion.txt. File is automatically created when running the script with WebGui enabled. The script is written to exlucude /downloads and partial files (just like the original script). Presently, minimum age exclusion does not work due to a bug in rclone (known and should and is pending fixes by rclone developers). 
+<b>Exclusion/Inclusion rules:</b> (as of present) Rules are currently handled differently through RC. RC Api struggles with filter commands which requires a work around for exclusion rules. Exclusion rules are now set within appdata/other/rclone/remotes/YOURREMOTE/exclusion.txt. This file is automatically created when running the script with WebGui enabled. The script is written to exlucude /downloads and partial files (just like the original script). Feel free to manually edit the exclusion.txt file if you require more exclusions (or simply stash exclude files witin your /local/downloads/ where they will not be touched). 
+<p/> Presently, a custom minimum age exclusion does not work due to a parsing bug in rclone (known and should and is pending fixes by rclone developers). The scripts have included a work around for this issue and place a minimum age of 15 minutes for the pending upload files. This may/may not be fixed quickly depending on rclone devs (it's a minor issue so it may take time). 
 <p/>
 
-<b>Additional Scripts:</b> Other scripts have been included which may be useful. This includes shutting down the rclone instance and a script to reset rclones statistics
+<b>Additional Scripts:</b> Other scripts have been included within the "other useful scripts" folder. This includes shutting down the rclone rc instance (created by mount script), a script to reset/clear rclones statistics, and a fusermount script (credit: teh0wner) if you are having hanging array on stop.
 <p/>
 
 </ul>
