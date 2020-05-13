@@ -6,7 +6,9 @@ The main thread for more support: https://forums.unraid.net/topic/75436-guide-ho
 
 <b>Credits:</b>
 
-Thanks to <a href="https://github.com/SenpaiBox">SenPaiBox</a> and the Unraid community for help in refining the scripts.
+Thanks to <a href="https://github.com/SenpaiBox">SenPaiBox</a>, <a href="https://github.com/watchmeexplode5">watchmeexplode5</a> and the Unraid community for help in refining the scripts.
+
+I've added a <a href="https://paypal.me/thankdzmm?locale.x=en_GB">Paypal.me</a> upon request if anyone wants to buy me a beer.
 
 <b>Unraid Users Requirements:</b>
 <ul>
