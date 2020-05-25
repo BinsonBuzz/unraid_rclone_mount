@@ -1,74 +1,84 @@
 #!/bin/bash
+#############################################################################
+######################           Mount Script          ######################
+######################            GUI Build            ######################
+#############################################################################
+#############################################################################
+######################         Version 0.98.1          ######################
+#############################################################################
+#############################################################################
+#############################################################################
+#                               INSTRUCTIONS                                #
+#           Make Sure to edit config settings to your prefernces            #
+#                                                                           #
+#    Script Config located at: /mnt/user/appdata/other/rclone/config.cfg    #
+#                                                                           #
+#    If config.cfg not present script will automatically create             #
+#    a config file for you to edit                                          #
+#                                                                           #
+#    If you need to change the config_file or path feel free below          #
+#    (Eg. Multiple mount/upload scripts running)                            #
+#                                                                           #
+#              Otherwise, no need to edit this script                       #
+#############################################################################
+#############################################################################
 
-######################
-#### Mount Script ####
-######################
-### Version 0.96.6 ###
-######################
 
-####### EDIT ONLY THESE SETTINGS #######
+configfile="/mnt/user/appdata/other/rclone/config.cfg" #Leave as default unless you need to run multiple configs. Example - multiple mount/upload scripts
 
-# INSTRUCTIONS
-# 1. Change the name of the rclone remote and shares to match your setup
-# 2. NOTE: enter RcloneRemoteName WITHOUT ':'
-# 3. Optional: include custom command and bind mount settings
-# 4. Optional: include extra folders in mergerfs mount
 
-# REQUIRED SETTINGS
-RcloneRemoteName="gdrive_vfs" # Name of rclone remote mount WITHOUT ':'. NOTE: Choose your encrypted remote for sensitive data
-RcloneMountShare="/mnt/user/mount_rclone" # where your rclone remote will be located without trailing slash  e.g. /mnt/user/mount_rclone
-MergerfsMountShare="/mnt/user/mount_mergerfs" # location without trailing slash  e.g. /mnt/user/mount_mergerfs. Enter 'ignore' to disable
-DockerStart="nzbget plex sonarr radarr ombi" # list of dockers, separated by space, to start once mergerfs mount verified. Remember to disable AUTOSTART for dockers added in docker settings page
-LocalFilesShare="/mnt/user/local" # location of the local files and MountFolders you want to upload without trailing slash to rclone e.g. /mnt/user/local. Enter 'ignore' to disable
-MountFolders=\{"downloads/complete,downloads/intermediate,downloads/seeds,movies,tv"\} # comma separated list of folders to create within the mount
 
-# Note: Again - remember to NOT use ':' in your remote name above
+#############################################################################
+#############################################################################
+#####                                                                   #####
+#####    DO NOT EDIT THIS SCRIPT UNLESS YOU KNOW WHAT YOU ARE DOING     #####
+#####                                                                   #####
+#############################################################################
+#############################################################################
+#############################################################################
 
-# OPTIONAL SETTINGS
+######################  Load and Prep Config Variables  #####################
 
-# Add extra paths to mergerfs mount in addition to LocalFilesShare
-LocalFilesShare2="ignore" # without trailing slash e.g. /mnt/user/other__remote_mount/or_other_local_folder.  Enter 'ignore' to disable
-LocalFilesShare3="ignore"
-LocalFilesShare4="ignore"
+if [[ -f "$configfile" ]]; then
+		echo "$(date "+%d.%m.%Y %T") INFO: Found Config Files"
+	else
+		echo "$(date "+%d.%m.%Y %T") ERROR: No Config File found."
+		echo "$(date "+%d.%m.%Y %T") ERROR: Please run modify and run setup config script with your settings OR manually setup a config file at /mnt/user/appdata/other/rclone/config.cfg (see github for examples)"
+		exit
+fi
 
-# Add extra commands or filters
-Command1="--rc"
-Command2=""
-Command3=""
-Command4=""
-Command5=""
-Command6=""
-Command7=""
-Command8=""
+echo "$(date "+%d.%m.%Y %T") INFO: Loading Config File."
 
-CreateBindMount="N" # Y/N. Choose whether to bind traffic to a particular network adapter
-RCloneMountIP="192.168.1.252" # My unraid IP is 172.30.12.2 so I create another similar IP address
-NetworkAdapter="eth0" # choose your network adapter. eth0 recommended
-VirtualIPNumber="2" # creates eth0:x e.g. eth0:1.  I create a unique virtual IP addresses for each mount & upload so I can monitor and traffic shape for each of them
+shopt -s extglob
+tr -d '\r' < $configfile > $config.cfg
+while IFS='= ' read -r lhs rhs
+do
+    if [[ ! $lhs =~ ^\ *# && -n $lhs ]]; then
+        rhs="${rhs%%\#*}"    # Del in line right comments
+        rhs="${rhs%%*( )}"   # Del trailing spaces
+        rhs="${rhs%\"*}"     # Del opening string quotes 
+        rhs="${rhs#\"*}"     # Del closing string quotes 
+        declare $lhs="$rhs"
+    fi
+done < $config.cfg
 
-####### END SETTINGS #######
 
-###############################################################################
-#####   DO NOT EDIT ANYTHING BELOW UNLESS YOU KNOW WHAT YOU ARE DOING   #######
-###############################################################################
-
-####### Preparing mount location variables #######
+######################  Prep Mount Location Variables  ######################
 LocalFilesLocation="$LocalFilesShare/$RcloneRemoteName" # Location for local files to be merged with rclone mount
 RcloneMountLocation="$RcloneMountShare/$RcloneRemoteName" # Location for rclone mount
 MergerFSMountLocation="$MergerfsMountShare/$RcloneRemoteName" # Rclone data folder location
 
-####### create directories for rclone mount and mergerfs mounts #######
+######################   Create Dir for Script Files   ######################
 mkdir -p /mnt/user/appdata/other/rclone/remotes/$RcloneRemoteName #for script files
 if [[  $LocalFileShare == 'ignore' ]]; then
 	echo "$(date "+%d.%m.%Y %T") INFO: Not creating local folders as requested."
 else
 	echo "$(date "+%d.%m.%Y %T") INFO: Creating local folders."
-	eval mkdir -p $LocalFilesLocation/"$MountFolders"
+	eval mkdir -p $LocalFilesLocation/$MountFolders
 fi
 mkdir -p $RcloneMountLocation
 mkdir -p $MergerFSMountLocation
-
-#######  Check if script is already running  #######
+###################### Check if script Already Running ######################
 echo "$(date "+%d.%m.%Y %T") INFO: *** Starting mount of remote ${RcloneRemoteName}"
 echo "$(date "+%d.%m.%Y %T") INFO: Checking if this script is already running."
 if [[ -f "/mnt/user/appdata/other/rclone/remotes/$RcloneRemoteName/mount_running" ]]; then
@@ -79,48 +89,61 @@ else
 	touch /mnt/user/appdata/other/rclone/remotes/$RcloneRemoteName/mount_running
 fi
 
-#######  Create Rclone Mount  #######
-
-# Check If Rclone Mount Already Created
-if [[ -f "$RcloneMountLocation/mountcheck" ]]; then
-	echo "$(date "+%d.%m.%Y %T") INFO: Success ${RcloneRemoteName} remote is already mounted."
-else
-	echo "$(date "+%d.%m.%Y %T") INFO: Mount not running. Will now mount ${RcloneRemoteName} remote."
-# Creating mountcheck file in case it doesn't already exist
+######################    Check if Already Mounted     ######################
+	if [[ -f "$RcloneMountLocation/mountcheck" ]]; then
+		echo "$(date "+%d.%m.%Y %T") INFO: Success ${RcloneRemoteName} remote is already mounted."
+	else
+		echo "$(date "+%d.%m.%Y %T") INFO: Mount not running. Will now mount ${RcloneRemoteName} remote."
+	
+######################  Create mountcheck if Missing   ######################
 	echo "$(date "+%d.%m.%Y %T") INFO: Recreating mountcheck file for ${RcloneRemoteName} remote."
 	touch mountcheck
 	rclone copy mountcheck $RcloneRemoteName: -vv --no-traverse
-# Check bind option
-	if [[  $CreateBindMount == 'Y' ]]; then
-		echo "$(date "+%d.%m.%Y %T") INFO: *** Checking if IP address ${RCloneMountIP} already created for remote ${RcloneRemoteName}"
-		ping -q -c2 $RCloneMountIP > /dev/null # -q quiet, -c number of pings to perform
+
+######################  Setup Rclone WebGui Variables  ######################
+if [[  $Webgui == 'Y' ]]; then
+	echo "$(date "+%d.%m.%Y %T") INFO: *** WebGUI Enabled - Note this is still currently in beta and may have errors or issues associated with it"
+	Webguicommands="--rc --rc-web-gui --rc-user $Webgui_Username --rc-pass $Webgui_Password	--rc-addr $Webgui_Address --rc-web-gui-update"
+	CreateBindMount="N"
+else
+	echo "$(date "+%d.%m.%Y %T") INFO: *** WebGUI Not Enabled"
+	Webguicommands=""
+fi
+ 
+######################      Check Binding Options      ######################
+	if [[  $CreateBindMount_mount == 'Y' ]]; then
+		echo "$(date "+%d.%m.%Y %T") INFO: *** Checking if IP address ${RCloneMountIP_mount} already created for remote ${RcloneRemoteName}"
+		ping -q -c2 $RCloneMountIP_mount > /dev/null # -q quiet, -c number of pings to perform
 		if [ $? -eq 0 ]; then # ping returns exit status 0 if successful
-			echo "$(date "+%d.%m.%Y %T") INFO: *** IP address ${RCloneMountIP} already created for remote ${RcloneRemoteName}"
+			echo "$(date "+%d.%m.%Y %T") INFO: *** IP address ${RCloneMountIP_mount} already created for remote ${RcloneRemoteName}"
 		else
-			echo "$(date "+%d.%m.%Y %T") INFO: *** Creating IP address ${RCloneMountIP} for remote ${RcloneRemoteName}"
-			ip addr add $RCloneMountIP/24 dev $NetworkAdapter label $NetworkAdapter:$VirtualIPNumber
+			echo "$(date "+%d.%m.%Y %T") INFO: *** Creating IP address ${RCloneMountIP_mount} for remote ${RcloneRemoteName}"
+			ip addr add $RCloneMountIP_mount/24 dev $NetworkAdapter_mount label $NetworkAdapter_mount:$VirtualIPNumber_mount
 		fi
-		echo "$(date "+%d.%m.%Y %T") INFO: *** Created bind mount ${RCloneMountIP} for remote ${RcloneRemoteName}"
+		echo "$(date "+%d.%m.%Y %T") INFO: *** Created bind mount ${RCloneMountIP_mount} for remote ${RcloneRemoteName}"
 	else
-		RCloneMountIP=""
+		RCloneMountIP_mount=""
 		echo "$(date "+%d.%m.%Y %T") INFO: *** Creating mount for remote ${RcloneRemoteName}"
 	fi
-# create rclone mount
+
+######################       Create Rclone Mount       ######################
 	rclone mount \
+	$Webguicommands \
+	$Command1_mount $Command2_mount $Command3_mount $Command4_mount $Command5_mount $Command6_mount $Command7_mount $Command8_mount \
 	--allow-other \
 	--buffer-size 256M \
 	--dir-cache-time 720h \
 	--drive-chunk-size 512M \
-	--log-level INFO \
+	--log-level $loglevel \
 	--vfs-read-chunk-size 128M \
+	--poll-interval 30s \
 	--vfs-read-chunk-size-limit off \
 	--vfs-cache-mode writes \
-	--bind=$RCloneMountIP \
+	--bind=$RCloneMountIP_mount \
 	$RcloneRemoteName: $RcloneMountLocation &
 
-# Check if Mount Successful
+######################           Check Mount           ######################
 	echo "$(date "+%d.%m.%Y %T") INFO: sleeping for 5 seconds"
-# slight pause to give mount time to finalise
 	sleep 5
 	echo "$(date "+%d.%m.%Y %T") INFO: continuing..."
 	if [[ -f "$RcloneMountLocation/mountcheck" ]]; then
@@ -132,8 +155,7 @@ else
 	fi
 fi
 
-####### Start MergerFS Mount #######
-
+######################      Start MergerFS Mount       ######################
 if [[  $MergerfsMountShare == 'ignore' ]]; then
 	echo "$(date "+%d.%m.%Y %T") INFO: Not creating mergerfs mount as requested."
 else
@@ -162,7 +184,7 @@ else
 		fi
 # Create mergerfs mount
 		echo "$(date "+%d.%m.%Y %T") INFO: Creating ${RcloneRemoteName} mergerfs mount."
-# Extra Mergerfs folders
+# Extra Mergerfs folders and Additional Mounts
 		if [[  $LocalFilesShare2 != 'ignore' ]]; then
 			echo "$(date "+%d.%m.%Y %T") INFO: Adding ${LocalFilesShare2} to ${RcloneRemoteName} mergerfs mount."
 			LocalFilesShare2=":$LocalFilesShare2"
@@ -195,9 +217,7 @@ else
 	fi
 fi
 
-####### Starting Dockers That Need Mergerfs Mount To Work Properly #######
-
-# only start dockers once
+######################          Start Dockers          ######################
 if [[ -f "/mnt/user/appdata/other/rclone/remotes/$RcloneRemoteName/dockers_started" ]]; then
 	echo "$(date "+%d.%m.%Y %T") INFO: dockers already started."
 else
@@ -206,6 +226,7 @@ else
 	docker start $DockerStart
 fi
 
+######################            Clean-Up             ######################
 rm /mnt/user/appdata/other/rclone/remotes/$RcloneRemoteName/mount_running
 echo "$(date "+%d.%m.%Y %T") INFO: Script complete"
 
