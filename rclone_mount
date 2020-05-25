@@ -3,7 +3,7 @@
 ######################
 #### Mount Script ####
 ######################
-### Version 0.96.6 ###
+### Version 0.96.7 ###
 ######################
 
 ####### EDIT ONLY THESE SETTINGS #######
@@ -17,9 +17,9 @@
 # REQUIRED SETTINGS
 RcloneRemoteName="gdrive_vfs" # Name of rclone remote mount WITHOUT ':'. NOTE: Choose your encrypted remote for sensitive data
 RcloneMountShare="/mnt/user/mount_rclone" # where your rclone remote will be located without trailing slash  e.g. /mnt/user/mount_rclone
+LocalFilesShare="/mnt/user/local" # location of the local files and MountFolders you want to upload without trailing slash to rclone e.g. /mnt/user/local. Enter 'ignore' to disable
 MergerfsMountShare="/mnt/user/mount_mergerfs" # location without trailing slash  e.g. /mnt/user/mount_mergerfs. Enter 'ignore' to disable
 DockerStart="nzbget plex sonarr radarr ombi" # list of dockers, separated by space, to start once mergerfs mount verified. Remember to disable AUTOSTART for dockers added in docker settings page
-LocalFilesShare="/mnt/user/local" # location of the local files and MountFolders you want to upload without trailing slash to rclone e.g. /mnt/user/local. Enter 'ignore' to disable
 MountFolders=\{"downloads/complete,downloads/intermediate,downloads/seeds,movies,tv"\} # comma separated list of folders to create within the mount
 
 # Note: Again - remember to NOT use ':' in your remote name above
@@ -53,8 +53,8 @@ VirtualIPNumber="2" # creates eth0:x e.g. eth0:1.  I create a unique virtual IP 
 ###############################################################################
 
 ####### Preparing mount location variables #######
-LocalFilesLocation="$LocalFilesShare/$RcloneRemoteName" # Location for local files to be merged with rclone mount
 RcloneMountLocation="$RcloneMountShare/$RcloneRemoteName" # Location for rclone mount
+LocalFilesLocation="$LocalFilesShare/$RcloneRemoteName" # Location for local files to be merged with rclone mount
 MergerFSMountLocation="$MergerfsMountShare/$RcloneRemoteName" # Rclone data folder location
 
 ####### create directories for rclone mount and mergerfs mounts #######
@@ -77,6 +77,18 @@ if [[ -f "/mnt/user/appdata/other/rclone/remotes/$RcloneRemoteName/mount_running
 else
 	echo "$(date "+%d.%m.%Y %T") INFO: Script not running - proceeding."
 	touch /mnt/user/appdata/other/rclone/remotes/$RcloneRemoteName/mount_running
+fi
+
+####### Checking have connectivity #######
+
+echo "$(date "+%d.%m.%Y %T") INFO: *** Checking if online"
+ping -q -c2 google.com > /dev/null # -q quiet, -c number of pings to perform
+if [ $? -eq 0 ]; then # ping returns exit status 0 if successful
+	echo "$(date "+%d.%m.%Y %T") PASSED: *** Internet online"
+else
+	echo "$(date "+%d.%m.%Y %T") FAIL: *** No connectivity.  Will try again on next run"
+	rm /mnt/user/appdata/other/rclone/remotes/$RcloneRemoteName/mount_running
+	exit
 fi
 
 #######  Create Rclone Mount  #######
@@ -126,7 +138,8 @@ else
 	if [[ -f "$RcloneMountLocation/mountcheck" ]]; then
 		echo "$(date "+%d.%m.%Y %T") INFO: Successful mount of ${RcloneRemoteName} mount."
 	else
-		echo "$(date "+%d.%m.%Y %T") CRITICAL: ${RcloneRemoteName} mount failed - please check for problems."
+		echo "$(date "+%d.%m.%Y %T") CRITICAL: ${RcloneRemoteName} mount failed - please check for problems.  Stopping dockers"
+		docker stop $DockerStart
 		rm /mnt/user/appdata/other/rclone/remotes/$RcloneRemoteName/mount_running
 		exit
 	fi
@@ -181,6 +194,9 @@ else
 		else
 			LocalFilesShare4=""
 		fi
+# make sure mergerfs mount point is empty
+		mv $MergerFSMountLocation $LocalFilesLocation
+		mkdir -p $MergerFSMountLocation
 # mergerfs mount command
 		mergerfs $LocalFilesLocation:$RcloneMountLocation$LocalFilesShare2$LocalFilesShare3$LocalFilesShare4 $MergerFSMountLocation -o rw,async_read=false,use_ino,allow_other,func.getattr=newest,category.action=all,category.create=ff,cache.files=partial,dropcacheonclose=true
 # check if mergerfs mount successful
@@ -188,7 +204,8 @@ else
 		if [[ -f "$MergerFSMountLocation/mountcheck" ]]; then
 			echo "$(date "+%d.%m.%Y %T") INFO: Check successful, ${RcloneRemoteName} mergerfs mount created."
 		else
-			echo "$(date "+%d.%m.%Y %T") CRITICAL: ${RcloneRemoteName} mergerfs mount failed."
+			echo "$(date "+%d.%m.%Y %T") CRITICAL: ${RcloneRemoteName} mergerfs mount failed.  Stopping dockers."
+			docker stop $DockerStart
 			rm /mnt/user/appdata/other/rclone/remotes/$RcloneRemoteName/mount_running
 			exit
 		fi
