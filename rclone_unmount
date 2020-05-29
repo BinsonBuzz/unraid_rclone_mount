@@ -3,7 +3,7 @@
 #######################
 ### Cleanup Script ####
 #######################
-#### Version 0.9.1 ####
+#### Version 0.9.2 ####
 #######################
 
 echo "$(date "+%d.%m.%Y %T") INFO: *** Starting rclone_cleanup script ***"
@@ -12,9 +12,9 @@ echo "$(date "+%d.%m.%Y %T") INFO: *** Starting rclone_cleanup script ***"
 
 echo "$(date "+%d.%m.%Y %T") INFO: *** Removing Tracking Files ***"
 
-find /mnt/user/appdata/other/rclone/remotes -name dockers_started -delete
-find /mnt/user/appdata/other/rclone/remotes -name mount_running -delete
-find /mnt/user/appdata/other/rclone/remotes -name upload_running -delete
+find /mnt/user/appdata/other/rclone/remotes -name dockers_started* -delete
+find /mnt/user/appdata/other/rclone/remotes -name mount_running* -delete
+find /mnt/user/appdata/other/rclone/remotes -name upload_running* -delete
 echo "$(date "+%d.%m.%Y %T") INFO: ***Finished Cleanup! ***"
 
 exit
