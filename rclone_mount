@@ -3,54 +3,41 @@
 ######################
 #### Mount Script ####
 ######################
-### Version 0.96.7 ###
+### Version 0.96.8 ###
 ######################
 
-####### EDIT ONLY THESE SETTINGS #######
+configfile="/mnt/user/appdata/other/rclone/config.cfg" #Leave as default unless you need to run multiple mount/upload scripts.
 
-# INSTRUCTIONS
-# 1. Change the name of the rclone remote and shares to match your setup
-# 2. NOTE: enter RcloneRemoteName WITHOUT ':'
-# 3. Optional: include custom command and bind mount settings
-# 4. Optional: include extra folders in mergerfs mount
-
-# REQUIRED SETTINGS
-RcloneRemoteName="gdrive_vfs" # Name of rclone remote mount WITHOUT ':'. NOTE: Choose your encrypted remote for sensitive data
-RcloneMountShare="/mnt/user/mount_rclone" # where your rclone remote will be located without trailing slash  e.g. /mnt/user/mount_rclone
-LocalFilesShare="/mnt/user/local" # location of the local files and MountFolders you want to upload without trailing slash to rclone e.g. /mnt/user/local. Enter 'ignore' to disable
-MergerfsMountShare="/mnt/user/mount_mergerfs" # location without trailing slash  e.g. /mnt/user/mount_mergerfs. Enter 'ignore' to disable
-DockerStart="nzbget plex sonarr radarr ombi" # list of dockers, separated by space, to start once mergerfs mount verified. Remember to disable AUTOSTART for dockers added in docker settings page
-MountFolders=\{"downloads/complete,downloads/intermediate,downloads/seeds,movies,tv"\} # comma separated list of folders to create within the mount
-
-# Note: Again - remember to NOT use ':' in your remote name above
-
-# OPTIONAL SETTINGS
-
-# Add extra paths to mergerfs mount in addition to LocalFilesShare
-LocalFilesShare2="ignore" # without trailing slash e.g. /mnt/user/other__remote_mount/or_other_local_folder.  Enter 'ignore' to disable
-LocalFilesShare3="ignore"
-LocalFilesShare4="ignore"
-
-# Add extra commands or filters
-Command1="--rc"
-Command2=""
-Command3=""
-Command4=""
-Command5=""
-Command6=""
-Command7=""
-Command8=""
-
-CreateBindMount="N" # Y/N. Choose whether to bind traffic to a particular network adapter
-RCloneMountIP="192.168.1.252" # My unraid IP is 172.30.12.2 so I create another similar IP address
-NetworkAdapter="eth0" # choose your network adapter. eth0 recommended
-VirtualIPNumber="2" # creates eth0:x e.g. eth0:1.  I create a unique virtual IP addresses for each mount & upload so I can monitor and traffic shape for each of them
-
-####### END SETTINGS #######
+####### END OF USER SETTINGS #######
 
 ###############################################################################
 #####   DO NOT EDIT ANYTHING BELOW UNLESS YOU KNOW WHAT YOU ARE DOING   #######
 ###############################################################################
+
+#######  Load and Prep Config Variables  #######
+
+if [[ -f "$configfile" ]]; then
+		echo "$(date "+%d.%m.%Y %T") INFO: Found Config Files"
+	else
+		echo "$(date "+%d.%m.%Y %T") ERROR: No Config File found."
+		echo "$(date "+%d.%m.%Y %T") ERROR: Please run setup config script with your settings OR manually setup a config file at /mnt/user/appdata/other/rclone/config.cfg (see github for examples)"
+		exit
+fi
+
+echo "$(date "+%d.%m.%Y %T") INFO: Loading Config File."
+
+shopt -s extglob
+tr -d '\r' < $configfile > $config.cfg
+while IFS='= ' read -r lhs rhs
+do
+    if [[ ! $lhs =~ ^\ *# && -n $lhs ]]; then
+        rhs="${rhs%%\#*}"    # Del in line right comments
+        rhs="${rhs%%*( )}"   # Del trailing spaces
+        rhs="${rhs%\"*}"     # Del opening string quotes 
+        rhs="${rhs#\"*}"     # Del closing string quotes 
+        declare $lhs="$rhs"
+    fi
+done < $config.cfg
 
 ####### Preparing mount location variables #######
 RcloneMountLocation="$RcloneMountShare/$RcloneRemoteName" # Location for rclone mount
@@ -103,23 +90,24 @@ else
 	touch mountcheck
 	rclone copy mountcheck $RcloneRemoteName: -vv --no-traverse
 # Check bind option
-	if [[  $CreateBindMount == 'Y' ]]; then
-		echo "$(date "+%d.%m.%Y %T") INFO: *** Checking if IP address ${RCloneMountIP} already created for remote ${RcloneRemoteName}"
-		ping -q -c2 $RCloneMountIP > /dev/null # -q quiet, -c number of pings to perform
+	if [[  $CreateBindMount_mount == 'Y' ]]; then
+		echo "$(date "+%d.%m.%Y %T") INFO: *** Checking if IP address ${RCloneMountIP_mount} already created for remote ${RcloneRemoteName}"
+		ping -q -c2 $RCloneMountIP_mount > /dev/null # -q quiet, -c number of pings to perform
 		if [ $? -eq 0 ]; then # ping returns exit status 0 if successful
-			echo "$(date "+%d.%m.%Y %T") INFO: *** IP address ${RCloneMountIP} already created for remote ${RcloneRemoteName}"
+			echo "$(date "+%d.%m.%Y %T") INFO: *** IP address ${RCloneMountIP_mount} already created for remote ${RcloneRemoteName}"
 		else
-			echo "$(date "+%d.%m.%Y %T") INFO: *** Creating IP address ${RCloneMountIP} for remote ${RcloneRemoteName}"
-			ip addr add $RCloneMountIP/24 dev $NetworkAdapter label $NetworkAdapter:$VirtualIPNumber
+			echo "$(date "+%d.%m.%Y %T") INFO: *** Creating IP address ${RCloneMountIP_mount} for remote ${RcloneRemoteName}"
+			ip addr add $RCloneMountIP_mount/24 dev $NetworkAdapter_mount label $NetworkAdapter_mount:$VirtualIPNumber_mount
 		fi
-		echo "$(date "+%d.%m.%Y %T") INFO: *** Created bind mount ${RCloneMountIP} for remote ${RcloneRemoteName}"
+		echo "$(date "+%d.%m.%Y %T") INFO: *** Created bind mount ${RCloneMountIP_mount} for remote ${RcloneRemoteName}"
 	else
-		RCloneMountIP=""
+		RCloneMountIP_mount=""
 		echo "$(date "+%d.%m.%Y %T") INFO: *** Creating mount for remote ${RcloneRemoteName}"
 	fi
 # create rclone mount
 	rclone mount \
 	--allow-other \
+	$Command1_mount $Command2_mount $Command3_mount $Command4_mount $Command5_mount $Command6_mount $Command7_mount $Command8_mount \
 	--buffer-size 256M \
 	--dir-cache-time 720h \
 	--drive-chunk-size 512M \
@@ -127,7 +115,7 @@ else
 	--vfs-read-chunk-size 128M \
 	--vfs-read-chunk-size-limit off \
 	--vfs-cache-mode writes \
-	--bind=$RCloneMountIP \
+	--bind=$RCloneMountIP_mount \
 	$RcloneRemoteName: $RcloneMountLocation &
 
 # Check if Mount Successful
