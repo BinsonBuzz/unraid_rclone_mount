@@ -23,7 +23,7 @@ Thanks to <a href="https://github.com/SenpaiBox">SenPaiBox</a> and the Unraid co
 		<ul>
 			<li>To mass rename the service accounts use the following steps:</li>
 			<ul>
-				<li>Place Auto-Genortated Service Accounts into /mnt/user/appdata/other/rclone/service_accounts/</li>
+				<li>Place Auto-Generated Service Accounts into /mnt/user/appdata/other/rclone/service_accounts/</li>
 				<li>Run the following in terminal/ssh</li>
 				<ul>
 					<li>Move to directory: cd /mnt/user/appdata/other/rclone/service_accounts/</li>
