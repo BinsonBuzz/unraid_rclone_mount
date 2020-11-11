@@ -66,7 +66,14 @@ else
 	eval mkdir -p $LocalFilesLocation/"$MountFolders"
 fi
 mkdir -p $RcloneMountLocation
-mkdir -p $MergerFSMountLocation
+
+if [[  $MergerfsMountShare == 'ignore' ]]; then
+	echo "$(date "+%d.%m.%Y %T") INFO: Not creating MergerFS folders as requested."
+else
+	echo "$(date "+%d.%m.%Y %T") INFO: Creating MergerFS folders."
+	mkdir -p $MergerFSMountLocation
+fi
+
 
 #######  Check if script is already running  #######
 echo "$(date "+%d.%m.%Y %T") INFO: *** Starting mount of remote ${RcloneRemoteName}"
