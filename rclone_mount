@@ -59,7 +59,7 @@ MergerFSMountLocation="$MergerfsMountShare/$RcloneRemoteName" # Rclone data fold
 
 ####### create directories for rclone mount and mergerfs mounts #######
 mkdir -p /mnt/user/appdata/other/rclone/remotes/$RcloneRemoteName #for script files
-if [[  $LocalFileShare == 'ignore' ]]; then
+if [[  $LocalFilesShare == 'ignore' ]]; then
 	echo "$(date "+%d.%m.%Y %T") INFO: Not creating local folders as requested."
 else
 	echo "$(date "+%d.%m.%Y %T") INFO: Creating local folders."
