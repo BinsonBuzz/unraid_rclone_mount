@@ -3,7 +3,7 @@
 ######################
 #### Mount Script ####
 ######################
-### Version 0.96.7.1 ###
+### Version 0.96.8 ###
 ######################
 
 ####### EDIT ONLY THESE SETTINGS #######
@@ -17,7 +17,11 @@
 # REQUIRED SETTINGS
 RcloneRemoteName="gdrive_vfs" # Name of rclone remote mount WITHOUT ':'. NOTE: Choose your encrypted remote for sensitive data
 RcloneMountShare="/mnt/user/mount_rclone" # where your rclone remote will be located without trailing slash  e.g. /mnt/user/mount_rclone
+RcloneMountDirCacheTime="720h" # rclone dir cache time
 LocalFilesShare="/mnt/user/local" # location of the local files and MountFolders you want to upload without trailing slash to rclone e.g. /mnt/user/local. Enter 'ignore' to disable
+RcloneCacheShare="/mnt/user0/mount_rclone" # location of rclone cache files without trailing slash e.g. /mnt/user0/mount_rclone
+RcloneCacheMaxSize="400G" # Maximum size of rclone cache
+RcloneCacheMaxAge="336h" # Maximum age of cache files
 MergerfsMountShare="/mnt/user/mount_mergerfs" # location without trailing slash  e.g. /mnt/user/mount_mergerfs. Enter 'ignore' to disable
 DockerStart="nzbget plex sonarr radarr ombi" # list of dockers, separated by space, to start once mergerfs mount verified. Remember to disable AUTOSTART for dockers added in docker settings page
 MountFolders=\{"downloads/complete,downloads/intermediate,downloads/seeds,movies,tv"\} # comma separated list of folders to create within the mount
@@ -58,7 +62,8 @@ LocalFilesLocation="$LocalFilesShare/$RcloneRemoteName" # Location for local fil
 MergerFSMountLocation="$MergerfsMountShare/$RcloneRemoteName" # Rclone data folder location
 
 ####### create directories for rclone mount and mergerfs mounts #######
-mkdir -p /mnt/user/appdata/other/rclone/remotes/$RcloneRemoteName #for script files
+mkdir -p /mnt/user/appdata/other/rclone/remotes/$RcloneRemoteName # for script files
+mkdir -p $RcloneCacheShare/cache/$RcloneRemoteName # for cache files
 if [[  $LocalFilesShare == 'ignore' ]]; then
 	echo "$(date "+%d.%m.%Y %T") INFO: Not creating local folders as requested."
 else
@@ -128,13 +133,13 @@ else
 	rclone mount \
 	$Command1 $Command2 $Command3 $Command4 $Command5 $Command6 $Command7 $Command8 \
 	--allow-other \
-	--buffer-size 256M \
-	--dir-cache-time 720h \
-	--drive-chunk-size 512M \
+	--dir-cache-time $RcloneMountDirCacheTime \
 	--log-level INFO \
-	--vfs-read-chunk-size 128M \
-	--vfs-read-chunk-size-limit off \
-	--vfs-cache-mode writes \
+	--poll-interval 15s \
+	--cache-dir=$RcloneCacheShare/cache/$RcloneRemoteName \
+	--vfs-cache-mode full \
+	--vfs-cache-max-size $RcloneCacheMaxSize \
+	--vfs-cache-max-age $RcloneCacheMaxAge \
 	--bind=$RCloneMountIP \
 	$RcloneRemoteName: $RcloneMountLocation &
 
