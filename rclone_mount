@@ -3,7 +3,7 @@
 ######################
 #### Mount Script ####
 ######################
-### Version 0.96.7 ###
+### Version 0.96.7.1 ###
 ######################
 
 ####### EDIT ONLY THESE SETTINGS #######
@@ -126,6 +126,7 @@ else
 	fi
 # create rclone mount
 	rclone mount \
+	$Command1 $Command2 $Command3 $Command4 $Command5 $Command6 $Command7 $Command8 \
 	--allow-other \
 	--buffer-size 256M \
 	--dir-cache-time 720h \
