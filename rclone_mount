@@ -3,7 +3,7 @@
 ######################
 #### Mount Script ####
 ######################
-### Version 0.96.8 ###
+## Version 0.96.9.1 ##
 ######################
 
 ####### EDIT ONLY THESE SETTINGS #######
@@ -231,9 +231,14 @@ fi
 if [[ -f "/mnt/user/appdata/other/rclone/remotes/$RcloneRemoteName/dockers_started" ]]; then
 	echo "$(date "+%d.%m.%Y %T") INFO: dockers already started."
 else
-	touch /mnt/user/appdata/other/rclone/remotes/$RcloneRemoteName/dockers_started
-	echo "$(date "+%d.%m.%Y %T") INFO: Starting dockers."
-	docker start $DockerStart
+# Check CA Appdata plugin not backing up or restoring
+	if [[ -f "/tmp/ca.backup2/tempFiles/backupInProgress" ] || [ -f "/tmp/ca.backup2/tempFiles/restoreInProgress" ]] ; then
+		echo "$(date "+%d.%m.%Y %T") INFO: Appdata Backup plugin running - not starting dockers."
+	else
+		touch /mnt/user/appdata/other/rclone/remotes/$RcloneRemoteName/dockers_started
+		echo "$(date "+%d.%m.%Y %T") INFO: Starting dockers."
+		docker start $DockerStart
+	fi
 fi
 
 rm /mnt/user/appdata/other/rclone/remotes/$RcloneRemoteName/mount_running
