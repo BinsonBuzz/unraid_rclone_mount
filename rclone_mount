@@ -3,7 +3,7 @@
 ######################
 #### Mount Script ####
 ######################
-## Version 0.96.9.1 ##
+## Version 0.96.9.2 ##
 ######################
 
 ####### EDIT ONLY THESE SETTINGS #######
@@ -232,7 +232,7 @@ if [[ -f "/mnt/user/appdata/other/rclone/remotes/$RcloneRemoteName/dockers_start
 	echo "$(date "+%d.%m.%Y %T") INFO: dockers already started."
 else
 # Check CA Appdata plugin not backing up or restoring
-	if [[ -f "/tmp/ca.backup2/tempFiles/backupInProgress" ] || [ -f "/tmp/ca.backup2/tempFiles/restoreInProgress" ]] ; then
+	if [ -f "/tmp/ca.backup2/tempFiles/backupInProgress" ] || [ -f "/tmp/ca.backup2/tempFiles/restoreInProgress" ] ; then
 		echo "$(date "+%d.%m.%Y %T") INFO: Appdata Backup plugin running - not starting dockers."
 	else
 		touch /mnt/user/appdata/other/rclone/remotes/$RcloneRemoteName/dockers_started
