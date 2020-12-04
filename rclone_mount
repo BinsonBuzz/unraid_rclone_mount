@@ -66,6 +66,8 @@ mkdir -p /mnt/user/appdata/other/rclone/remotes/$RcloneRemoteName # for script f
 mkdir -p $RcloneCacheShare/cache/$RcloneRemoteName # for cache files
 if [[  $LocalFilesShare == 'ignore' ]]; then
 	echo "$(date "+%d.%m.%Y %T") INFO: Not creating local folders as requested."
+	LocalFilesLocation="/tmp/$RcloneRemoteName"
+	eval mkdir -p $LocalFilesLocation
 else
 	echo "$(date "+%d.%m.%Y %T") INFO: Creating local folders."
 	eval mkdir -p $LocalFilesLocation/"$MountFolders"
