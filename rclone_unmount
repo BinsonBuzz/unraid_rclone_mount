@@ -3,10 +3,28 @@
 #######################
 ### Cleanup Script ####
 #######################
-#### Version 0.9.2 ####
+#### Version 0.9.3 ####
 #######################
 
+# REQUIRED SETTINGS
+
+# Copy settings from rclone_mount
+RcloneRemoteName="gdrive_vfs" # Name of rclone remote mount WITHOUT ':'.
+RcloneMountShare="/mnt/user/mount_rclone"
+LocalFilesShare="/mnt/user/local"
+RcloneCacheShare="/mnt/user0/mount_rclone"
+MergerfsMountShare="/mnt/user/mount_mergerfs"
+
+# END SETTINGS
+
 echo "$(date "+%d.%m.%Y %T") INFO: *** Starting rclone_cleanup script ***"
+
+####### Unmount Rclone #######
+
+umount -l $MergerfsMountShare/$RcloneRemoteName
+umount -l $RcloneMountShare/$RcloneRemoteName
+umount -l $RcloneCacheShare/cache/$RcloneRemoteName
+umount -l $LocalFilesShare/$RcloneRemoteName
 
 ####### Cleanup Tracking Files #######
 
