@@ -9,6 +9,9 @@
 # REQUIRED SETTINGS
 
 # Copy settings from rclone_mount
+# NOTE: This only handles one mount instance. If you have multiple rclone
+#       mounts, add manual entries for each mount.
+
 RcloneRemoteName="gdrive_vfs" # Name of rclone remote mount WITHOUT ':'.
 RcloneMountShare="/mnt/user/mount_rclone"
 LocalFilesShare="/mnt/user/local"
