@@ -3,7 +3,7 @@
 ######################
 #### Mount Script ####
 ######################
-## Version 0.96.9.2 ##
+## Version 0.96.9.3 ##
 ######################
 
 ####### EDIT ONLY THESE SETTINGS #######
@@ -135,6 +135,7 @@ else
 	rclone mount \
 	$Command1 $Command2 $Command3 $Command4 $Command5 $Command6 $Command7 $Command8 \
 	--allow-other \
+	--umask 000 \
 	--dir-cache-time $RcloneMountDirCacheTime \
 	--log-level INFO \
 	--poll-interval 15s \
