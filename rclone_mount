@@ -137,12 +137,16 @@ else
 	--allow-other \
 	--umask 000 \
 	--dir-cache-time $RcloneMountDirCacheTime \
+	--attr-timeout $RcloneMountDirCacheTime \
 	--log-level INFO \
-	--poll-interval 15s \
+	--poll-interval 10s \
 	--cache-dir=$RcloneCacheShare/cache/$RcloneRemoteName \
+	--drive-pacer-min-sleep 10ms \
+	--drive-pacer-burst 1000 \
 	--vfs-cache-mode full \
 	--vfs-cache-max-size $RcloneCacheMaxSize \
 	--vfs-cache-max-age $RcloneCacheMaxAge \
+	--vfs-read-ahead 1G \
 	--bind=$RCloneMountIP \
 	$RcloneRemoteName: $RcloneMountLocation &
 
