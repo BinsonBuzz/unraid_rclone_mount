@@ -1,5 +1,7 @@
 # Rclone Mount & Upload Scripts for Plex Users
 
+Note: This project is no longer supported
+
 Collection of scripts to create rclone google mounts to allow fast launch times with Plex (or Emby).  
 
 The main thread for more support: https://forums.unraid.net/topic/75436-guide-how-to-use-rclone-to-mount-cloud-drives-and-play-files/.
