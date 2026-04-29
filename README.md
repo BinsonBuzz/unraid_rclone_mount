@@ -1,6 +1,6 @@
 # Rclone Mount & Upload Scripts for Plex Users
 
-Note: This project is no longer supported
+Note: This project is no longer supported. Please see https://github.com/BinsonBuzz/unRAID-rclone-mounting-scripts-for-NzbDAV for similar functionality
 
 Collection of scripts to create rclone google mounts to allow fast launch times with Plex (or Emby).  
 
